@@ -1,0 +1,58 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>xAI Chrome Extension Development Server</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 800px; 
+            margin: 50px auto; 
+            padding: 20px;
+            background: #0a0a0a;
+            color: #ffffff;
+        }
+        .header { text-align: center; margin-bottom: 40px; }
+        .instructions { background: #1a1a2e; padding: 20px; border-radius: 10px; }
+        .file-list { margin-top: 30px; }
+        .file-list a { 
+            display: block; 
+            padding: 10px; 
+            margin: 5px 0; 
+            background: #2a2a4e; 
+            color: #ffffff; 
+            text-decoration: none; 
+            border-radius: 5px; 
+        }
+        .file-list a:hover { background: #3a3a6e; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚀 xAI Chrome Extension</h1>
+        <p>Development Server Running on Port 5000</p>
+    </div>
+    
+    <div class="instructions">
+        <h2>📋 How to Load the Extension</h2>
+        <ol>
+            <li>Open Chrome and navigate to <code>chrome://extensions/</code></li>
+            <li>Enable "Developer mode" in the top right</li>
+            <li>Click "Load unpacked" and select this directory</li>
+            <li>The xAI extension will be loaded and ready to use!</li>
+        </ol>
+    </div>
+    
+    <div class="file-list">
+        <h2>📁 Extension Files</h2>
+        <a href="manifest.json">manifest.json</a>
+        <a href="newtab.html">newtab.html</a>
+        <a href="styles.css">styles.css</a>
+        <a href="script.js">script.js</a>
+        <a href="background.js">background.js</a>
+        <a href="popup.html">popup.html</a>
+        <a href="popup.js">popup.js</a>
+    </div>
+</body>
+</html>
+                

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>xAI New Tab</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="background-container">
+        <div class="particle-canvas" id="particleCanvas"></div>
+        <div class="stars-container" id="starsContainer"></div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Header Section -->
+        <header class="header-section">
+            <div class="greeting-container">
+                <h1 class="greeting-text" id="greetingText">Welcome back</h1>
+                <p class="time-display" id="timeDisplay"></p>
+            </div>
+        </header>
+
+        <!-- Search Section -->
+        <section class="search-section">
+            <div class="search-container">
+                <div class="search-input-wrapper">
+                    <input 
+                        type="text" 
+                        class="search-input" 
+                        id="searchInput"
+                        placeholder="Search or enter URL"
+                        autocomplete="off"
+                    >
+                    <div class="search-glow"></div>
+                </div>
+                <button class="search-button" id="searchButton">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                </button>
+            </div>
+        </section>
+
+        <!-- Quick Access Section -->
+        <section class="quick-access-section">
+            <h2 class="section-title">Quick Access</h2>
+            <div class="bookmarks-grid" id="bookmarksGrid">
+                <!-- Bookmarks will be populated by JavaScript -->
+            </div>
+        </section>
+
+        <!-- Recent History Section -->
+        <section class="history-section">
+            <h2 class="section-title">Recent</h2>
+            <div class="history-list" id="historyList">
+                <!-- History will be populated by JavaScript -->
+            </div>
+        </section>
+    </div>
+
+    <!-- Settings Button -->
+    <div class="settings-container">
+        <button class="settings-button" id="settingsButton">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M12 1v6m0 10v6m11-7h-6m-10 0H1m15.5-7.5L19 7l-3-3m0 12l3 3-2.5 2.5M9 7L6 4 3.5 6.5M15 17l3 3-2.5 2.5"></path>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Floating Elements -->
+    <div class="floating-elements" id="floatingElements"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
