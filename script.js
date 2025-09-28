@@ -70,7 +70,9 @@ class XAIExtension {
         // Google Apps launcher
         const appsLauncher = document.getElementById('appsLauncher');
         if (appsLauncher) {
-            appsLauncher.addEventListener('click', () => {
+            appsLauncher.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
                 this.showGoogleApps();
             });
         }
