@@ -9,7 +9,7 @@ chrome.runtime.onInstalled.addListener((details) => {
         if (!result.xaiSettings) {
             const defaultSettings = {
                 animationsEnabled: true,
-                particleCount: 50,
+                particleCount: 15,
                 userName: '',
                 customBookmarks: []
             };

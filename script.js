@@ -5,7 +5,7 @@ class XAIExtension {
         this.animationId = null;
         this.settings = {
             animationsEnabled: true,
-            particleCount: 50,
+            particleCount: 15,
             userName: '',
             customBookmarks: []
         };
@@ -249,17 +249,17 @@ class XAIExtension {
 
     createStars() {
         const starsContainer = document.getElementById('starsContainer');
-        const starCount = 100;
+        const starCount = 40; // Reduced count for minimal look
 
         for (let i = 0; i < starCount; i++) {
             const star = document.createElement('div');
             star.className = 'star';
             star.style.left = Math.random() * 100 + '%';
             star.style.top = Math.random() * 100 + '%';
-            star.style.animationDelay = Math.random() * 3 + 's';
+            star.style.animationDelay = Math.random() * 4 + 's';
             
-            // Random size variation
-            const size = Math.random() * 3 + 1;
+            // Smaller pulsating stars
+            const size = Math.random() * 2 + 1;
             star.style.width = size + 'px';
             star.style.height = size + 'px';
             
@@ -269,20 +269,18 @@ class XAIExtension {
 
     createFloatingElements() {
         const floatingContainer = document.getElementById('floatingElements');
-        const elementCount = 12; // Increased count for more variety
-        const shapes = ['circle', 'square', 'diamond', 'star'];
+        const elementCount = 5; // Minimal count as requested
 
         for (let i = 0; i < elementCount; i++) {
             const element = document.createElement('div');
-            const randomShape = shapes[Math.floor(Math.random() * shapes.length)];
             
-            element.className = `floating-element floating-${randomShape}`;
+            element.className = 'floating-element floating-circle';
             element.style.left = Math.random() * 100 + '%';
-            element.style.animationDelay = Math.random() * 15 + 's';
-            element.style.animationDuration = (Math.random() * 10 + 15) + 's';
+            element.style.animationDelay = Math.random() * 20 + 's';
+            element.style.animationDuration = (Math.random() * 15 + 20) + 's';
             
-            // Random size for floating elements
-            const size = Math.random() * 8 + 4; // 4-12px
+            // Smaller size for minimal look
+            const size = Math.random() * 6 + 3; // 3-9px
             element.style.width = size + 'px';
             element.style.height = size + 'px';
             
@@ -304,8 +302,8 @@ class XAIExtension {
     createParticle() {
         const particle = document.createElement('div');
         
-        // Array of different particle types
-        const particleTypes = ['circle', 'square', 'diamond', 'triangle', 'line', 'star', 'glow'];
+        // Only use circles and glowing particles
+        const particleTypes = ['circle', 'glow'];
         const randomType = particleTypes[Math.floor(Math.random() * particleTypes.length)];
         
         // Set base class and specific type class
@@ -314,42 +312,18 @@ class XAIExtension {
         // Random position
         particle.style.left = Math.random() * window.innerWidth + 'px';
         
-        // Random size based on type
-        let size;
-        switch(randomType) {
-            case 'line':
-                size = Math.random() * 15 + 5; // 5-20px width
-                particle.style.width = size + 'px';
-                particle.style.height = '1px';
-                break;
-            case 'triangle':
-                size = Math.random() * 4 + 2; // 2-6px
-                particle.style.borderLeftWidth = size + 'px';
-                particle.style.borderRightWidth = size + 'px';
-                particle.style.borderBottomWidth = size * 2 + 'px';
-                break;
-            case 'star':
-                size = Math.random() * 8 + 4; // 4-12px
-                particle.style.width = size + 'px';
-                particle.style.height = size + 'px';
-                break;
-            default:
-                size = Math.random() * 6 + 1; // 1-7px
-                particle.style.width = size + 'px';
-                particle.style.height = size + 'px';
-        }
+        // Random size for circular particles
+        const size = Math.random() * 4 + 1; // 1-5px (smaller for minimal look)
+        particle.style.width = size + 'px';
+        particle.style.height = size + 'px';
         
         // Random animation timing
-        particle.style.animationDelay = Math.random() * 20 + 's';
-        particle.style.animationDuration = (Math.random() * 15 + 15) + 's';
-        
-        // Random opacity variation
-        const opacity = Math.random() * 0.4 + 0.3; // 0.3-0.7
-        particle.style.setProperty('--particle-opacity', opacity);
+        particle.style.animationDelay = Math.random() * 25 + 's';
+        particle.style.animationDuration = (Math.random() * 10 + 20) + 's';
         
         document.getElementById('particleCanvas').appendChild(particle);
         
-        // Remove particle after animation with longer timeout for varied durations
+        // Remove particle after animation
         setTimeout(() => {
             if (particle.parentNode) {
                 particle.parentNode.removeChild(particle);
@@ -358,12 +332,12 @@ class XAIExtension {
     }
 
     animateParticles() {
-        // Continuously create new particles
+        // Continuously create new particles (less frequent for minimal count)
         setInterval(() => {
             if (this.settings.animationsEnabled) {
                 this.createParticle();
             }
-        }, 400);
+        }, 800);
     }
 
     handleMouseMove(e) {
@@ -420,44 +394,45 @@ class XAIExtension {
 
         modal.innerHTML = `
             <div style="
-                background: rgba(0, 0, 0, 0.95);
-                border: 1px solid rgba(255, 255, 255, 0.1);
+                background: rgba(0, 0, 0, 0.98);
+                border: 1px solid rgba(255, 255, 255, 0.03);
                 border-radius: 20px;
                 padding: 40px;
                 max-width: 500px;
                 width: 90%;
                 color: white;
-                backdrop-filter: blur(25px);
+                backdrop-filter: blur(30px);
+                box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8);
             ">
                 <h3 style="margin-bottom: 30px; font-size: 1.8rem; color: #a855f7; text-align: center;">Google Workspace</h3>
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px;">
-                    <a href="https://drive.google.com" target="_self" style="display: flex; flex-direction: column; align-items: center; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 12px; text-decoration: none; color: white; transition: all 0.3s ease;" onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.transform='translateY(-3px)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'; this.style.transform='translateY(0)'">
-                        <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #1ea362, #34a853); border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">📁</div>
-                        <span>Drive</span>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px;">
+                    <a href="https://drive.google.com" target="_self" style="display: flex; flex-direction: column; align-items: center; padding: 18px; background: rgba(255,255,255,0.008); border: 1px solid rgba(255,255,255,0.02); border-radius: 12px; text-decoration: none; color: white; transition: all 0.3s ease;" onmouseover="this.style.background='rgba(255,255,255,0.03)'; this.style.transform='translateY(-3px)'; this.style.borderColor='rgba(124,58,237,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.008)'; this.style.transform='translateY(0)'; this.style.borderColor='rgba(255,255,255,0.02)'">
+                        <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #0d4f2c, #1ea362); border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">📁</div>
+                        <span style="font-size: 0.9rem;">Drive</span>
                     </a>
-                    <a href="https://docs.google.com" target="_self" style="display: flex; flex-direction: column; align-items: center; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 12px; text-decoration: none; color: white; transition: all 0.3s ease;" onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.transform='translateY(-3px)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'; this.style.transform='translateY(0)'">
-                        <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #1a73e8, #4285f4); border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">📝</div>
-                        <span>Docs</span>
+                    <a href="https://docs.google.com" target="_self" style="display: flex; flex-direction: column; align-items: center; padding: 18px; background: rgba(255,255,255,0.008); border: 1px solid rgba(255,255,255,0.02); border-radius: 12px; text-decoration: none; color: white; transition: all 0.3s ease;" onmouseover="this.style.background='rgba(255,255,255,0.03)'; this.style.transform='translateY(-3px)'; this.style.borderColor='rgba(124,58,237,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.008)'; this.style.transform='translateY(0)'; this.style.borderColor='rgba(255,255,255,0.02)'">
+                        <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #0c2859, #1a73e8); border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">📝</div>
+                        <span style="font-size: 0.9rem;">Docs</span>
                     </a>
-                    <a href="https://sheets.google.com" target="_self" style="display: flex; flex-direction: column; align-items: center; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 12px; text-decoration: none; color: white; transition: all 0.3s ease;" onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.transform='translateY(-3px)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'; this.style.transform='translateY(0)'">
-                        <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #0f9d58, #34a853); border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">📊</div>
-                        <span>Sheets</span>
+                    <a href="https://sheets.google.com" target="_self" style="display: flex; flex-direction: column; align-items: center; padding: 18px; background: rgba(255,255,255,0.008); border: 1px solid rgba(255,255,255,0.02); border-radius: 12px; text-decoration: none; color: white; transition: all 0.3s ease;" onmouseover="this.style.background='rgba(255,255,255,0.03)'; this.style.transform='translateY(-3px)'; this.style.borderColor='rgba(124,58,237,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.008)'; this.style.transform='translateY(0)'; this.style.borderColor='rgba(255,255,255,0.02)'">
+                        <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #063d28, #0f9d58); border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">📊</div>
+                        <span style="font-size: 0.9rem;">Sheets</span>
                     </a>
-                    <a href="https://slides.google.com" target="_self" style="display: flex; flex-direction: column; align-items: center; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 12px; text-decoration: none; color: white; transition: all 0.3s ease;" onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.transform='translateY(-3px)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'; this.style.transform='translateY(0)'">
-                        <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #f9ab00, #fbbc04); border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">🎨</div>
-                        <span>Slides</span>
+                    <a href="https://slides.google.com" target="_self" style="display: flex; flex-direction: column; align-items: center; padding: 18px; background: rgba(255,255,255,0.008); border: 1px solid rgba(255,255,255,0.02); border-radius: 12px; text-decoration: none; color: white; transition: all 0.3s ease;" onmouseover="this.style.background='rgba(255,255,255,0.03)'; this.style.transform='translateY(-3px)'; this.style.borderColor='rgba(124,58,237,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.008)'; this.style.transform='translateY(0)'; this.style.borderColor='rgba(255,255,255,0.02)'">
+                        <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #7a4c00, #f9ab00); border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">🎨</div>
+                        <span style="font-size: 0.9rem;">Slides</span>
                     </a>
-                    <a href="https://calendar.google.com" target="_self" style="display: flex; flex-direction: column; align-items: center; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 12px; text-decoration: none; color: white; transition: all 0.3s ease;" onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.transform='translateY(-3px)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'; this.style.transform='translateY(0)'">
-                        <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #1a73e8, #4285f4); border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">📅</div>
-                        <span>Calendar</span>
+                    <a href="https://calendar.google.com" target="_self" style="display: flex; flex-direction: column; align-items: center; padding: 18px; background: rgba(255,255,255,0.008); border: 1px solid rgba(255,255,255,0.02); border-radius: 12px; text-decoration: none; color: white; transition: all 0.3s ease;" onmouseover="this.style.background='rgba(255,255,255,0.03)'; this.style.transform='translateY(-3px)'; this.style.borderColor='rgba(124,58,237,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.008)'; this.style.transform='translateY(0)'; this.style.borderColor='rgba(255,255,255,0.02)'">
+                        <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #0c2859, #1a73e8); border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">📅</div>
+                        <span style="font-size: 0.9rem;">Calendar</span>
                     </a>
-                    <a href="https://meet.google.com" target="_self" style="display: flex; flex-direction: column; align-items: center; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 12px; text-decoration: none; color: white; transition: all 0.3s ease;" onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.transform='translateY(-3px)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'; this.style.transform='translateY(0)'">
-                        <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #00ac47, #34a853); border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">📹</div>
-                        <span>Meet</span>
+                    <a href="https://meet.google.com" target="_self" style="display: flex; flex-direction: column; align-items: center; padding: 18px; background: rgba(255,255,255,0.008); border: 1px solid rgba(255,255,255,0.02); border-radius: 12px; text-decoration: none; color: white; transition: all 0.3s ease;" onmouseover="this.style.background='rgba(255,255,255,0.03)'; this.style.transform='translateY(-3px)'; this.style.borderColor='rgba(124,58,237,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.008)'; this.style.transform='translateY(0)'; this.style.borderColor='rgba(255,255,255,0.02)'">
+                        <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #004626, #00ac47); border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">📹</div>
+                        <span style="font-size: 0.9rem;">Meet</span>
                     </a>
                 </div>
                 <div style="text-align: center;">
-                    <button id="closeGoogleApps" style="padding: 12px 24px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; color: white; cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.background='rgba(255,255,255,0.15)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">Close</button>
+                    <button id="closeGoogleApps" style="padding: 12px 24px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; color: white; cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.background='rgba(255,255,255,0.08)'; this.style.borderColor='rgba(124,58,237,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.03)'; this.style.borderColor='rgba(255,255,255,0.08)'">Close</button>
                 </div>
             </div>
         `;

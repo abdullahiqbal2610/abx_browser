@@ -3,7 +3,7 @@ class PopupController {
     constructor() {
         this.settings = {
             animationsEnabled: true,
-            particleCount: 50,
+            particleCount: 15,
             userName: '',
             customBookmarks: []
         };
