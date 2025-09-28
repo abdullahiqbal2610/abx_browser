@@ -2,6 +2,7 @@
 class XAIExtension {
     constructor() {
         this.particles = [];
+        this.activeParticles = 0;
         this.animationId = null;
         this.settings = {
             animationsEnabled: true,
@@ -300,6 +301,11 @@ class XAIExtension {
     }
 
     createParticle() {
+        // Only create if under particle limit
+        if (this.activeParticles >= this.settings.particleCount) {
+            return;
+        }
+        
         const particle = document.createElement('div');
         
         // Only use circles and glowing particles
@@ -318,26 +324,28 @@ class XAIExtension {
         particle.style.height = size + 'px';
         
         // Random animation timing
-        particle.style.animationDelay = Math.random() * 25 + 's';
+        particle.style.animationDelay = Math.random() * 5 + 's';
         particle.style.animationDuration = (Math.random() * 10 + 20) + 's';
         
         document.getElementById('particleCanvas').appendChild(particle);
+        this.activeParticles++;
         
         // Remove particle after animation
         setTimeout(() => {
             if (particle.parentNode) {
                 particle.parentNode.removeChild(particle);
+                this.activeParticles--;
             }
-        }, 35000);
+        }, 30000);
     }
 
     animateParticles() {
-        // Continuously create new particles (less frequent for minimal count)
+        // Continuously create new particles (respecting max count)
         setInterval(() => {
-            if (this.settings.animationsEnabled) {
+            if (this.settings.animationsEnabled && this.activeParticles < this.settings.particleCount) {
                 this.createParticle();
             }
-        }, 800);
+        }, 1500); // Slower spawn rate for truly minimal look
     }
 
     handleMouseMove(e) {

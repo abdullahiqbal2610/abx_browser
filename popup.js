@@ -124,7 +124,7 @@ class PopupController {
     handleReset() {
         const defaultSettings = {
             animationsEnabled: true,
-            particleCount: 50,
+            particleCount: 15,
             userName: '',
             customBookmarks: []
         };
