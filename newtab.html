@@ -1,119 +1,151 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>xAI New Tab</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>New Tab</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
     <!-- Animated Background -->
     <div class="background-container">
-        <div class="particle-canvas" id="particleCanvas"></div>
-        <div class="stars-container" id="starsContainer"></div>
+      <div class="particle-canvas" id="particleCanvas"></div>
+      <div class="stars-container" id="starsContainer"></div>
     </div>
 
     <!-- Main Content -->
     <div class="main-container">
-        <!-- Header Section -->
-        <header class="header-section">
-            <div class="greeting-container">
-                <h1 class="greeting-text" id="greetingText">Welcome back</h1>
-                <p class="time-display" id="timeDisplay"></p>
-            </div>
-        </header>
+      <!-- Header Section -->
+      <header class="header-section">
+        <div class="greeting-container">
+          <h1 class="greeting-text" id="greetingText">Welcome back</h1>
+          <p class="time-display" id="timeDisplay"></p>
+        </div>
+      </header>
 
-        <!-- Search Section -->
-        <section class="search-section">
-            <div class="search-container">
-                <div class="search-input-wrapper">
-                    <input 
-                        type="text" 
-                        class="search-input" 
-                        id="searchInput"
-                        placeholder="Search or enter URL"
-                        autocomplete="off"
-                    >
-                    <div class="search-glow"></div>
-                </div>
-                <button class="search-button" id="searchButton">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <path d="m21 21-4.35-4.35"></path>
-                    </svg>
-                </button>
-            </div>
-        </section>
+      <!-- Search Section -->
+      <section class="search-section">
+        <div class="search-container">
+          <div class="search-input-wrapper">
+            <input
+              type="text"
+              class="search-input"
+              id="searchInput"
+              placeholder="Search or enter URL"
+              autocomplete="off"
+            />
+            <div class="search-glow"></div>
+          </div>
+          <button class="search-button" id="searchButton">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.35-4.35"></path>
+            </svg>
+          </button>
+        </div>
+      </section>
 
-        <!-- Google Services Section -->
-        <section class="google-services-section">
-            <div class="google-apps-container">
-                <a href="https://mail.google.com" class="google-app-item gmail-app" target="_self">
-                    <div class="app-icon gmail-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                            <path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-.9.732-1.636 1.636-1.636h.909L12 10.545l9.455-6.724h.909c.904 0 1.636.732 1.636 1.636Z" fill="currentColor"/>
-                        </svg>
-                    </div>
-                    <div class="app-info">
-                        <div class="app-name">Gmail</div>
-                        <div class="app-description">Email</div>
-                    </div>
-                    <div class="app-glow"></div>
-                </a>
-                
-                <div class="google-app-item apps-launcher" id="appsLauncher">
-                    <div class="app-icon apps-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                            <rect x="1" y="1" width="6" height="6" rx="1" fill="currentColor"/>
-                            <rect x="9" y="1" width="6" height="6" rx="1" fill="currentColor"/>
-                            <rect x="17" y="1" width="6" height="6" rx="1" fill="currentColor"/>
-                            <rect x="1" y="9" width="6" height="6" rx="1" fill="currentColor"/>
-                            <rect x="9" y="9" width="6" height="6" rx="1" fill="currentColor"/>
-                            <rect x="17" y="9" width="6" height="6" rx="1" fill="currentColor"/>
-                            <rect x="1" y="17" width="6" height="6" rx="1" fill="currentColor"/>
-                            <rect x="9" y="17" width="6" height="6" rx="1" fill="currentColor"/>
-                            <rect x="17" y="17" width="6" height="6" rx="1" fill="currentColor"/>
-                        </svg>
-                    </div>
-                    <div class="app-info">
-                        <div class="app-name">Google Apps</div>
-                        <div class="app-description">Workspace</div>
-                    </div>
-                    <div class="app-glow"></div>
-                </div>
+      <!-- Google Services Section -->
+      <section class="google-services-section">
+        <div class="google-apps-container">
+          <a
+            href="https://mail.google.com"
+            class="google-app-item gmail-app"
+            target="_self"
+          >
+            <div class="app-icon gmail-icon">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <path
+                  d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-.9.732-1.636 1.636-1.636h.909L12 10.545l9.455-6.724h.909c.904 0 1.636.732 1.636 1.636Z"
+                />
+              </svg>
             </div>
-        </section>
+            <div class="app-info">
+              <div class="app-name">Gmail</div>
+              <div class="app-description">Email</div>
+            </div>
+            <div class="app-glow"></div>
+          </a>
 
-        <!-- Quick Access Section -->
-        <section class="quick-access-section">
-            <h2 class="section-title">Quick Access</h2>
-            <div class="bookmarks-grid" id="bookmarksGrid">
-                <!-- Bookmarks will be populated by JavaScript -->
+          <div class="google-app-item apps-launcher" id="appsLauncher">
+            <div class="app-icon apps-icon">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <rect x="1" y="1" width="6" height="6" rx="1" />
+                <rect x="9" y="1" width="6" height="6" rx="1" />
+                <rect x="17" y="1" width="6" height="6" rx="1" />
+                <rect x="1" y="9" width="6" height="6" rx="1" />
+                <rect x="9" y="9" width="6" height="6" rx="1" />
+                <rect x="17" y="9" width="6" height="6" rx="1" />
+                <rect x="1" y="17" width="6" height="6" rx="1" />
+                <rect x="9" y="17" width="6" height="6" rx="1" />
+                <rect x="17" y="17" width="6" height="6" rx="1" />
+              </svg>
             </div>
-        </section>
+            <div class="app-info">
+              <div class="app-name">Google Apps</div>
+              <div class="app-description">Workspace</div>
+            </div>
+            <div class="app-glow"></div>
+          </div>
+        </div>
+      </section>
 
-        <!-- Recent History Section -->
-        <section class="history-section">
-            <h2 class="section-title">Recent</h2>
-            <div class="history-list" id="historyList">
-                <!-- History will be populated by JavaScript -->
-            </div>
-        </section>
+      <!-- Quick Access Section -->
+      <section class="quick-access-section">
+        <h2 class="section-title">Quick Access</h2>
+        <div class="bookmarks-grid" id="bookmarksGrid">
+          <!-- Bookmarks and shortcuts will be populated by JavaScript -->
+        </div>
+      </section>
+
+      <!-- Recent History Section -->
+      <section class="history-section">
+        <h2 class="section-title">Recent</h2>
+        <div class="history-list" id="historyList">
+          <!-- History will be populated by JavaScript -->
+        </div>
+      </section>
     </div>
 
     <!-- Settings Button -->
     <div class="settings-container">
-        <button class="settings-button" id="settingsButton">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="3"></circle>
-                <path d="M12 1v6m0 10v6m11-7h-6m-10 0H1m15.5-7.5L19 7l-3-3m0 12l3 3-2.5 2.5M9 7L6 4 3.5 6.5M15 17l3 3-2.5 2.5"></path>
-            </svg>
-        </button>
+      <button class="settings-button" id="settingsButton">
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <circle cx="12" cy="12" r="3"></circle>
+          <path
+            d="M12 1v6m0 10v6m11-7h-6m-10 0H1m15.5-7.5L19 7l-3-3m0 12l3 3-2.5 2.5M9 7L6 4 3.5 6.5M15 17l3 3-2.5 2.5"
+          ></path>
+        </svg>
+      </button>
     </div>
 
     <!-- Floating Elements -->
     <div class="floating-elements" id="floatingElements"></div>
 
     <script src="script.js"></script>
-</body>
+  </body>
 </html>
