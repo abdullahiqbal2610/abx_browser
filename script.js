@@ -17,7 +17,8 @@ class XAIExtension {
         enabled: true,
         unit: 'metric', // metric (Celsius) or imperial (Fahrenheit)
         location: '',
-        apiKey: 'eddf07fac98cf25cdfcf66cab6b7a4ec', // OpenWeatherMap API key
+        apiKey: '', // User's personal API key (empty = use default)
+        defaultApiKey: 'eddf07fac98cf25cdfcf66cab6b7a4ec', // Fallback API key for demo
         lastUpdate: null,
         cacheData: null,
         cacheDuration: 15 * 60 * 1000 // 15 minutes in milliseconds
@@ -771,6 +772,25 @@ class XAIExtension {
     }, this.settings.weather.cacheDuration);
   }
 
+  // Determine which API key to use (user's personal key or default)
+  getActiveApiKey() {
+    // If user has provided their own API key, use it
+    if (this.settings.weather.apiKey && 
+        this.settings.weather.apiKey.trim() !== '' && 
+        this.settings.weather.apiKey !== 'YOUR_API_KEY') {
+      console.log('🔑 Using user-provided API key');
+      return this.settings.weather.apiKey;
+    }
+    
+    // Otherwise, use the default shared key
+    if (this.settings.weather.defaultApiKey) {
+      console.log('🌐 Using shared demo API key');
+      return this.settings.weather.defaultApiKey;
+    }
+    
+    return null;
+  }
+
   setupWeatherEventListeners() {
     const retryBtn = document.getElementById('retryWeather');
     if (retryBtn) {
@@ -839,6 +859,9 @@ class XAIExtension {
 
       // Display weather
       this.displayWeather(weatherData);
+      
+      // Show info about API key usage
+      this.updateApiKeyStatus(weatherData);
       
       // Show info if using mock data
       if (weatherData.name === 'Demo Location') {
@@ -919,14 +942,16 @@ class XAIExtension {
   }
 
   async fetchWeatherData(lat, lon) {
-    // Check if API key is set
-    if (!this.settings.weather.apiKey || this.settings.weather.apiKey === 'YOUR_API_KEY') {
-      // Use mock data for demo purposes
+    // Determine which API key to use
+    const apiKey = this.getActiveApiKey();
+    
+    if (!apiKey) {
+      console.log('⚠️ No API key available, using mock data');
       return this.getMockWeatherData();
     }
 
     try {
-      const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${this.settings.weather.apiKey}&units=${this.settings.weather.unit}`;
+      const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=${this.settings.weather.unit}`;
       
       console.log('Fetching weather from:', weatherUrl);
       const response = await fetch(weatherUrl);
@@ -1053,6 +1078,20 @@ class XAIExtension {
         refreshBtn.classList.remove('refreshing');
       }
     }, 1000);
+  }
+
+  // Update API key status indicator
+  updateApiKeyStatus(weatherData) {
+    const activeApiKey = this.getActiveApiKey();
+    const isUsingPersonalKey = this.settings.weather.apiKey && 
+                              this.settings.weather.apiKey.trim() !== '' && 
+                              this.settings.weather.apiKey !== 'YOUR_API_KEY';
+    
+    if (isUsingPersonalKey) {
+      console.log('✅ Using personal API key - unlimited weather updates!');
+    } else if (activeApiKey === this.settings.weather.defaultApiKey) {
+      console.log('🌐 Using shared demo API key - consider getting your own for unlimited access');
+    }
   }
 
   // Force refresh weather data (clears cache)
