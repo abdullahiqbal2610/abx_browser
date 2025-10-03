@@ -109,19 +109,74 @@
 
       <!-- Quick Access Section -->
       <section class="quick-access-section">
-        <h2 class="section-title">Quick Access</h2>
-        <div class="bookmarks-grid" id="bookmarksGrid">
-          <!-- Bookmarks and shortcuts will be populated by JavaScript -->
+        <div class="section-header" id="quickAccessHeader">
+          <h2 class="section-title">Quick Access</h2>
+          <button class="section-toggle" id="quickAccessToggle" aria-label="Toggle Quick Access section">
+            <svg class="toggle-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6,9 12,15 18,9"></polyline>
+            </svg>
+          </button>
+        </div>
+        <div class="section-content" id="quickAccessContent">
+          <div class="bookmarks-grid" id="bookmarksGrid">
+            <!-- Bookmarks and shortcuts will be populated by JavaScript -->
+          </div>
         </div>
       </section>
 
       <!-- Recent History Section -->
       <section class="history-section">
-        <h2 class="section-title">Recent</h2>
-        <div class="history-list" id="historyList">
-          <!-- History will be populated by JavaScript -->
+        <div class="section-header" id="recentHeader">
+          <h2 class="section-title">Recent</h2>
+          <button class="section-toggle" id="recentToggle" aria-label="Toggle Recent section">
+            <svg class="toggle-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6,9 12,15 18,9"></polyline>
+            </svg>
+          </button>
+        </div>
+        <div class="section-content" id="recentContent">
+          <div class="history-list" id="historyList">
+            <!-- History will be populated by JavaScript -->
+          </div>
         </div>
       </section>
+    </div>
+
+    <!-- Weather Widget -->
+    <div class="weather-container">
+      <div class="weather-widget" id="weatherWidget">
+        <div class="weather-loading" id="weatherLoading">
+          <div class="loading-spinner"></div>
+          <span>Loading weather...</span>
+        </div>
+        
+        <div class="weather-content" id="weatherContent" style="display: none;">
+          <div class="weather-main">
+            <div class="weather-icon">
+              <img id="weatherIcon" src="" alt="Weather" />
+            </div>
+            <div class="weather-info">
+              <div class="weather-temp" id="weatherTemp">--°</div>
+              <div class="weather-desc" id="weatherDesc">--</div>
+            </div>
+          </div>
+          
+          <div class="weather-details">
+            <div class="weather-location" id="weatherLocation">--</div>
+            <div class="weather-extra">
+              <span class="feels-like">Feels like <span id="feelsLike">--°</span></span>
+              <span class="humidity">💧 <span id="humidity">--%</span></span>
+              <span class="wind">💨 <span id="windSpeed">-- km/h</span></span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="weather-error" id="weatherError" style="display: none;">
+          <div class="error-icon">⚠️</div>
+          <div class="error-message" id="errorMessage">Weather unavailable</div>
+          <button class="retry-btn" id="retryWeather">Retry</button>
+        </div>
+      </div>
     </div>
 
     <!-- Settings Button -->

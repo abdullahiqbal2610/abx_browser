@@ -9,6 +9,10 @@ class XAIExtension {
       particleCount: 15,
       userName: "",
       customBookmarks: [],
+      sectionsCollapsed: {
+        quickAccess: false,
+        recent: false
+      }
     };
     this.init();
   }
@@ -16,6 +20,7 @@ class XAIExtension {
   async init() {
     await this.loadSettings();
     this.setupEventListeners();
+    this.initSectionToggles();
     this.updateGreeting();
     this.updateTime();
     this.loadBookmarks();
@@ -82,6 +87,9 @@ class XAIExtension {
     document.addEventListener("mousemove", (e) => {
       this.handleMouseMove(e);
     });
+
+    // Section toggle functionality
+    this.setupSectionToggleListeners();
 
     // Focus search input on startup
     setTimeout(() => {
@@ -622,6 +630,86 @@ class XAIExtension {
     modal.onclick = (e) => {
       if (e.target === modal) modal.remove();
     };
+  }
+
+  // Section Toggle Functionality
+  initSectionToggles() {
+    // Load saved collapsed states
+    this.loadSectionStates();
+    
+    // Set initial max-height for sections after content loads
+    setTimeout(() => {
+      this.setSectionMaxHeights();
+    }, 500);
+  }
+
+  setupSectionToggleListeners() {
+    const quickAccessHeader = document.getElementById('quickAccessHeader');
+    const recentHeader = document.getElementById('recentHeader');
+    
+    if (quickAccessHeader) {
+      quickAccessHeader.addEventListener('click', () => {
+        this.toggleSection('quickAccess');
+      });
+    }
+    
+    if (recentHeader) {
+      recentHeader.addEventListener('click', () => {
+        this.toggleSection('recent');
+      });
+    }
+  }
+
+  toggleSection(sectionName) {
+    const isCollapsed = this.settings.sectionsCollapsed[sectionName];
+    this.settings.sectionsCollapsed[sectionName] = !isCollapsed;
+    
+    this.updateSectionUI(sectionName, !isCollapsed);
+    this.saveSettings();
+  }
+
+  updateSectionUI(sectionName, isCollapsed) {
+    const sectionIdMap = {
+      quickAccess: { header: 'quickAccessHeader', content: 'quickAccessContent' },
+      recent: { header: 'recentHeader', content: 'recentContent' }
+    };
+    
+    const { header: headerId, content: contentId } = sectionIdMap[sectionName];
+    const headerElement = document.getElementById(headerId);
+    const contentElement = document.getElementById(contentId);
+    
+    if (headerElement && contentElement) {
+      if (isCollapsed) {
+        headerElement.classList.add('collapsed');
+        contentElement.classList.add('collapsed');
+      } else {
+        headerElement.classList.remove('collapsed');
+        contentElement.classList.remove('collapsed');
+      }
+    }
+  }
+
+  setSectionMaxHeights() {
+    const quickAccessContent = document.getElementById('quickAccessContent');
+    const recentContent = document.getElementById('recentContent');
+    
+    if (quickAccessContent) {
+      const height = quickAccessContent.scrollHeight;
+      quickAccessContent.style.maxHeight = height + 'px';
+    }
+    
+    if (recentContent) {
+      const height = recentContent.scrollHeight;
+      recentContent.style.maxHeight = height + 'px';
+    }
+  }
+
+  loadSectionStates() {
+    // Apply saved collapsed states to UI
+    Object.keys(this.settings.sectionsCollapsed).forEach(sectionName => {
+      const isCollapsed = this.settings.sectionsCollapsed[sectionName];
+      this.updateSectionUI(sectionName, isCollapsed);
+    });
   }
 
   truncateText(text, maxLength) {
