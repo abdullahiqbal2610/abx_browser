@@ -12,6 +12,15 @@ class XAIExtension {
       sectionsCollapsed: {
         quickAccess: false,
         recent: false
+      },
+      weather: {
+        enabled: true,
+        unit: 'metric', // metric (Celsius) or imperial (Fahrenheit)
+        location: '',
+        apiKey: 'eddf07fac98cf25cdfcf66cab6b7a4ec', // OpenWeatherMap API key
+        lastUpdate: null,
+        cacheData: null,
+        cacheDuration: 15 * 60 * 1000 // 15 minutes in milliseconds
       }
     };
     this.init();
@@ -21,6 +30,7 @@ class XAIExtension {
     await this.loadSettings();
     this.setupEventListeners();
     this.initSectionToggles();
+    this.initWeather();
     this.updateGreeting();
     this.updateTime();
     this.loadBookmarks();
@@ -95,6 +105,24 @@ class XAIExtension {
     setTimeout(() => {
       searchInput.focus();
     }, 500);
+
+    // Listen for settings updates from popup
+    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+      if (message.action === 'settingsUpdated') {
+        console.log('📨 Settings updated from popup');
+        this.settings = { ...this.settings, ...message.settings };
+        
+        // If weather settings changed, refresh immediately
+        if (message.weatherChanged) {
+          console.log('🌤️ Weather settings changed, refreshing...');
+          this.refreshWeatherData();
+        }
+        
+        // Update other UI elements
+        this.updateGreeting();
+        sendResponse({ success: true });
+      }
+    });
   }
 
   performSearch(query) {
@@ -725,6 +753,318 @@ class XAIExtension {
     } catch {
       return url;
     }
+  }
+
+  // Weather Functionality
+  async initWeather() {
+    if (!this.settings.weather.enabled) {
+      document.getElementById('weatherWidget').style.display = 'none';
+      return;
+    }
+
+    this.setupWeatherEventListeners();
+    await this.loadWeather();
+    
+    // Update weather every 15 minutes
+    setInterval(() => {
+      this.loadWeather();
+    }, this.settings.weather.cacheDuration);
+  }
+
+  setupWeatherEventListeners() {
+    const retryBtn = document.getElementById('retryWeather');
+    if (retryBtn) {
+      retryBtn.addEventListener('click', () => {
+        this.loadWeather();
+      });
+    }
+    
+    const refreshBtn = document.getElementById('weatherRefresh');
+    if (refreshBtn) {
+      refreshBtn.addEventListener('click', () => {
+        this.handleWeatherRefresh();
+      });
+    }
+  }
+
+  async loadWeather() {
+    const weatherWidget = document.getElementById('weatherWidget');
+    const weatherLoading = document.getElementById('weatherLoading');
+    const weatherContent = document.getElementById('weatherContent');
+    const weatherError = document.getElementById('weatherError');
+
+    // Check cache first
+    if (this.isWeatherCacheValid()) {
+      this.displayWeather(this.settings.weather.cacheData);
+      return;
+    }
+
+    // Show loading state
+    weatherLoading.style.display = 'flex';
+    weatherContent.style.display = 'none';
+    weatherError.style.display = 'none';
+
+    try {
+      let coords;
+      
+      // Try to get coordinates
+      if (this.settings.weather.location) {
+        try {
+          coords = await this.geocodeLocation(this.settings.weather.location);
+        } catch (error) {
+          console.log('Geocoding failed, trying current location');
+          coords = await this.getCurrentLocation();
+        }
+      } else {
+        try {
+          coords = await this.getCurrentLocation();
+        } catch (error) {
+          console.log('Current location failed, using fallback (London)');
+          // Use London as fallback for testing
+          coords = { lat: 51.5074, lon: -0.1278 };
+        }
+      }
+
+      if (!coords) {
+        throw new Error('Unable to get location');
+      }
+
+      // Fetch weather data
+      const weatherData = await this.fetchWeatherData(coords.lat, coords.lon);
+      
+      // Cache the data
+      this.settings.weather.cacheData = weatherData;
+      this.settings.weather.lastUpdate = Date.now();
+      this.saveSettings();
+
+      // Display weather
+      this.displayWeather(weatherData);
+      
+      // Show info if using mock data
+      if (weatherData.name === 'Demo Location') {
+        console.log('📍 Using demo weather data - Set up your API key for live weather!');
+      }
+
+    } catch (error) {
+      console.log('Weather error:', error);
+      this.displayWeatherError(error.message);
+    }
+  }
+
+  isWeatherCacheValid() {
+    if (!this.settings.weather.cacheData || !this.settings.weather.lastUpdate) {
+      return false;
+    }
+
+    const timeSinceUpdate = Date.now() - this.settings.weather.lastUpdate;
+    return timeSinceUpdate < this.settings.weather.cacheDuration;
+  }
+
+  async getCurrentLocation() {
+    return new Promise((resolve, reject) => {
+      if (!navigator.geolocation) {
+        reject(new Error('Geolocation not supported by browser'));
+        return;
+      }
+
+      console.log('Requesting current location...');
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          console.log('Location obtained:', position.coords.latitude, position.coords.longitude);
+          resolve({
+            lat: position.coords.latitude,
+            lon: position.coords.longitude
+          });
+        },
+        (error) => {
+          console.error('Geolocation error:', error);
+          let message = 'Location access denied';
+          switch(error.code) {
+            case error.PERMISSION_DENIED:
+              message = 'Location permission denied';
+              break;
+            case error.POSITION_UNAVAILABLE:
+              message = 'Location unavailable';
+              break;
+            case error.TIMEOUT:
+              message = 'Location request timed out';
+              break;
+          }
+          reject(new Error(message));
+        },
+        { timeout: 15000, enableHighAccuracy: false, maximumAge: 300000 }
+      );
+    });
+  }
+
+  async geocodeLocation(locationName) {
+    // For demo purposes, this is a simple implementation
+    // In a real app, you'd use a geocoding API
+    const geocodeUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(locationName)}&limit=1&appid=${this.settings.weather.apiKey}`;
+    
+    try {
+      const response = await fetch(geocodeUrl);
+      const data = await response.json();
+      
+      if (data.length > 0) {
+        return {
+          lat: data[0].lat,
+          lon: data[0].lon
+        };
+      }
+      throw new Error('Location not found');
+    } catch (error) {
+      throw new Error('Failed to find location');
+    }
+  }
+
+  async fetchWeatherData(lat, lon) {
+    // Check if API key is set
+    if (!this.settings.weather.apiKey || this.settings.weather.apiKey === 'YOUR_API_KEY') {
+      // Use mock data for demo purposes
+      return this.getMockWeatherData();
+    }
+
+    try {
+      const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${this.settings.weather.apiKey}&units=${this.settings.weather.unit}`;
+      
+      console.log('Fetching weather from:', weatherUrl);
+      const response = await fetch(weatherUrl);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Weather API Error Details:');
+        console.error('Status:', response.status, response.statusText);
+        console.error('Response:', errorText);
+        
+        if (response.status === 401) {
+          console.log('❌ API key issue detected - falling back to mock data');
+          console.log('💡 Check: 1) API key activation 2) Email verification 3) Account limits');
+          return this.getMockWeatherData();
+        }
+        throw new Error(`Weather API error: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('Weather data received:', data);
+      return data;
+    } catch (error) {
+      console.error('Weather fetch error:', error);
+      // If API fails, fall back to mock data
+      if (error.message.includes('401') || error.message.includes('API')) {
+        console.log('API failed, using mock data as fallback');
+        return this.getMockWeatherData();
+      }
+      throw new Error('Weather service unavailable');
+    }
+  }
+
+  getMockWeatherData() {
+    // Generate realistic mock weather data
+    const hour = new Date().getHours();
+    const isDay = hour >= 6 && hour < 18;
+    
+    const weatherConditions = [
+      { main: 'Clear', description: 'clear sky', icon: isDay ? '01d' : '01n' },
+      { main: 'Clouds', description: 'few clouds', icon: isDay ? '02d' : '02n' },
+      { main: 'Clouds', description: 'scattered clouds', icon: isDay ? '03d' : '03n' },
+      { main: 'Rain', description: 'light rain', icon: '10d' },
+    ];
+    
+    const randomWeather = weatherConditions[Math.floor(Math.random() * weatherConditions.length)];
+    const baseTemp = 18 + Math.random() * 12; // 18-30°C
+    
+    return {
+      name: 'Demo Location',
+      sys: { country: 'XX' },
+      main: {
+        temp: Math.round(baseTemp),
+        feels_like: Math.round(baseTemp + (Math.random() * 4 - 2)),
+        humidity: Math.round(40 + Math.random() * 40) // 40-80%
+      },
+      weather: [randomWeather],
+      wind: {
+        speed: Math.round((Math.random() * 8 + 2) * 100) / 100 // 2-10 m/s
+      }
+    };
+  }
+
+  displayWeather(data) {
+    const weatherLoading = document.getElementById('weatherLoading');
+    const weatherContent = document.getElementById('weatherContent');
+    const weatherError = document.getElementById('weatherError');
+
+    // Hide loading and error
+    weatherLoading.style.display = 'none';
+    weatherError.style.display = 'none';
+    
+    // Update weather display
+    document.getElementById('weatherTemp').textContent = `${Math.round(data.main.temp)}°`;
+    document.getElementById('weatherDesc').textContent = data.weather[0].description;
+    document.getElementById('weatherLocation').textContent = data.name;
+    document.getElementById('feelsLike').textContent = `${Math.round(data.main.feels_like)}°`;
+    document.getElementById('humidity').textContent = `${data.main.humidity}%`;
+    // Convert wind speed based on unit system
+    const windSpeed = this.settings.weather.unit === 'imperial' 
+      ? Math.round(data.wind.speed) + ' mph' 
+      : Math.round(data.wind.speed * 3.6) + ' km/h';
+    document.getElementById('windSpeed').textContent = windSpeed;
+    
+    // Set weather icon
+    const iconUrl = `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
+    const weatherIcon = document.getElementById('weatherIcon');
+    weatherIcon.src = iconUrl;
+    weatherIcon.alt = data.weather[0].description;
+    
+    // Show weather content
+    weatherContent.style.display = 'block';
+  }
+
+  displayWeatherError(message) {
+    const weatherLoading = document.getElementById('weatherLoading');
+    const weatherContent = document.getElementById('weatherContent');
+    const weatherError = document.getElementById('weatherError');
+    const errorMessage = document.getElementById('errorMessage');
+
+    // Hide loading and content
+    weatherLoading.style.display = 'none';
+    weatherContent.style.display = 'none';
+    
+    // Show error
+    errorMessage.textContent = message;
+    weatherError.style.display = 'block';
+  }
+
+  // Handle manual refresh button click
+  async handleWeatherRefresh() {
+    const refreshBtn = document.getElementById('weatherRefresh');
+    
+    // Add spinning animation
+    if (refreshBtn) {
+      refreshBtn.classList.add('refreshing');
+    }
+    
+    console.log('🔄 Manual weather refresh triggered');
+    await this.refreshWeatherData();
+    
+    // Remove spinning animation after a short delay
+    setTimeout(() => {
+      if (refreshBtn) {
+        refreshBtn.classList.remove('refreshing');
+      }
+    }, 1000);
+  }
+
+  // Force refresh weather data (clears cache)
+  async refreshWeatherData() {
+    console.log('🔄 Forcing weather refresh...');
+    // Clear cached data to force fresh API call
+    this.settings.weather.cacheData = null;
+    this.settings.weather.lastUpdate = null;
+    await this.saveSettings();
+    
+    // Immediately load fresh weather data
+    await this.loadWeather();
   }
 }
 

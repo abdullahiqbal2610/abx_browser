@@ -796,12 +796,55 @@ body {
 }
 
 /* Weather Details */
+.weather-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
 .weather-location {
   font-size: 1rem;
   color: #e5e7eb;
-  margin-bottom: 12px;
   font-weight: 400;
+  flex: 1;
   text-align: center;
+}
+
+.weather-refresh {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 28px;
+  height: 28px;
+}
+
+.weather-refresh:hover {
+  background: rgba(96, 165, 250, 0.1);
+  border-color: rgba(96, 165, 250, 0.2);
+  color: #60a5fa;
+  transform: scale(1.1);
+}
+
+.weather-refresh:active {
+  transform: scale(0.95);
+}
+
+.weather-refresh.refreshing {
+  animation: refreshSpin 1s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes refreshSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .weather-extra {
@@ -998,6 +1041,37 @@ body {
 
   .google-app-item {
     min-width: 250px;
+  }
+
+  /* Weather Widget Mobile */
+  .weather-container {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: 100%;
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .weather-widget {
+    min-width: 260px;
+    max-width: 320px;
+    padding: 16px;
+  }
+
+  .weather-temp {
+    font-size: 1.8rem;
+  }
+
+  .weather-extra {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .weather-extra span {
+    padding: 4px 6px;
+    font-size: 0.75rem;
   }
 }
 

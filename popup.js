@@ -60,6 +60,31 @@ class PopupController {
             particleValue.textContent = value;
         });
 
+        // Weather settings
+        const weatherEnabled = document.getElementById('weatherEnabled');
+        weatherEnabled.addEventListener('change', (e) => {
+            if (!this.settings.weather) this.settings.weather = {};
+            this.settings.weather.enabled = e.target.checked;
+        });
+
+        const weatherLocation = document.getElementById('weatherLocation');
+        weatherLocation.addEventListener('input', (e) => {
+            if (!this.settings.weather) this.settings.weather = {};
+            this.settings.weather.location = e.target.value;
+        });
+
+        const weatherUnit = document.getElementById('weatherUnit');
+        weatherUnit.addEventListener('change', (e) => {
+            if (!this.settings.weather) this.settings.weather = {};
+            this.settings.weather.unit = e.target.value;
+        });
+
+        const weatherApiKey = document.getElementById('weatherApiKey');
+        weatherApiKey.addEventListener('input', (e) => {
+            if (!this.settings.weather) this.settings.weather = {};
+            this.settings.weather.apiKey = e.target.value || 'YOUR_API_KEY';
+        });
+
         // Save button
         document.getElementById('saveBtn').addEventListener('click', () => {
             this.handleSave();
@@ -86,11 +111,30 @@ class PopupController {
         document.getElementById('animationsEnabled').checked = this.settings.animationsEnabled;
         document.getElementById('particleCount').value = this.settings.particleCount;
         document.getElementById('particleValue').textContent = this.settings.particleCount;
+        
+        // Update weather settings
+        if (this.settings.weather) {
+            document.getElementById('weatherEnabled').checked = this.settings.weather.enabled !== false;
+            document.getElementById('weatherLocation').value = this.settings.weather.location || '';
+            document.getElementById('weatherUnit').value = this.settings.weather.unit || 'metric';
+            document.getElementById('weatherApiKey').value = this.settings.weather.apiKey && this.settings.weather.apiKey !== 'YOUR_API_KEY' ? this.settings.weather.apiKey : '';
+            
+            // Store original weather settings for change detection
+            this.originalWeatherSettings = {
+                enabled: this.settings.weather.enabled !== false,
+                location: this.settings.weather.location || '',
+                unit: this.settings.weather.unit || 'metric',
+                apiKey: this.settings.weather.apiKey || ''
+            };
+        }
     }
 
     async handleSave() {
         const saveBtn = document.getElementById('saveBtn');
         const statusMessage = document.getElementById('statusMessage');
+        
+        // Check if weather settings changed
+        const weatherChanged = this.hasWeatherSettingsChanged();
         
         // Update button state
         saveBtn.textContent = 'Saving...';
@@ -103,7 +147,7 @@ class PopupController {
                 this.showStatus('Settings saved successfully!', 'success');
                 
                 // Notify all new tab pages to reload settings
-                this.notifyNewTabPages();
+                this.notifyNewTabPages(weatherChanged);
                 
                 // Auto-close popup after 1.5 seconds
                 setTimeout(() => {
@@ -155,7 +199,24 @@ class PopupController {
         }
     }
 
-    async notifyNewTabPages() {
+    hasWeatherSettingsChanged() {
+        // Store original weather settings to compare
+        if (!this.originalWeatherSettings) {
+            return false;
+        }
+        
+        const current = this.settings.weather || {};
+        const original = this.originalWeatherSettings;
+        
+        return (
+            current.enabled !== original.enabled ||
+            current.location !== original.location ||
+            current.unit !== original.unit ||
+            current.apiKey !== original.apiKey
+        );
+    }
+
+    async notifyNewTabPages(weatherChanged = false) {
         try {
             const tabs = await chrome.tabs.query({ 
                 url: chrome.runtime.getURL('newtab.html') 
@@ -164,7 +225,8 @@ class PopupController {
             tabs.forEach(tab => {
                 chrome.tabs.sendMessage(tab.id, { 
                     action: 'settingsUpdated',
-                    settings: this.settings 
+                    settings: this.settings,
+                    weatherChanged: weatherChanged
                 }, () => {
                     // Ignore errors if tab is not ready
                     if (chrome.runtime.lastError) {

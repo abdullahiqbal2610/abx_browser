@@ -259,6 +259,44 @@
         </div>
     </div>
 
+    <div class="setting-group">
+        <label class="checkbox-container">
+            <input type="checkbox" id="weatherEnabled" class="checkbox-input">
+            <span class="setting-label">Enable Weather Widget</span>
+        </label>
+    </div>
+
+    <div class="setting-group">
+        <label class="setting-label" for="weatherLocation">Weather Location</label>
+        <input 
+            type="text" 
+            id="weatherLocation" 
+            class="setting-input" 
+            placeholder="Enter city name (leave empty for current location)"
+        >
+    </div>
+
+    <div class="setting-group">
+        <label class="setting-label" for="weatherUnit">Temperature Unit</label>
+        <select id="weatherUnit" class="setting-input">
+            <option value="metric">Celsius (°C)</option>
+            <option value="imperial">Fahrenheit (°F)</option>
+        </select>
+    </div>
+
+    <div class="setting-group">
+        <label class="setting-label" for="weatherApiKey">OpenWeatherMap API Key (Optional)</label>
+        <input 
+            type="password" 
+            id="weatherApiKey" 
+            class="setting-input" 
+            placeholder="Enter your API key for live weather data"
+        >
+        <div style="font-size: 0.75rem; color: #6b7280; margin-top: 5px;">
+            Get a free API key at <a href="https://openweathermap.org/api" target="_blank" style="color: #60a5fa;">openweathermap.org</a>
+        </div>
+    </div>
+
     <div class="button-group">
         <button class="btn btn-secondary" id="resetBtn">Reset</button>
         <button class="btn btn-primary" id="saveBtn">Save Settings</button>

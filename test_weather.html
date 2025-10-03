@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather API Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: white;
+            padding: 20px;
+        }
+        .test-result {
+            background: #2a2a2a;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #60a5fa;
+        }
+        .error {
+            border-left-color: #ef4444;
+        }
+        .success {
+            border-left-color: #10b981;
+        }
+        button {
+            background: #60a5fa;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #3b82f6;
+        }
+    </style>
+</head>
+<body>
+    <h1>Weather API Test</h1>
+    <p>Testing OpenWeatherMap API with your key: 0c1ebb49b4585e9e2309e63ccec7a420</p>
+    
+    <button onclick="testCurrentLocation()">Test Current Location Weather</button>
+    <button onclick="testLondonWeather()">Test London Weather</button>
+    <button onclick="testNewYorkWeather()">Test New York Weather</button>
+    
+    <div id="results"></div>
+
+    <script>
+        const API_KEY = '0c1ebb49b4585e9e2309e63ccec7a420';
+        const resultsDiv = document.getElementById('results');
+
+        function addResult(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.innerHTML = `<strong>${new Date().toLocaleTimeString()}</strong>: ${message}`;
+            resultsDiv.appendChild(div);
+        }
+
+        async function testWeather(lat, lon, locationName) {
+            try {
+                addResult(`Testing weather for ${locationName}...`);
+                
+                const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`;
+                console.log('API URL:', url);
+                
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                const result = `
+                    <strong>${locationName} Weather:</strong><br>
+                    📍 Location: ${data.name}, ${data.sys.country}<br>
+                    🌡️ Temperature: ${Math.round(data.main.temp)}°C<br>
+                    🌤️ Weather: ${data.weather[0].description}<br>
+                    💧 Humidity: ${data.main.humidity}%<br>
+                    💨 Wind: ${Math.round(data.wind.speed * 3.6)} km/h<br>
+                    🌅 Feels like: ${Math.round(data.main.feels_like)}°C
+                `;
+                
+                addResult(result, 'success');
+                
+            } catch (error) {
+                addResult(`❌ Error for ${locationName}: ${error.message}`, 'error');
+                console.error('Weather API Error:', error);
+            }
+        }
+
+        async function testCurrentLocation() {
+            if (!navigator.geolocation) {
+                addResult('❌ Geolocation not supported by browser', 'error');
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    testWeather(position.coords.latitude, position.coords.longitude, 'Current Location');
+                },
+                (error) => {
+                    addResult(`❌ Geolocation error: ${error.message}`, 'error');
+                    // Fallback to London
+                    testWeather(51.5074, -0.1278, 'London (Fallback)');
+                }
+            );
+        }
+
+        function testLondonWeather() {
+            testWeather(51.5074, -0.1278, 'London');
+        }
+
+        function testNewYorkWeather() {
+            testWeather(40.7128, -74.0060, 'New York');
+        }
+
+        // Auto-test on load
+        addResult('🚀 Weather API testing initialized');
+        testLondonWeather();
+    </script>
+</body>
+</html>
