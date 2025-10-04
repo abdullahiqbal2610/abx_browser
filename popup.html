@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>xAI Extension Settings</title>
-    <style>
+      <style>
         * {
             margin: 0;
             padding: 0;
@@ -13,7 +13,9 @@
 
         body {
             width: 350px;
-            min-height: 400px;
+            min-height: 500px;
+            max-height: 600px;
+            overflow-y: auto;
             background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
             color: #ffffff;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -122,6 +124,29 @@
             border: none;
         }
 
+        .section-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 25px 0;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #a855f7;
+            margin-bottom: 15px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .hint-text {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 5px;
+            line-height: 1.4;
+        }
+
         .button-group {
             display: flex;
             gap: 10px;
@@ -215,14 +240,33 @@
             font-size: 0.75rem;
             margin-top: 15px;
         }
+
+        /* Custom scrollbar */
+        body::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        body::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        body::-webkit-scrollbar-thumb {
+            background: rgba(124, 58, 237, 0.5);
+            border-radius: 3px;
+        }
+
+        body::-webkit-scrollbar-thumb:hover {
+            background: rgba(124, 58, 237, 0.7);
+        }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>xAI Extension</h1>
+        <h1>ABX-One Extension</h1>
         <p>Customize your experience</p>
     </div>
 
+    <!-- 1️⃣ User Name -->
     <div class="setting-group">
         <label class="setting-label" for="userName">Your Name</label>
         <input 
@@ -233,6 +277,7 @@
         >
     </div>
 
+    <!-- 2️⃣ Animations & Particle Settings -->
     <div class="setting-group">
         <label class="checkbox-container">
             <input type="checkbox" id="animationsEnabled" class="checkbox-input">
@@ -258,6 +303,11 @@
             </div>
         </div>
     </div>
+
+    <div class="section-divider"></div>
+
+    <!-- 3️⃣ Weather Settings -->
+    <div class="section-title">🌤️ Weather Widget</div>
 
     <div class="setting-group">
         <label class="checkbox-container">
@@ -285,17 +335,57 @@
     </div>
 
     <div class="setting-group">
-        <label class="setting-label" for="weatherApiKey">Personal API Key (Optional)</label>
+        <label class="setting-label" for="weatherApiKey">Personal Weather API Key (Optional)</label>
         <input 
             type="password" 
             id="weatherApiKey" 
             class="setting-input" 
-            placeholder="Enter your personal OpenWeatherMap API key"
+            placeholder="Enter your OpenWeatherMap API key"
         >
-        <div style="font-size: 0.75rem; color: #6b7280; margin-top: 5px; line-height: 1.4;">
-            <strong>📍 Default:</strong> Uses shared demo API key (limited usage)<br>
-            <strong>🚀 Personal:</strong> Get unlimited weather updates with your own free key from 
+        <div class="hint-text">
+            <strong>Default:</strong> Uses shared demo API key (limited usage)<br>
+            <strong>Personal:</strong> Get unlimited weather updates from 
             <a href="https://openweathermap.org/api" target="_blank" style="color: #60a5fa;">openweathermap.org</a>
+        </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- 4️⃣ Sports Settings -->
+    <div class="section-title">⚽ Sports Widget</div>
+
+    <div class="setting-group">
+        <label class="checkbox-container">
+            <input type="checkbox" id="sportsEnabled" class="checkbox-input">
+            <span class="setting-label">Enable Sports Widget</span>
+        </label>
+    </div>
+
+    <div class="setting-group">
+        <label class="setting-label" for="sportsTeamName">Favorite Team</label>
+        <input 
+            type="text" 
+            id="sportsTeamName" 
+            class="setting-input" 
+            placeholder="Enter full team name (e.g., Manchester United)"
+        >
+        <div class="hint-text">
+            Enter the complete team name for best results. The widget will show last match results and upcoming fixtures.
+        </div>
+    </div>
+
+    <div class="setting-group">
+        <label class="setting-label" for="sportsApiKey">Personal Sports API Key (Optional)</label>
+        <input 
+            type="password" 
+            id="sportsApiKey" 
+            class="setting-input" 
+            placeholder="Enter your TheSportsDB API key"
+        >
+        <div class="hint-text">
+            <strong>Default:</strong> Uses shared demo API key (limited usage)<br>
+            <strong>Personal:</strong> Get your own API key from 
+            <a href="https://www.thesportsdb.com/api.php" target="_blank" style="color: #60a5fa;">thesportsdb.com</a>
         </div>
     </div>
 
@@ -312,7 +402,7 @@
     <div class="status-message" id="statusMessage"></div>
 
     <div class="version-info">
-        Version 1.0.0
+        Version 2.0.0
     </div>
 
     <script src="popup.js"></script>

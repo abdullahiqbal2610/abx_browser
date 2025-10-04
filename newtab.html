@@ -111,8 +111,20 @@
       <section class="quick-access-section">
         <div class="section-header" id="quickAccessHeader">
           <h2 class="section-title">Quick Access</h2>
-          <button class="section-toggle" id="quickAccessToggle" aria-label="Toggle Quick Access section">
-            <svg class="toggle-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <button
+            class="section-toggle"
+            id="quickAccessToggle"
+            aria-label="Toggle Quick Access section"
+          >
+            <svg
+              class="toggle-icon"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
               <polyline points="6,9 12,15 18,9"></polyline>
             </svg>
           </button>
@@ -128,8 +140,20 @@
       <section class="history-section">
         <div class="section-header" id="recentHeader">
           <h2 class="section-title">Recent</h2>
-          <button class="section-toggle" id="recentToggle" aria-label="Toggle Recent section">
-            <svg class="toggle-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <button
+            class="section-toggle"
+            id="recentToggle"
+            aria-label="Toggle Recent section"
+          >
+            <svg
+              class="toggle-icon"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
               <polyline points="6,9 12,15 18,9"></polyline>
             </svg>
           </button>
@@ -149,8 +173,8 @@
           <div class="loading-spinner"></div>
           <span>Loading weather...</span>
         </div>
-        
-        <div class="weather-content" id="weatherContent" style="display: none;">
+
+        <div class="weather-content" id="weatherContent" style="display: none">
           <div class="weather-main">
             <div class="weather-icon">
               <img id="weatherIcon" src="" alt="Weather" />
@@ -160,30 +184,167 @@
               <div class="weather-desc" id="weatherDesc">--</div>
             </div>
           </div>
-          
+
           <div class="weather-details">
             <div class="weather-header">
               <div class="weather-location" id="weatherLocation">--</div>
-              <button class="weather-refresh" id="weatherRefresh" title="Refresh weather data">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <button
+                class="weather-refresh"
+                id="weatherRefresh"
+                title="Refresh weather data"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
                   <polyline points="23 4 23 10 17 10"></polyline>
                   <polyline points="1 20 1 14 7 14"></polyline>
-                  <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path>
+                  <path
+                    d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"
+                  ></path>
                 </svg>
               </button>
             </div>
             <div class="weather-extra">
-              <span class="feels-like">Feels like <span id="feelsLike">--°</span></span>
+              <span class="feels-like"
+                >Feels like <span id="feelsLike">--°</span></span
+              >
               <span class="humidity">💧 <span id="humidity">--%</span></span>
               <span class="wind">💨 <span id="windSpeed">-- km/h</span></span>
             </div>
           </div>
         </div>
-        
-        <div class="weather-error" id="weatherError" style="display: none;">
+
+        <div class="weather-error" id="weatherError" style="display: none">
           <div class="error-icon">⚠️</div>
           <div class="error-message" id="errorMessage">Weather unavailable</div>
           <button class="retry-btn" id="retryWeather">Retry</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sports Widget -->
+    <div class="sports-container">
+      <div class="sports-widget" id="sportsWidget">
+        <div class="sports-loading" id="sportsLoading">
+          <div class="loading-spinner"></div>
+          <span>Loading sports...</span>
+        </div>
+
+        <div class="sports-content" id="sportsContent" style="display: none">
+          <div class="sports-header">
+            <div class="team-info">
+              <img class="team-badge" id="teamBadge" src="" alt="Team Badge" />
+              <div class="team-details">
+                <div class="team-name" id="teamName">--</div>
+                <div class="team-league" id="teamLeague">--</div>
+              </div>
+            </div>
+            <button
+              class="sports-refresh"
+              id="sportsRefresh"
+              title="Refresh sports data"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <polyline points="23 4 23 10 17 10"></polyline>
+                <polyline points="1 20 1 14 7 14"></polyline>
+                <path
+                  d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"
+                ></path>
+              </svg>
+            </button>
+          </div>
+
+          <div class="matches-container">
+            <!-- Last Match -->
+            <div class="match-card last-match">
+              <div class="match-label">Last Match</div>
+              <div class="match-info" id="lastMatchInfo">
+                <div class="match-teams">
+                  <div class="match-team">
+                    <img
+                      class="match-team-badge"
+                      id="lastHomeBadge"
+                      src=""
+                      alt=""
+                    />
+                    <span id="lastHomeTeam">--</span>
+                  </div>
+                  <div class="match-score" id="lastScore">- : -</div>
+                  <div class="match-team">
+                    <img
+                      class="match-team-badge"
+                      id="lastAwayBadge"
+                      src=""
+                      alt=""
+                    />
+                    <span id="lastAwayTeam">--</span>
+                  </div>
+                </div>
+                <div class="match-details">
+                  <span class="match-competition" id="lastCompetition">--</span>
+                  <span class="match-date" id="lastDate">--</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Next Match -->
+            <div class="match-card next-match">
+              <div class="match-label">Upcoming Match</div>
+              <div class="match-info" id="nextMatchInfo">
+                <div class="match-teams">
+                  <div class="match-team">
+                    <img
+                      class="match-team-badge"
+                      id="nextHomeBadge"
+                      src=""
+                      alt=""
+                    />
+                    <span id="nextHomeTeam">--</span>
+                  </div>
+                  <div class="match-vs">VS</div>
+                  <div class="match-team">
+                    <img
+                      class="match-team-badge"
+                      id="nextAwayBadge"
+                      src=""
+                      alt=""
+                    />
+                    <span id="nextAwayTeam">--</span>
+                  </div>
+                </div>
+                <div class="match-details">
+                  <span class="match-competition" id="nextCompetition">--</span>
+                  <span class="match-date" id="nextDate">--</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sports-error" id="sportsError" style="display: none">
+          <div class="error-icon">⚠️</div>
+          <div class="error-message" id="sportsErrorMessage">
+            Sports data unavailable
+          </div>
+          <button class="retry-btn" id="retrySports">Retry</button>
+        </div>
+
+        <div class="sports-empty" id="sportsEmpty">
+          <div class="empty-icon">⚽</div>
+          <div class="empty-message">No team selected</div>
+          <div class="empty-hint">Set your favorite team in settings</div>
         </div>
       </div>
     </div>
