@@ -144,7 +144,7 @@ ABX-One is a **premium Chrome Extension** that transforms your new tab into a **
 
 ---
 
-**Built with ❤️ by [Abdullah Iqbal]**
+**Built with ❤️ by Abdullah Iqbal**
 
 ### 🏷️ Tags
 `#ABXOne` `#ChromeExtension` `#Weather` `#NewTab` `#Productivity` `#WebDevelopment` `#JavaScript` `#UIUX`
