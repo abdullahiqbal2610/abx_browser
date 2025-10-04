@@ -1385,6 +1385,17 @@ class XAIExtension {
   }
 }
 
+
+const weather = document.querySelector('.weather-container');
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 100) {  // adjust threshold as needed
+    weather.style.opacity = '0';
+  } else {
+    weather.style.opacity = '1';
+  }
+});
+
+
 // CSS for fadeOut animation
 const style = document.createElement("style");
 style.textContent = `
