@@ -17,6 +17,10 @@
   "background": {
     "service_worker": "background.js"
   },
+  "host_permissions": [
+    "https://www.alphavantage.co/*",
+    "https://suggestqueries.google.com/*" 
+  ],
   "action": {
     "default_popup": "popup.html",
     "default_title": "ABX-One Extension Settings",
