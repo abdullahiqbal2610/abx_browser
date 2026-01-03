@@ -696,15 +696,15 @@ body {
 
 /* Weather Widget Styles */
 .weather-container {
-  position: fixed;      /* keep it at top-left */
-  top: 20px;            /* adjust distance from top */
-  left: 20px;           /* adjust distance from left */
+  position: fixed; /* keep it at top-left */
+  top: 20px; /* adjust distance from top */
+  left: 20px; /* adjust distance from left */
   width: auto;
   margin: 0;
   display: flex;
   justify-content: flex-start; /* align left */
   transition: opacity 0.5s ease; /* for smooth fade */
-  z-index: 999;         /* ensure it stays above other elements */
+  z-index: 999; /* ensure it stays above other elements */
 }
 
 .weather-widget {
@@ -923,9 +923,9 @@ body {
 }
 
 .sports-widget {
-  width: 100%;               /* full width */
-  max-width: 1200px;         /* optional: limit width for large screens */
-  margin: 20px auto;         /* center horizontally and add spacing */
+  width: 100%; /* full width */
+  max-width: 1200px; /* optional: limit width for large screens */
+  margin: 20px auto; /* center horizontally and add spacing */
   padding: 20px;
   background: rgba(0, 0, 0, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -935,9 +935,8 @@ body {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03),
     0 2px 10px rgba(0, 0, 0, 0.2);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;         /* ensures it scrolls with the page */
+  position: relative; /* ensures it scrolls with the page */
 }
-
 
 .sports-widget:hover {
   background: rgba(0, 0, 0, 0.5);
@@ -1443,4 +1442,124 @@ body {
   .section-title {
     color: #ffffff;
   }
+}
+
+/* === FINANCE WIDGET (Top Right Card) === */
+.finance-container {
+  position: fixed;
+  top: 120px;
+  right: 20px;
+  z-index: 90;
+  transition: opacity 0.5s ease; /* Smooth fade for scrolling */
+}
+
+.finance-widget {
+  min-width: 220px; /* Compact width */
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px; /* Matches Weather/Sports */
+  color: #ffffff;
+  backdrop-filter: blur(25px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03),
+    0 2px 10px rgba(0, 0, 0, 0.2);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.finance-widget:hover {
+  background: rgba(0, 0, 0, 0.5);
+  border-color: rgba(96, 165, 250, 0.2);
+  transform: translateY(-2px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 0 25px rgba(96, 165, 250, 0.15), 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* Header (Label + Refresh) */
+.finance-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.finance-label {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 500;
+}
+
+.finance-refresh {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: #9ca3af;
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.finance-refresh:hover {
+  background: rgba(96, 165, 250, 0.1);
+  border-color: rgba(96, 165, 250, 0.2);
+  color: #60a5fa;
+  transform: rotate(180deg);
+}
+
+/* Main Data Display */
+.finance-main {
+  display: flex;
+  flex-direction: column;
+}
+
+.ticker-rate {
+  font-size: 2rem; /* Big like Weather Temp */
+  font-weight: 200;
+  color: #ffffff;
+  background: linear-gradient(
+    135deg,
+    #ffffff 0%,
+    #10b981 100%
+  ); /* Greenish tint */
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1.2;
+}
+
+.ticker-pair {
+  font-size: 0.9rem;
+  color: #e5e7eb;
+  font-weight: 400;
+}
+
+.ticker-change {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-top: 5px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Loading/Error/Empty */
+.loading-spinner.small {
+  width: 16px;
+  height: 16px;
+  margin: 0 auto;
+}
+.finance-loading,
+.finance-error,
+.finance-empty {
+  text-align: center;
+  padding: 10px;
+  color: #9ca3af;
+  font-size: 0.85rem;
 }

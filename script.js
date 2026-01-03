@@ -32,6 +32,13 @@ class XAIExtension {
         cacheData: null,
         cacheDuration: 15 * 60 * 1000,
       },
+      finance: {
+        enabled: true,
+        apiKey: "",
+        currencyPair1: {},
+        currencyPair2: {},
+        cacheDuration: 900000,
+      },
     };
     this.init();
   }
@@ -42,6 +49,7 @@ class XAIExtension {
     this.initSectionToggles();
     this.initWeather();
     this.initSports();
+    this.initFinance();
     this.updateGreeting();
     this.updateTime();
     this.loadBookmarks();
@@ -1014,6 +1022,105 @@ class XAIExtension {
     await this.loadWeather();
   }
 
+  // ================= FINANCE TICKER (Single Pair) =================
+  async initFinance() {
+    const widget = document.getElementById("financeWidget");
+    if (!this.settings.finance || !this.settings.finance.enabled) {
+      if (widget) widget.style.display = "none";
+      return;
+    }
+    if (widget) widget.style.display = "flex"; // Flex for centering
+
+    const refreshBtn = document.getElementById("financeRefresh");
+    if (refreshBtn) refreshBtn.onclick = () => this.loadFinance(true);
+
+    await this.loadFinance();
+
+    // Refresh every 15 mins
+    const duration = this.settings.finance.cacheDuration || 900000;
+    setInterval(() => this.loadFinance(), duration);
+  }
+
+  async loadFinance(force = false) {
+    const loading = document.getElementById("financeLoading");
+    const content = document.getElementById("financeContent");
+    const error = document.getElementById("financeError");
+    const empty = document.getElementById("financeEmpty");
+
+    const fromCurr = this.settings.finance.fromCurrency;
+    const toCurr = this.settings.finance.toCurrency;
+
+    // Check if empty
+    if (!fromCurr || !toCurr) {
+      loading.style.display = "none";
+      content.style.display = "none";
+      error.style.display = "none";
+      empty.style.display = "block";
+      return;
+    }
+
+    // Check Cache
+    if (
+      !force &&
+      this.settings.finance.cacheData &&
+      this.settings.finance.lastUpdate
+    ) {
+      const age = Date.now() - this.settings.finance.lastUpdate;
+      if (age < (this.settings.finance.cacheDuration || 900000)) {
+        this.displayFinance(this.settings.finance.cacheData);
+        return;
+      }
+    }
+
+    // Load New
+    loading.style.display = "block";
+    content.style.display = "none";
+    error.style.display = "none";
+    empty.style.display = "none";
+
+    try {
+      const apiKey = this.settings.finance.apiKey || "demo";
+      const url = `https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=${fromCurr}&to_currency=${toCurr}&apikey=${apiKey}`;
+
+      const res = await fetch(url);
+      const json = await res.json();
+
+      if (json["Note"] || !json["Realtime Currency Exchange Rate"])
+        throw new Error("API Limit/Error");
+
+      const r = json["Realtime Currency Exchange Rate"];
+      const data = {
+        from: r["1. From_Currency Code"],
+        to: r["3. To_Currency Code"],
+        rate: parseFloat(r["5. Exchange Rate"]),
+        time: new Date().toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+      };
+
+      this.settings.finance.cacheData = data;
+      this.settings.finance.lastUpdate = Date.now();
+      this.saveSettings();
+
+      this.displayFinance(data);
+    } catch (e) {
+      console.error(e);
+      loading.style.display = "none";
+      error.style.display = "block";
+    }
+  }
+
+  displayFinance(data) {
+    document.getElementById("financeLoading").style.display = "none";
+    document.getElementById("financeContent").style.display = "flex"; // Flex for layout
+
+    document.getElementById("tickerFrom").textContent = data.from;
+    document.getElementById("tickerTo").textContent = data.to;
+    document.getElementById("tickerRate").textContent = data.rate.toFixed(2);
+    document.getElementById("tickerTime").textContent = "Updated " + data.time;
+  }
+
   // ==================== SPORTS WIDGET FUNCTIONALITY ====================
 
   async initSports() {
@@ -1385,13 +1492,21 @@ class XAIExtension {
   }
 }
 
-const weather = document.querySelector(".weather-container");
+// Fade out widgets on scroll
+const weatherWidget = document.querySelector(".weather-container");
+const financeWidget = document.querySelector(".finance-container");
+
 window.addEventListener("scroll", () => {
-  if (window.scrollY > 100) {
-    // adjust threshold as needed
-    weather.style.opacity = "0";
-  } else {
-    weather.style.opacity = "1";
+  const shouldHide = window.scrollY > 100;
+
+  if (weatherWidget) {
+    weatherWidget.style.opacity = shouldHide ? "0" : "1";
+    weatherWidget.style.pointerEvents = shouldHide ? "none" : "auto";
+  }
+
+  if (financeWidget) {
+    financeWidget.style.opacity = shouldHide ? "0" : "1";
+    financeWidget.style.pointerEvents = shouldHide ? "none" : "auto";
   }
 });
 

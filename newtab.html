@@ -349,6 +349,50 @@
       </div>
     </div>
 
+    <div class="finance-container">
+      <div class="finance-widget" id="financeWidget">
+        <div class="finance-header">
+          <span class="finance-label">Market</span>
+          <button class="finance-refresh" id="financeRefresh">
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M23 4v6h-6"></path>
+              <path d="M1 20v-6h6"></path>
+              <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10"></path>
+              <path d="M20.49 14.36A9 9 0 0 1 3.51 15L1 10"></path>
+            </svg>
+          </button>
+        </div>
+
+        <div class="finance-loading" id="financeLoading">
+          <div class="loading-spinner small"></div>
+        </div>
+
+        <div class="finance-content" id="financeContent" style="display: none">
+          <div class="finance-main">
+            <div class="ticker-rate" id="tickerRate">--.--</div>
+            <div class="ticker-pair">
+              <span id="tickerFrom">--</span> / <span id="tickerTo">--</span>
+            </div>
+          </div>
+          <div class="ticker-change" id="tickerTime">Updated just now</div>
+        </div>
+
+        <div class="finance-error" id="financeError" style="display: none">
+          Unavailable
+        </div>
+        <div class="finance-empty" id="financeEmpty" style="display: none">
+          No Pair Set
+        </div>
+      </div>
+    </div>
+
     <!-- Settings Button -->
     <div class="settings-container">
       <button class="settings-button" id="settingsButton">

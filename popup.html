@@ -1,307 +1,321 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>xAI Extension Settings</title>
-      <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-        body {
-            width: 350px;
-            min-height: 500px;
-            max-height: 600px;
-            overflow-y: auto;
-            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
-            color: #ffffff;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            padding: 20px;
-        }
+      body {
+        width: 350px;
+        min-height: 500px;
+        max-height: 600px;
+        overflow-y: auto;
+        background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+        color: #ffffff;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+        padding: 20px;
+      }
 
-        .header {
-            text-align: center;
-            margin-bottom: 25px;
-        }
+      .header {
+        text-align: center;
+        margin-bottom: 25px;
+      }
 
-        .header h1 {
-            font-size: 1.5rem;
-            font-weight: 300;
-            background: linear-gradient(135deg, #ffffff 0%, #a855f7 50%, #3b82f6 100%);
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 5px;
-        }
+      .header h1 {
+        font-size: 1.5rem;
+        font-weight: 300;
+        background: linear-gradient(
+          135deg,
+          #ffffff 0%,
+          #a855f7 50%,
+          #3b82f6 100%
+        );
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 5px;
+      }
 
-        .header p {
-            color: #9ca3af;
-            font-size: 0.9rem;
-        }
+      .header p {
+        color: #9ca3af;
+        font-size: 0.9rem;
+      }
 
-        .setting-group {
-            margin-bottom: 20px;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            backdrop-filter: blur(10px);
-        }
+      .setting-group {
+        margin-bottom: 20px;
+        padding: 15px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        backdrop-filter: blur(10px);
+      }
 
-        .setting-label {
-            display: block;
-            margin-bottom: 8px;
-            color: #e5e7eb;
-            font-weight: 500;
-            font-size: 0.9rem;
-        }
+      .setting-label {
+        display: block;
+        margin-bottom: 8px;
+        color: #e5e7eb;
+        font-weight: 500;
+        font-size: 0.9rem;
+      }
 
-        .setting-input {
-            width: 100%;
-            padding: 10px 12px;
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 8px;
-            color: #ffffff;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-        }
+      .setting-input {
+        width: 100%;
+        padding: 10px 12px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 8px;
+        color: #ffffff;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+      }
 
-        .setting-input:focus {
-            outline: none;
-            border-color: #7c3aed;
-            box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.2);
-        }
+      .setting-input:focus {
+        outline: none;
+        border-color: #7c3aed;
+        box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.2);
+      }
 
-        .setting-input::placeholder {
-            color: #6b7280;
-        }
+      .setting-input::placeholder {
+        color: #6b7280;
+      }
 
-        .checkbox-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-        }
+      .checkbox-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+      }
 
-        .checkbox-input {
-            width: 18px;
-            height: 18px;
-            margin: 0;
-        }
+      .checkbox-input {
+        width: 18px;
+        height: 18px;
+        margin: 0;
+      }
 
-        .slider-container {
-            margin-top: 10px;
-        }
+      .slider-container {
+        margin-top: 10px;
+      }
 
-        .slider {
-            width: 100%;
-            height: 6px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 3px;
-            outline: none;
-            appearance: none;
-        }
+      .slider {
+        width: 100%;
+        height: 6px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 3px;
+        outline: none;
+        appearance: none;
+      }
 
-        .slider::-webkit-slider-thumb {
-            appearance: none;
-            width: 18px;
-            height: 18px;
-            background: linear-gradient(135deg, #7c3aed, #3b82f6);
-            border-radius: 50%;
-            cursor: pointer;
-        }
+      .slider::-webkit-slider-thumb {
+        appearance: none;
+        width: 18px;
+        height: 18px;
+        background: linear-gradient(135deg, #7c3aed, #3b82f6);
+        border-radius: 50%;
+        cursor: pointer;
+      }
 
-        .slider::-moz-range-thumb {
-            width: 18px;
-            height: 18px;
-            background: linear-gradient(135deg, #7c3aed, #3b82f6);
-            border-radius: 50%;
-            cursor: pointer;
-            border: none;
-        }
+      .slider::-moz-range-thumb {
+        width: 18px;
+        height: 18px;
+        background: linear-gradient(135deg, #7c3aed, #3b82f6);
+        border-radius: 50%;
+        cursor: pointer;
+        border: none;
+      }
 
-        .section-divider {
-            height: 1px;
-            background: rgba(255, 255, 255, 0.1);
-            margin: 25px 0;
-        }
+      .section-divider {
+        height: 1px;
+        background: rgba(255, 255, 255, 0.1);
+        margin: 25px 0;
+      }
 
-        .section-title {
-            font-size: 1.1rem;
-            font-weight: 500;
-            color: #a855f7;
-            margin-bottom: 15px;
-            text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+      .section-title {
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: #a855f7;
+        margin-bottom: 15px;
+        text-align: center;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
 
-        .hint-text {
-            font-size: 0.75rem;
-            color: #6b7280;
-            margin-top: 5px;
-            line-height: 1.4;
-        }
+      .hint-text {
+        font-size: 0.75rem;
+        color: #6b7280;
+        margin-top: 5px;
+        line-height: 1.4;
+      }
 
-        .button-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 25px;
-        }
+      .button-group {
+        display: flex;
+        gap: 10px;
+        margin-top: 25px;
+      }
 
-        .btn {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
+      .btn {
+        flex: 1;
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
 
-        .btn-primary {
-            background: linear-gradient(135deg, #7c3aed, #3b82f6);
-            color: #ffffff;
-        }
+      .btn-primary {
+        background: linear-gradient(135deg, #7c3aed, #3b82f6);
+        color: #ffffff;
+      }
 
-        .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 5px 15px rgba(124, 58, 237, 0.4);
-        }
+      .btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 5px 15px rgba(124, 58, 237, 0.4);
+      }
 
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.08);
-            color: #e5e7eb;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-        }
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.08);
+        color: #e5e7eb;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+      }
 
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.12);
-        }
+      .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.12);
+      }
 
-        .status-message {
-            text-align: center;
-            padding: 10px;
-            border-radius: 6px;
-            margin-top: 15px;
-            font-size: 0.85rem;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
+      .status-message {
+        text-align: center;
+        padding: 10px;
+        border-radius: 6px;
+        margin-top: 15px;
+        font-size: 0.85rem;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
 
-        .status-message.success {
-            background: rgba(34, 197, 94, 0.1);
-            color: #10b981;
-            border: 1px solid rgba(34, 197, 94, 0.2);
-        }
+      .status-message.success {
+        background: rgba(34, 197, 94, 0.1);
+        color: #10b981;
+        border: 1px solid rgba(34, 197, 94, 0.2);
+      }
 
-        .status-message.error {
-            background: rgba(239, 68, 68, 0.1);
-            color: #ef4444;
-            border: 1px solid rgba(239, 68, 68, 0.2);
-        }
+      .status-message.error {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+      }
 
-        .status-message.show {
-            opacity: 1;
-        }
+      .status-message.show {
+        opacity: 1;
+      }
 
-        .quick-actions {
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
+      .quick-actions {
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+      }
 
-        .quick-action-btn {
-            width: 100%;
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            color: #e5e7eb;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-bottom: 8px;
-        }
+      .quick-action-btn {
+        width: 100%;
+        padding: 12px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        color: #e5e7eb;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-bottom: 8px;
+      }
 
-        .quick-action-btn:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: #7c3aed;
-        }
+      .quick-action-btn:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: #7c3aed;
+      }
 
-        .version-info {
-            text-align: center;
-            color: #6b7280;
-            font-size: 0.75rem;
-            margin-top: 15px;
-        }
+      .version-info {
+        text-align: center;
+        color: #6b7280;
+        font-size: 0.75rem;
+        margin-top: 15px;
+      }
 
-        /* Custom scrollbar */
-        body::-webkit-scrollbar {
-            width: 6px;
-        }
+      /* Custom scrollbar */
+      body::-webkit-scrollbar {
+        width: 6px;
+      }
 
-        body::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.2);
-        }
+      body::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.2);
+      }
 
-        body::-webkit-scrollbar-thumb {
-            background: rgba(124, 58, 237, 0.5);
-            border-radius: 3px;
-        }
+      body::-webkit-scrollbar-thumb {
+        background: rgba(124, 58, 237, 0.5);
+        border-radius: 3px;
+      }
 
-        body::-webkit-scrollbar-thumb:hover {
-            background: rgba(124, 58, 237, 0.7);
-        }
+      body::-webkit-scrollbar-thumb:hover {
+        background: rgba(124, 58, 237, 0.7);
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="header">
-        <h1>ABX-One Extension</h1>
-        <p>Customize your experience</p>
+      <h1>ABX-One Extension</h1>
+      <p>Customize your experience</p>
     </div>
 
     <!-- 1️⃣ User Name -->
     <div class="setting-group">
-        <label class="setting-label" for="userName">Your Name</label>
-        <input 
-            type="text" 
-            id="userName" 
-            class="setting-input" 
-            placeholder="Enter your name for personalized greetings"
-        >
+      <label class="setting-label" for="userName">Your Name</label>
+      <input
+        type="text"
+        id="userName"
+        class="setting-input"
+        placeholder="Enter your name for personalized greetings"
+      />
     </div>
 
     <!-- 2️⃣ Animations & Particle Settings -->
     <div class="setting-group">
-        <label class="checkbox-container">
-            <input type="checkbox" id="animationsEnabled" class="checkbox-input">
-            <span class="setting-label">Enable Animations</span>
-        </label>
+      <label class="checkbox-container">
+        <input type="checkbox" id="animationsEnabled" class="checkbox-input" />
+        <span class="setting-label">Enable Animations</span>
+      </label>
     </div>
 
     <div class="setting-group">
-        <label class="setting-label" for="particleCount">Particle Density</label>
-        <div class="slider-container">
-            <input 
-                type="range" 
-                id="particleCount" 
-                class="slider" 
-                min="10" 
-                max="100" 
-                value="50"
-            >
-            <div style="display: flex; justify-content: space-between; margin-top: 5px; font-size: 0.8rem; color: #9ca3af;">
-                <span>Low</span>
-                <span id="particleValue">50</span>
-                <span>High</span>
-            </div>
+      <label class="setting-label" for="particleCount">Particle Density</label>
+      <div class="slider-container">
+        <input
+          type="range"
+          id="particleCount"
+          class="slider"
+          min="10"
+          max="100"
+          value="50"
+        />
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            font-size: 0.8rem;
+            color: #9ca3af;
+          "
+        >
+          <span>Low</span>
+          <span id="particleValue">50</span>
+          <span>High</span>
         </div>
+      </div>
     </div>
 
     <div class="section-divider"></div>
@@ -310,43 +324,52 @@
     <div class="section-title">🌤️ Weather Widget</div>
 
     <div class="setting-group">
-        <label class="checkbox-container">
-            <input type="checkbox" id="weatherEnabled" class="checkbox-input">
-            <span class="setting-label">Enable Weather Widget</span>
-        </label>
+      <label class="checkbox-container">
+        <input type="checkbox" id="weatherEnabled" class="checkbox-input" />
+        <span class="setting-label">Enable Weather Widget</span>
+      </label>
     </div>
 
     <div class="setting-group">
-        <label class="setting-label" for="weatherLocation">Weather Location</label>
-        <input 
-            type="text" 
-            id="weatherLocation" 
-            class="setting-input" 
-            placeholder="Enter city name (leave empty for current location)"
+      <label class="setting-label" for="weatherLocation"
+        >Weather Location</label
+      >
+      <input
+        type="text"
+        id="weatherLocation"
+        class="setting-input"
+        placeholder="Enter city name (leave empty for current location)"
+      />
+    </div>
+
+    <div class="setting-group">
+      <label class="setting-label" for="weatherUnit">Temperature Unit</label>
+      <select id="weatherUnit" class="setting-input">
+        <option value="metric">Celsius (°C)</option>
+        <option value="imperial">Fahrenheit (°F)</option>
+      </select>
+    </div>
+
+    <div class="setting-group">
+      <label class="setting-label" for="weatherApiKey"
+        >Personal Weather API Key (Optional)</label
+      >
+      <input
+        type="password"
+        id="weatherApiKey"
+        class="setting-input"
+        placeholder="Enter your OpenWeatherMap API key"
+      />
+      <div class="hint-text">
+        <strong>Default:</strong> Uses shared demo API key (limited usage)<br />
+        <strong>Personal:</strong> Get unlimited weather updates from
+        <a
+          href="https://openweathermap.org/api"
+          target="_blank"
+          style="color: #60a5fa"
+          >openweathermap.org</a
         >
-    </div>
-
-    <div class="setting-group">
-        <label class="setting-label" for="weatherUnit">Temperature Unit</label>
-        <select id="weatherUnit" class="setting-input">
-            <option value="metric">Celsius (°C)</option>
-            <option value="imperial">Fahrenheit (°F)</option>
-        </select>
-    </div>
-
-    <div class="setting-group">
-        <label class="setting-label" for="weatherApiKey">Personal Weather API Key (Optional)</label>
-        <input 
-            type="password" 
-            id="weatherApiKey" 
-            class="setting-input" 
-            placeholder="Enter your OpenWeatherMap API key"
-        >
-        <div class="hint-text">
-            <strong>Default:</strong> Uses shared demo API key (limited usage)<br>
-            <strong>Personal:</strong> Get unlimited weather updates from 
-            <a href="https://openweathermap.org/api" target="_blank" style="color: #60a5fa;">openweathermap.org</a>
-        </div>
+      </div>
     </div>
 
     <div class="section-divider"></div>
@@ -355,56 +378,110 @@
     <div class="section-title">⚽ Sports Widget</div>
 
     <div class="setting-group">
-        <label class="checkbox-container">
-            <input type="checkbox" id="sportsEnabled" class="checkbox-input">
-            <span class="setting-label">Enable Sports Widget</span>
-        </label>
+      <label class="checkbox-container">
+        <input type="checkbox" id="sportsEnabled" class="checkbox-input" />
+        <span class="setting-label">Enable Sports Widget</span>
+      </label>
     </div>
 
     <div class="setting-group">
-        <label class="setting-label" for="sportsTeamName">Favorite Team</label>
-        <input 
-            type="text" 
-            id="sportsTeamName" 
-            class="setting-input" 
-            placeholder="Enter full team name (e.g., Manchester United)"
-        >
-        <div class="hint-text">
-            Enter the complete team name for best results. The widget will show last match results and upcoming fixtures.
-        </div>
+      <label class="setting-label" for="sportsTeamName">Favorite Team</label>
+      <input
+        type="text"
+        id="sportsTeamName"
+        class="setting-input"
+        placeholder="Enter full team name (e.g., Manchester United)"
+      />
+      <div class="hint-text">
+        Enter the complete team name for best results. The widget will show last
+        match results and upcoming fixtures.
+      </div>
     </div>
 
     <div class="setting-group">
-        <label class="setting-label" for="sportsApiKey">Personal Sports API Key (Optional)</label>
-        <input 
-            type="password" 
-            id="sportsApiKey" 
-            class="setting-input" 
-            placeholder="Enter your TheSportsDB API key"
+      <label class="setting-label" for="sportsApiKey"
+        >Personal Sports API Key (Optional)</label
+      >
+      <input
+        type="password"
+        id="sportsApiKey"
+        class="setting-input"
+        placeholder="Enter your TheSportsDB API key"
+      />
+      <div class="hint-text">
+        <strong>Default:</strong> Uses shared demo API key (limited usage)<br />
+        <strong>Personal:</strong> Get your own API key from
+        <a
+          href="https://www.thesportsdb.com/api.php"
+          target="_blank"
+          style="color: #60a5fa"
+          >thesportsdb.com</a
         >
-        <div class="hint-text">
-            <strong>Default:</strong> Uses shared demo API key (limited usage)<br>
-            <strong>Personal:</strong> Get your own API key from 
-            <a href="https://www.thesportsdb.com/api.php" target="_blank" style="color: #60a5fa;">thesportsdb.com</a>
-        </div>
+      </div>
     </div>
+    <div class="section-divider"></div>
+
+    <div class="section-title">💹 Market Ticker</div>
+
+    <div class="setting-group">
+      <label class="checkbox-container">
+        <input type="checkbox" id="financeEnabled" class="checkbox-input" />
+        <span class="setting-label">Enable Market Ticker</span>
+      </label>
+    </div>
+
+    <div class="setting-group">
+      <label class="setting-label">Currency Pair (e.g. BTC to USD)</label>
+      <div style="display: flex; gap: 10px; align-items: center">
+        <input
+          type="text"
+          id="financeFrom"
+          class="setting-input"
+          placeholder="BTC"
+          style="text-transform: uppercase; text-align: center"
+        />
+        <span style="color: #666">→</span>
+        <input
+          type="text"
+          id="financeTo"
+          class="setting-input"
+          placeholder="USD"
+          style="text-transform: uppercase; text-align: center"
+        />
+      </div>
+      <div class="hint-text">Shows as a central ticker bar.</div>
+    </div>
+
+    <div class="setting-group">
+      <label class="setting-label" for="financeApiKey"
+        >AlphaVantage API Key</label
+      >
+      <input
+        type="password"
+        id="financeApiKey"
+        class="setting-input"
+        placeholder="Your API Key"
+      />
+    </div>
+
+    <div class="section-divider"></div>
 
     <div class="button-group">
-        <button class="btn btn-secondary" id="resetBtn">Reset</button>
-        <button class="btn btn-primary" id="saveBtn">Save Settings</button>
+      <button class="btn btn-secondary" id="resetBtn">Reset</button>
+      <button class="btn btn-primary" id="saveBtn">Save Settings</button>
     </div>
 
     <div class="quick-actions">
-        <button class="quick-action-btn" id="openNewTabBtn">Open New Tab</button>
-        <button class="quick-action-btn" id="refreshExtensionBtn">Refresh Extension</button>
+      <button class="quick-action-btn" id="openNewTabBtn">Open New Tab</button>
+      <button class="quick-action-btn" id="refreshExtensionBtn">
+        Refresh Extension
+      </button>
     </div>
 
     <div class="status-message" id="statusMessage"></div>
 
-    <div class="version-info">
-        Version 2.0.0
-    </div>
+    <div class="version-info">Version 2.0.0</div>
 
     <script src="popup.js"></script>
-</body>
+  </body>
 </html>
