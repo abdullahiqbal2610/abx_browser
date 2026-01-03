@@ -96,6 +96,19 @@ class XAIExtension {
       this.performSearch(searchInput.value);
     });
 
+    // Suggestion Listeners
+    searchInput.addEventListener("input", (e) =>
+      this.handleSearchInput(e.target.value)
+    );
+
+    // Hide suggestions when clicking outside
+    document.addEventListener("click", (e) => {
+      const wrapper = document.querySelector(".search-input-wrapper");
+      if (wrapper && !wrapper.contains(e.target)) {
+        this.clearSuggestions();
+      }
+    });
+
     settingsButton.addEventListener("click", () => {
       this.openSettings();
     });
@@ -138,6 +151,75 @@ class XAIExtension {
         sendResponse({ success: true });
       }
     });
+  }
+
+  // === SEARCH SUGGESTION LOGIC ===
+
+  async handleSearchInput(query) {
+    if (!query || query.length < 1) {
+      this.clearSuggestions();
+      return;
+    }
+
+    try {
+      // Fetch suggestions from Google (Client=firefox returns easiest JSON)
+      const res = await fetch(
+        `https://suggestqueries.google.com/complete/search?client=firefox&q=${encodeURIComponent(
+          query
+        )}`
+      );
+      const data = await res.json();
+      // data[1] contains the array of suggestion strings
+      this.showSuggestions(data[1]);
+    } catch (error) {
+      // Fail silently (internet issue or blocked)
+      this.clearSuggestions();
+    }
+  }
+
+  showSuggestions(suggestions) {
+    const container = document.getElementById("searchSuggestions");
+    if (!suggestions || suggestions.length === 0) {
+      container.classList.remove("active");
+      return;
+    }
+
+    // Limit to 5 suggestions for clean UI
+    const topSuggestions = suggestions.slice(0, 5);
+
+    container.innerHTML = topSuggestions
+      .map(
+        (s) => `
+      <div class="suggestion-item" role="button">
+        <svg class="suggestion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+        <span>${s}</span>
+      </div>
+    `
+      )
+      .join("");
+
+    container.classList.add("active");
+
+    // Add click listeners to new items
+    container.querySelectorAll(".suggestion-item").forEach((item) => {
+      item.addEventListener("click", () => {
+        const text = item.querySelector("span").textContent;
+        document.getElementById("searchInput").value = text;
+        this.performSearch(text);
+        this.clearSuggestions();
+      });
+    });
+  }
+
+  clearSuggestions() {
+    const container = document.getElementById("searchSuggestions");
+    if (container) {
+      container.classList.remove("active");
+      container.innerHTML = "";
+    }
   }
 
   performSearch(query) {

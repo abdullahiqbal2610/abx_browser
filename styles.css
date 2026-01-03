@@ -1598,19 +1598,84 @@ body {
   background: linear-gradient(135deg, #4b90ff 0%, #a768f6 50%, #ff5546 100%);
   border-color: rgba(255, 255, 255, 0.3);
   transform: translateY(-3px);
-  
+
   /* Deep Atmospheric Glow */
-  box-shadow: 
-    0 0 20px rgba(75, 144, 255, 0.4),
-    0 0 40px rgba(167, 104, 246, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 20px rgba(75, 144, 255, 0.4),
+    0 0 40px rgba(167, 104, 246, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 .gemini-search-btn:hover svg {
   transform: rotate(180deg) scale(1.2); /* Spin and pop */
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
 .gemini-search-btn:active {
   transform: translateY(-1px);
+}
+
+/* === SEARCH SUGGESTIONS DROPDOWN === */
+.suggestions-container {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.85); /* Darker background for readability */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  margin-top: 10px;
+  padding: 10px 0;
+  backdrop-filter: blur(25px);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: none; /* Hidden by default */
+  transform-origin: top;
+  animation: menuSlide 0.2s ease-out;
+}
+
+.suggestions-container.active {
+  display: block;
+}
+
+@keyframes menuSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.suggestion-item {
+  padding: 12px 20px;
+  color: #e5e7eb;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  transition: all 0.2s ease;
+}
+
+.suggestion-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  padding-left: 25px; /* Slight shift effect */
+}
+
+.suggestion-icon {
+  color: #6b7280;
+  width: 16px;
+  height: 16px;
+}
+
+.suggestion-item:hover .suggestion-icon {
+  color: #60a5fa; /* Blue glow on hover */
+}
+
+/* Match text highlight */
+.suggestion-match {
+  color: #ffffff;
+  font-weight: 500;
 }
