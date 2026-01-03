@@ -1539,16 +1539,9 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-// Initialize the extension when DOM is loaded
-document.addEventListener("DOMContentLoaded", () => {
-  new XAIExtension();
-});
-
-// Also initialize immediately if DOM is already loaded
+// Initialize the extension safely (Run only ONCE)
 if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", () => {
-    new XAIExtension();
-  });
+  document.addEventListener("DOMContentLoaded", () => new XAIExtension());
 } else {
   new XAIExtension();
 }
