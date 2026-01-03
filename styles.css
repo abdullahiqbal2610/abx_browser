@@ -839,7 +839,7 @@ body {
   background: rgba(96, 165, 250, 0.1);
   border-color: rgba(96, 165, 250, 0.2);
   color: #60a5fa;
-  transform: scale(1.1);
+  transform: rotate(180deg); /* This makes it spin! */
 }
 
 .weather-refresh:active {
@@ -1020,9 +1020,8 @@ body {
   background: rgba(16, 185, 129, 0.1);
   border-color: rgba(16, 185, 129, 0.2);
   color: #10b981;
-  transform: scale(1.1);
+  transform: rotate(180deg); /* This makes it spin! */
 }
-
 .sports-refresh:active {
   transform: scale(0.95);
 }

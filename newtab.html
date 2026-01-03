@@ -7,15 +7,12 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <!-- Animated Background -->
     <div class="background-container">
       <div class="particle-canvas" id="particleCanvas"></div>
       <div class="stars-container" id="starsContainer"></div>
     </div>
 
-    <!-- Main Content -->
     <div class="main-container">
-      <!-- Header Section -->
       <header class="header-section">
         <div class="greeting-container">
           <h1 class="greeting-text" id="greetingText">Welcome back</h1>
@@ -23,7 +20,6 @@
         </div>
       </header>
 
-      <!-- Search Section -->
       <section class="search-section">
         <div class="search-container">
           <div class="search-input-wrapper">
@@ -52,7 +48,6 @@
         </div>
       </section>
 
-      <!-- Google Services Section -->
       <section class="google-services-section">
         <div class="google-apps-container">
           <a
@@ -107,15 +102,10 @@
         </div>
       </section>
 
-      <!-- Quick Access Section -->
       <section class="quick-access-section">
         <div class="section-header" id="quickAccessHeader">
           <h2 class="section-title">Quick Access</h2>
-          <button
-            class="section-toggle"
-            id="quickAccessToggle"
-            aria-label="Toggle Quick Access section"
-          >
+          <button class="section-toggle" id="quickAccessToggle">
             <svg
               class="toggle-icon"
               width="20"
@@ -130,21 +120,14 @@
           </button>
         </div>
         <div class="section-content" id="quickAccessContent">
-          <div class="bookmarks-grid" id="bookmarksGrid">
-            <!-- Bookmarks and shortcuts will be populated by JavaScript -->
-          </div>
+          <div class="bookmarks-grid" id="bookmarksGrid"></div>
         </div>
       </section>
 
-      <!-- Recent History Section -->
       <section class="history-section">
         <div class="section-header" id="recentHeader">
           <h2 class="section-title">Recent</h2>
-          <button
-            class="section-toggle"
-            id="recentToggle"
-            aria-label="Toggle Recent section"
-          >
+          <button class="section-toggle" id="recentToggle">
             <svg
               class="toggle-icon"
               width="20"
@@ -159,21 +142,17 @@
           </button>
         </div>
         <div class="section-content" id="recentContent">
-          <div class="history-list" id="historyList">
-            <!-- History will be populated by JavaScript -->
-          </div>
+          <div class="history-list" id="historyList"></div>
         </div>
       </section>
     </div>
 
-    <!-- Weather Widget -->
     <div class="weather-container">
       <div class="weather-widget" id="weatherWidget">
         <div class="weather-loading" id="weatherLoading">
           <div class="loading-spinner"></div>
           <span>Loading weather...</span>
         </div>
-
         <div class="weather-content" id="weatherContent" style="display: none">
           <div class="weather-main">
             <div class="weather-icon">
@@ -184,14 +163,13 @@
               <div class="weather-desc" id="weatherDesc">--</div>
             </div>
           </div>
-
           <div class="weather-details">
             <div class="weather-header">
               <div class="weather-location" id="weatherLocation">--</div>
               <button
                 class="weather-refresh"
                 id="weatherRefresh"
-                title="Refresh weather data"
+                title="Refresh weather"
               >
                 <svg
                   width="16"
@@ -200,11 +178,11 @@
                   fill="none"
                   stroke="currentColor"
                   stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
                 >
-                  <polyline points="23 4 23 10 17 10"></polyline>
-                  <polyline points="1 20 1 14 7 14"></polyline>
                   <path
-                    d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"
+                    d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
                   ></path>
                 </svg>
               </button>
@@ -218,7 +196,6 @@
             </div>
           </div>
         </div>
-
         <div class="weather-error" id="weatherError" style="display: none">
           <div class="error-icon">⚠️</div>
           <div class="error-message" id="errorMessage">Weather unavailable</div>
@@ -227,18 +204,16 @@
       </div>
     </div>
 
-    <!-- Sports Widget -->
     <div class="sports-container">
       <div class="sports-widget" id="sportsWidget">
         <div class="sports-loading" id="sportsLoading">
           <div class="loading-spinner"></div>
           <span>Loading sports...</span>
         </div>
-
         <div class="sports-content" id="sportsContent" style="display: none">
           <div class="sports-header">
             <div class="team-info">
-              <img class="team-badge" id="teamBadge" src="" alt="Team Badge" />
+              <img class="team-badge" id="teamBadge" src="" alt="Badge" />
               <div class="team-details">
                 <div class="team-name" id="teamName">--</div>
                 <div class="team-league" id="teamLeague">--</div>
@@ -247,7 +222,7 @@
             <button
               class="sports-refresh"
               id="sportsRefresh"
-              title="Refresh sports data"
+              title="Refresh sports"
             >
               <svg
                 width="16"
@@ -256,18 +231,16 @@
                 fill="none"
                 stroke="currentColor"
                 stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
               >
-                <polyline points="23 4 23 10 17 10"></polyline>
-                <polyline points="1 20 1 14 7 14"></polyline>
                 <path
-                  d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"
+                  d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
                 ></path>
               </svg>
             </button>
           </div>
-
           <div class="matches-container">
-            <!-- Last Match -->
             <div class="match-card last-match">
               <div class="match-label">Last Match</div>
               <div class="match-info" id="lastMatchInfo">
@@ -298,8 +271,6 @@
                 </div>
               </div>
             </div>
-
-            <!-- Next Match -->
             <div class="match-card next-match">
               <div class="match-label">Upcoming Match</div>
               <div class="match-info" id="nextMatchInfo">
@@ -332,7 +303,6 @@
             </div>
           </div>
         </div>
-
         <div class="sports-error" id="sportsError" style="display: none">
           <div class="error-icon">⚠️</div>
           <div class="error-message" id="sportsErrorMessage">
@@ -340,7 +310,6 @@
           </div>
           <button class="retry-btn" id="retrySports">Retry</button>
         </div>
-
         <div class="sports-empty" id="sportsEmpty">
           <div class="empty-icon">⚽</div>
           <div class="empty-message">No team selected</div>
@@ -353,27 +322,26 @@
       <div class="finance-widget" id="financeWidget">
         <div class="finance-header">
           <span class="finance-label">Market</span>
-          <button class="finance-refresh" id="financeRefresh">
+          <button class="finance-refresh" id="financeRefresh" title="Refresh">
             <svg
-              width="12"
-              height="12"
+              width="20"
+              height="20"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              stroke-width="2"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
             >
-              <path d="M23 4v6h-6"></path>
-              <path d="M1 20v-6h6"></path>
-              <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10"></path>
-              <path d="M20.49 14.36A9 9 0 0 1 3.51 15L1 10"></path>
+              <path
+                d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
+              ></path>
             </svg>
           </button>
         </div>
-
         <div class="finance-loading" id="financeLoading">
           <div class="loading-spinner small"></div>
         </div>
-
         <div class="finance-content" id="financeContent" style="display: none">
           <div class="finance-main">
             <div class="ticker-rate" id="tickerRate">--.--</div>
@@ -383,7 +351,6 @@
           </div>
           <div class="ticker-change" id="tickerTime">Updated just now</div>
         </div>
-
         <div class="finance-error" id="financeError" style="display: none">
           Unavailable
         </div>
@@ -393,28 +360,27 @@
       </div>
     </div>
 
-    <!-- Settings Button -->
     <div class="settings-container">
-      <button class="settings-button" id="settingsButton">
+      <button class="settings-button" id="settingsButton" title="Settings">
         <svg
-          width="20"
-          height="20"
+          width="24"
+          height="24"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          stroke-width="2"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
         >
-          <circle cx="12" cy="12" r="3"></circle>
           <path
-            d="M12 1v6m0 10v6m11-7h-6m-10 0H1m15.5-7.5L19 7l-3-3m0 12l3 3-2.5 2.5M9 7L6 4 3.5 6.5M15 17l3 3-2.5 2.5"
+            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
           ></path>
+          <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
         </svg>
       </button>
     </div>
 
-    <!-- Floating Elements -->
     <div class="floating-elements" id="floatingElements"></div>
-
     <script src="script.js"></script>
   </body>
 </html>

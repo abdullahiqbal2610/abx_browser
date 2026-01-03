@@ -1499,11 +1499,13 @@ const financeWidget = document.querySelector(".finance-container");
 window.addEventListener("scroll", () => {
   const shouldHide = window.scrollY > 100;
 
+  // Fade Weather
   if (weatherWidget) {
     weatherWidget.style.opacity = shouldHide ? "0" : "1";
     weatherWidget.style.pointerEvents = shouldHide ? "none" : "auto";
   }
 
+  // Fade Finance
   if (financeWidget) {
     financeWidget.style.opacity = shouldHide ? "0" : "1";
     financeWidget.style.pointerEvents = shouldHide ? "none" : "auto";
