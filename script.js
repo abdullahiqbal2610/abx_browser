@@ -268,18 +268,40 @@ class XAIExtension {
   updateTime() {
     const timeElement = document.getElementById("timeDisplay");
     const now = new Date();
+
+    // === SETTINGS ===
+    // Change this to -1 or +1 if the date is off for Pakistan
+    const hijriOffset = 0;
+
+    // 1. Standard Time
     const timeString = now.toLocaleTimeString([], {
       hour: "2-digit",
       minute: "2-digit",
       hour12: true,
     });
+
+    // 2. Gregorian Date
     const dateString = now.toLocaleDateString([], {
       weekday: "long",
       month: "long",
       day: "numeric",
     });
 
-    timeElement.textContent = `${timeString} • ${dateString}`;
+    // 3. Islamic (Hijri) Date (With Offset Correction)
+    const islamicDate = new Date(now);
+    islamicDate.setDate(islamicDate.getDate() + hijriOffset); // Apply offset
+
+    const islamicString = new Intl.DateTimeFormat(
+      "en-US-u-ca-islamic-umalqura",
+      {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      }
+    ).format(islamicDate);
+
+    // Result: 11:30 AM • Sunday, January 4 • Rajab 14, 1447 AH
+    timeElement.textContent = `${timeString} • ${dateString} • ${islamicString}`;
   }
 
   async loadBookmarks() {
