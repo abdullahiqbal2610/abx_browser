@@ -247,11 +247,11 @@ class XAIExtension {
     // 1. Calculate the correct text (Your existing logic)
     if (this.settings.userName) {
       if (hour < 12) {
-        greeting = `Good morning, ${this.settings.userName}`;
+        greeting = `Good Morning, ${this.settings.userName}`;
       } else if (hour < 18) {
-        greeting = `Good afternoon, ${this.settings.userName}`;
+        greeting = `Good Afternoon, ${this.settings.userName}`;
       } else {
-        greeting = `Good evening, ${this.settings.userName}`;
+        greeting = `Good Evening, ${this.settings.userName}`;
       }
     } else {
       if (hour < 12) {
