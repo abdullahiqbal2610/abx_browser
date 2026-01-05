@@ -1679,3 +1679,29 @@ body {
   color: #ffffff;
   font-weight: 500;
 }
+
+/* The blinking cursor effect */
+.typewriter-cursor {
+  display: inline-block;
+  border-right: 3px solid #64ffda; /* CHANGE THIS HEX CODE to your accent color */
+  margin-left: 5px;
+  animation: blink-caret 0.75s step-end infinite;
+}
+
+/* The animation keyframes */
+@keyframes blink-caret {
+  from,
+  to {
+    border-color: transparent;
+  }
+  50% {
+    border-color: #64ffda;
+  } /* MATCH THIS with the color above */
+}
+
+/* Optional: Make the greeting look sleek */
+#greeting {
+  font-family: "Courier New", monospace; /* Or your main font */
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}

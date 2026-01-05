@@ -244,6 +244,7 @@ class XAIExtension {
     const hour = new Date().getHours();
     let greeting = "Welcome back";
 
+    // 1. Calculate the correct text (Your existing logic)
     if (this.settings.userName) {
       if (hour < 12) {
         greeting = `Good morning, ${this.settings.userName}`;
@@ -254,17 +255,52 @@ class XAIExtension {
       }
     } else {
       if (hour < 12) {
-        greeting = "Good morning";
+        greeting = "Good Morning";
       } else if (hour < 18) {
-        greeting = "Good afternoon";
+        greeting = "Good Afternoon";
       } else {
-        greeting = "Good evening";
+        greeting = "Good Evening";
       }
     }
 
-    greetingElement.textContent = greeting;
-  }
+    // 2. The Typewriter Logic (New addition)
+    // Check if we have already shown the animation in this session
+    if (sessionStorage.getItem("greetingShown")) {
+      // If yes, just show the text immediately (no animation)
+      greetingElement.textContent = greeting;
+    } else {
+      // If no, run the typewriter effect
 
+      // Clear existing text and add the cursor
+      greetingElement.innerHTML = '<span class="typewriter-cursor"></span>';
+
+      let i = 0;
+      const typeWriter = () => {
+        if (i < greeting.length) {
+          let cursor = greetingElement.querySelector(".typewriter-cursor");
+          // Create the letter node
+          let letter = document.createTextNode(greeting.charAt(i));
+
+          // Insert letter BEFORE the cursor so the cursor stays at the end
+          if (cursor) {
+            greetingElement.insertBefore(letter, cursor);
+          }
+
+          i++;
+
+          // Humanize the typing speed (random between 50ms and 150ms)
+          let randomSpeed = Math.floor(Math.random() * (150 - 50 + 1) + 50);
+          setTimeout(typeWriter, randomSpeed);
+        } else {
+          // Animation finished: set the flag so it doesn't run again on refresh
+          sessionStorage.setItem("greetingShown", "true");
+        }
+      };
+
+      // Start the loop
+      typeWriter();
+    }
+  }
   updateTime() {
     const timeElement = document.getElementById("timeDisplay");
     const now = new Date();
