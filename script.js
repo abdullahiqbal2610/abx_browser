@@ -235,6 +235,15 @@ class XAIExtension {
     if (replyMic) {
       replyMic.addEventListener("click", () => this.startReplyVoice());
     }
+
+    // 6. Keyboard Shortcut (Alt + J) -> Trigger Voice
+    document.addEventListener("keydown", (e) => {
+      // Check for Alt + J
+      if (e.altKey && (e.key === "j" || e.key === "J")) {
+        e.preventDefault();
+        this.startVoiceInput();
+      }
+    });
   }
 
   // === SEARCH SUGGESTION LOGIC ===
@@ -1783,7 +1792,6 @@ class XAIExtension {
   }
 
   startVoiceInput() {
-    // Check browser support
     if (!("webkitSpeechRecognition" in window)) {
       alert("Voice input not supported in this browser.");
       return;
@@ -1795,25 +1803,52 @@ class XAIExtension {
     recognition.lang = "en-US";
 
     const micBtn = document.getElementById("micButton");
-    micBtn.classList.add("listening-mode"); // Turn red
+    // Visual feedback that we are listening
+    if (micBtn) micBtn.classList.add("listening-mode");
 
     recognition.onresult = (event) => {
-      const text = event.results[0][0].transcript;
-      document.getElementById("searchInput").value = text;
+      const transcript = event.results[0][0].transcript;
+      const lowerText = transcript.toLowerCase().trim();
+      const input = document.getElementById("searchInput");
 
-      // If AI is on, auto-submit. If off, just fill text.
+      // === WAKE WORD PROTOCOL ===
+      // Check if user said the magic words
+      if (
+        lowerText.includes("hello jarvis") ||
+        lowerText.includes("hello, jarvis")
+      ) {
+        // If AI is currently OFF, turn it ON
+        if (!this.settings.ai.enabled) {
+          this.toggleAIMode();
+          // The toggleAIMode function already handles the greeting ("System Online..."),
+          // so we don't need to speak here to avoid double-talking.
+        } else {
+          // If already ON, just acknowledge
+          this.speakText("I am already online, sir.");
+        }
+
+        // Clear the input so "Hello Jarvis" doesn't sit in the search bar
+        input.value = "";
+        return;
+      }
+
+      // === STANDARD BEHAVIOR ===
+      // If no wake word, just fill the text box
+      input.value = transcript;
+
+      // If AI is ON, auto-submit the query
       if (this.settings.ai.enabled) {
-        this.handleAIQuery(text);
+        this.handleAIQuery(transcript);
       }
     };
 
     recognition.onerror = (e) => {
       console.error("Voice error", e);
-      micBtn.classList.remove("listening-mode");
+      if (micBtn) micBtn.classList.remove("listening-mode");
     };
 
     recognition.onend = () => {
-      micBtn.classList.remove("listening-mode");
+      if (micBtn) micBtn.classList.remove("listening-mode");
     };
 
     recognition.start();
