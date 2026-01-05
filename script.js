@@ -2,6 +2,7 @@
 class XAIExtension {
   constructor() {
     this.particles = [];
+    this.chatHistory = [];
     this.activeParticles = 0;
     this.animationId = null;
     this.settings = {
@@ -12,6 +13,10 @@ class XAIExtension {
       sectionsCollapsed: {
         quickAccess: true,
         recent: true,
+      },
+      ai: {
+        enabled: false,
+        apiKey: "", // This loads from your Popup settings
       },
       weather: {
         enabled: true,
@@ -151,28 +156,110 @@ class XAIExtension {
         sendResponse({ success: true });
       }
     });
+
+    // === AI BUTTON LISTENERS ===
+
+    // 1. Toggle AI Mode
+    const aiToggle = document.getElementById("aiToggle");
+    if (aiToggle) {
+      aiToggle.addEventListener("click", () => this.toggleAIMode());
+    }
+
+    // 2. Microphone Button
+    const micBtn = document.getElementById("micButton");
+    if (micBtn) {
+      micBtn.addEventListener("click", () => this.startVoiceInput());
+    }
+
+    // 3. Stop Voice Button (NEW)
+    const stopVoiceBtn = document.getElementById("stopVoiceBtn");
+    if (stopVoiceBtn) {
+      stopVoiceBtn.addEventListener("click", () => {
+        window.speechSynthesis.cancel(); // Kill audio
+        stopVoiceBtn.style.display = "none"; // Hide button
+      });
+    }
+
+    // 3. Close AI Result Window
+    const closeAiBtn = document.getElementById("closeAiModal");
+    if (closeAiBtn) {
+      closeAiBtn.addEventListener("click", () => {
+        document.getElementById("aiModal").classList.remove("active");
+        window.speechSynthesis.cancel();
+        // REMOVE THE MASTER CLASS
+        document.body.classList.remove("ai-active");
+
+        const widgets = [
+          ".weather-container",
+          ".sports-container",
+          ".finance-container",
+        ];
+        widgets.forEach((selector) => {
+          const el = document.querySelector(selector);
+          if (el) {
+            el.style.opacity = "1";
+            el.style.pointerEvents = "auto";
+          }
+        });
+      });
+    }
+
+    // 5. Close on Escape Key
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        const aiModal = document.getElementById("aiModal");
+        if (aiModal && aiModal.classList.contains("active")) {
+          // Trigger the close button click to run all cleanup logic
+          closeAiBtn.click();
+        }
+      }
+    });
+
+    // ... existing listeners ...
+
+    // 5. AI Reply Input (Enter Key)
+    const replyInput = document.getElementById("aiReplyInput");
+    const replySend = document.getElementById("aiReplySend");
+    const replyMic = document.getElementById("aiReplyMic");
+
+    if (replyInput) {
+      replyInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") this.sendReply();
+      });
+    }
+
+    if (replySend) {
+      replySend.addEventListener("click", () => this.sendReply());
+    }
+
+    if (replyMic) {
+      replyMic.addEventListener("click", () => this.startReplyVoice());
+    }
   }
 
   // === SEARCH SUGGESTION LOGIC ===
-
   async handleSearchInput(query) {
+    // 1. IF AI MODE IS ON -> KILL SUGGESTIONS
+    if (this.settings.ai && this.settings.ai.enabled) {
+      this.clearSuggestions(); // Clear any existing ones
+      return; // Stop here. Do not call Google.
+    }
+
+    // 2. STANDARD MODE -> FETCH SUGGESTIONS
     if (!query || query.length < 1) {
       this.clearSuggestions();
       return;
     }
 
     try {
-      // Fetch suggestions from Google (Client=firefox returns easiest JSON)
       const res = await fetch(
         `https://suggestqueries.google.com/complete/search?client=firefox&q=${encodeURIComponent(
           query
         )}`
       );
       const data = await res.json();
-      // data[1] contains the array of suggestion strings
       this.showSuggestions(data[1]);
     } catch (error) {
-      // Fail silently (internet issue or blocked)
       this.clearSuggestions();
     }
   }
@@ -225,6 +312,13 @@ class XAIExtension {
   performSearch(query) {
     if (!query.trim()) return;
 
+    // 1. CHECK IF AI MODE IS ON
+    if (this.settings.ai && this.settings.ai.enabled) {
+      this.handleAIQuery(query);
+      return; // Stop here, don't open Google
+    }
+
+    // 2. STANDARD SEARCH (Google / URL)
     const urlPattern =
       /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
     const isUrl = urlPattern.test(query) || query.includes(".");
@@ -1646,6 +1740,328 @@ class XAIExtension {
     this.settings.sports.lastUpdate = null;
     await this.saveSettings();
     await this.loadSports();
+  }
+
+  // ==========================================
+  //           AI & GEMINI LOGIC
+  // ==========================================
+
+  toggleAIMode() {
+    this.settings.ai.enabled = !this.settings.ai.enabled;
+
+    const searchWrapper = document.querySelector(".search-input-wrapper");
+    const aiBtn = document.getElementById("aiToggle");
+    const input = document.getElementById("searchInput");
+
+    if (this.settings.ai.enabled) {
+      // --- VISUALS ---
+      searchWrapper.classList.add("ai-mode-active");
+      aiBtn.classList.add("ai-mode-active");
+      input.placeholder = "Awaiting command...";
+      input.focus();
+
+      // --- AUDIO GREETING ---
+      const name = this.settings.userName || "Sir";
+      // Randomize greeting for variety
+      const greetings = [
+        `System initialized. Ready, ${name}.`,
+        `AI systems online. Hello, ${name}.`,
+        `Welcome back, ${name}. I am listening.`,
+      ];
+      const randomGreeting =
+        greetings[Math.floor(Math.random() * greetings.length)];
+      this.speakText(randomGreeting);
+    } else {
+      // --- OFF STATE ---
+      searchWrapper.classList.remove("ai-mode-active");
+      aiBtn.classList.remove("ai-mode-active");
+      input.placeholder = "Search or enter URL";
+
+      // Stop talking if turned off
+      window.speechSynthesis.cancel();
+    }
+  }
+
+  startVoiceInput() {
+    // Check browser support
+    if (!("webkitSpeechRecognition" in window)) {
+      alert("Voice input not supported in this browser.");
+      return;
+    }
+
+    const recognition = new webkitSpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = "en-US";
+
+    const micBtn = document.getElementById("micButton");
+    micBtn.classList.add("listening-mode"); // Turn red
+
+    recognition.onresult = (event) => {
+      const text = event.results[0][0].transcript;
+      document.getElementById("searchInput").value = text;
+
+      // If AI is on, auto-submit. If off, just fill text.
+      if (this.settings.ai.enabled) {
+        this.handleAIQuery(text);
+      }
+    };
+
+    recognition.onerror = (e) => {
+      console.error("Voice error", e);
+      micBtn.classList.remove("listening-mode");
+    };
+
+    recognition.onend = () => {
+      micBtn.classList.remove("listening-mode");
+    };
+
+    recognition.start();
+  }
+
+  async handleAIQuery(prompt, isFollowUp = false) {
+    const apiKey = this.settings.ai.apiKey || "";
+    if (!apiKey) {
+      alert("Please enter API Key in Settings.");
+      return;
+    }
+
+    // 1. UI Setup
+    const modal = document.getElementById("aiModal");
+    const responseContainer = document.getElementById("aiResponseText");
+    const status = document.querySelector(".ai-status");
+
+    if (!isFollowUp) {
+      this.hideWidgets();
+      modal.classList.add("active");
+      responseContainer.innerHTML = "";
+      this.chatHistory = [];
+    }
+
+    // 2. Add USER Message to UI
+    this.appendMessageToUI("User", prompt);
+    this.chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+
+    // 3. Scroll & Status
+    responseContainer.scrollTop = responseContainer.scrollHeight;
+    status.textContent = "CALCULATING TEMPORAL DATA...";
+
+    try {
+      // --- THE TIME FIX ---
+      // We get the current time from your browser
+      const now = new Date();
+      const dateString = now.toLocaleDateString("en-US", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+      const timeString = now.toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+
+      // We tell Gemini: "This is the current time. Act accordingly."
+      const systemPrompt = `Current Date: ${dateString}\nCurrent Time: ${timeString}\nUser Name: ${
+        this.settings.userName || "Commander"
+      }\nYou are JARVIS., an advanced AI assistant. Be  very concise, helpful, and  friendly.`;
+
+      // 4. Call API with System Instruction
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          // INJECT TIME HERE
+          systemInstruction: {
+            parts: [{ text: systemPrompt }],
+          },
+          contents: this.chatHistory,
+        }),
+      });
+
+      const data = await response.json();
+      if (data.error) throw new Error(data.error.message);
+
+      const aiText = data.candidates[0].content.parts[0].text;
+
+      // 5. Update History & UI
+      this.chatHistory.push({ role: "model", parts: [{ text: aiText }] });
+
+      status.textContent = "TRANSMITTING...";
+      this.streamAIResponse("Gemini", aiText, responseContainer);
+      this.speakText(aiText);
+    } catch (error) {
+      this.appendMessageToUI("System", "Error: " + error.message);
+      status.textContent = "CONNECTION LOST";
+    }
+  }
+  speakText(text) {
+    if (!("speechSynthesis" in window)) return;
+
+    // 1. Cancel previous audio
+    window.speechSynthesis.cancel();
+
+    // 2. Show Stop Button
+    const stopBtn = document.getElementById("stopVoiceBtn");
+    if (stopBtn) stopBtn.style.display = "flex";
+
+    const utterance = new SpeechSynthesisUtterance(text);
+
+    // === TUNING THE VOICE ===
+
+    // Speed: 1.2 is snappier (1.0 is too slow, 1.5 is too fast)
+    utterance.rate = 1.05;
+
+    // Pitch: 1.0 is standard. Lowering slightly (0.9) sometimes hides the "robot" metallic sound.
+    utterance.pitch = 1.0;
+
+    let voices = window.speechSynthesis.getVoices();
+
+    const setVoice = () => {
+      // PRIORITY LIST:
+      // 1. "Google US English" (Best/Most Human on Chrome)
+      // 2. "Microsoft Zira" (Good Windows Female)
+      // 3. "Samantha" (Good Mac Voice)
+      const preferredVoice =
+        voices.find((v) => v.name === "Google US English") ||
+        voices.find((v) => v.name.includes("Zira")) ||
+        voices.find((v) => v.name.includes("Samantha")) ||
+        voices.find((v) => v.name.includes("Google")); // Fallback to any Google voice
+
+      if (preferredVoice) {
+        utterance.voice = preferredVoice;
+      }
+
+      window.speechSynthesis.speak(utterance);
+    };
+
+    if (voices.length > 0) {
+      setVoice();
+    } else {
+      window.speechSynthesis.onvoiceschanged = () => {
+        voices = window.speechSynthesis.getVoices();
+        setVoice();
+      };
+    }
+
+    utterance.onend = () => {
+      if (stopBtn) stopBtn.style.display = "none";
+    };
+  }
+  streamAIResponse(fullText, element) {
+    // Clean text (basic markdown removal if you want, or keep it)
+    element.textContent = "";
+    let i = 0;
+    const speed = 15; // Fast typing speed
+
+    const type = () => {
+      if (i < fullText.length) {
+        element.textContent += fullText.charAt(i);
+        i++;
+        // Auto scroll to bottom
+        element.scrollTop = element.scrollHeight;
+        setTimeout(type, speed);
+      }
+    };
+    type();
+  }
+
+  // Helper: Visual Chat Bubbles
+  appendMessageToUI(role, text) {
+    const container = document.getElementById("aiResponseText");
+    const msgDiv = document.createElement("div");
+    msgDiv.className = "chat-message";
+
+    const label = role === "User" ? "COMMANDER" : "GEMINI";
+    const cssClass = role === "User" ? "chat-user" : "chat-ai";
+
+    msgDiv.innerHTML = `
+          <div class="${cssClass}">${label}</div>
+          <div class="chat-text">${text}</div>
+      `;
+
+    container.appendChild(msgDiv);
+    container.scrollTop = container.scrollHeight;
+  }
+
+  // Handle the "Send" button in modal
+  sendReply() {
+    const input = document.getElementById("aiReplyInput");
+    const text = input.value.trim();
+    if (!text) return;
+
+    input.value = ""; // Clear input
+    this.handleAIQuery(text, true); // true = maintain context
+  }
+
+  // Handle the Mic button in modal
+  startReplyVoice() {
+    if (!("webkitSpeechRecognition" in window)) return;
+
+    const recognition = new webkitSpeechRecognition();
+    recognition.lang = "en-US";
+    const btn = document.getElementById("aiReplyMic");
+    btn.style.color = "#ef4444"; // Red when listening
+
+    recognition.onresult = (event) => {
+      const text = event.results[0][0].transcript;
+      this.handleAIQuery(text, true);
+    };
+
+    recognition.onend = () => {
+      btn.style.color = ""; // Reset color
+    };
+
+    recognition.start();
+  }
+
+  // Updated Widget Hider (Moved to own function for clarity)
+  hideWidgets() {
+    // Add the master class to body
+    document.body.classList.add("ai-active");
+
+    // Keep your existing manual hiding logic (optional, but good for backup)
+    const widgets = [
+      ".weather-container",
+      ".sports-container",
+      ".finance-container",
+    ];
+    widgets.forEach((selector) => {
+      const el = document.querySelector(selector);
+      if (el) {
+        el.style.opacity = "0";
+        el.style.pointerEvents = "none";
+      }
+    });
+  }
+
+  // Modified Streamer to use the new UI structure
+  streamAIResponse(role, fullText, container) {
+    // Create the container for this specific message
+    const msgDiv = document.createElement("div");
+    msgDiv.className = "chat-message";
+    msgDiv.innerHTML = `
+          <div class="chat-ai">GEMINI</div>
+          <div class="chat-text"></div>
+      `;
+    container.appendChild(msgDiv);
+
+    const textEl = msgDiv.querySelector(".chat-text");
+
+    let i = 0;
+    const speed = 15;
+
+    const type = () => {
+      if (i < fullText.length) {
+        textEl.textContent += fullText.charAt(i);
+        i++;
+        container.scrollTop = container.scrollHeight;
+        setTimeout(type, speed);
+      }
+    };
+    type();
   }
 }
 

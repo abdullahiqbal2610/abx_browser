@@ -25,6 +25,10 @@ class PopupController {
         apiKey: "",
         cacheDuration: 900000, // 15 mins
       },
+      ai: {
+        enabled: false,
+        apiKey: "",
+      },
     };
     this.init();
   }
@@ -44,6 +48,7 @@ class PopupController {
           ...this.settings,
           ...result.xaiSettings,
           finance: { ...this.settings.finance, ...result.xaiSettings.finance },
+          ai: { ...this.settings.ai, ...result.xaiSettings.ai },
         };
       }
     } catch (error) {
@@ -74,6 +79,17 @@ class PopupController {
         const value = parseInt(e.target.value);
         this.settings.particleCount = value;
         particleValue.textContent = value;
+      });
+    }
+
+    // ... inside setupEventListeners, after Finance settings ...
+
+    // --- AI Settings ---
+    const geminiApiKey = document.getElementById("geminiApiKey");
+    if (geminiApiKey) {
+      geminiApiKey.addEventListener("input", (e) => {
+        if (!this.settings.ai) this.settings.ai = {};
+        this.settings.ai.apiKey = e.target.value;
       });
     }
 
@@ -197,6 +213,12 @@ class PopupController {
       this.settings.particleCount;
     document.getElementById("particleValue").textContent =
       this.settings.particleCount;
+
+    // AI
+    if (this.settings.ai) {
+      const keyInput = document.getElementById("geminiApiKey");
+      if (keyInput) keyInput.value = this.settings.ai.apiKey || "";
+    }
 
     // Weather
     if (this.settings.weather) {
