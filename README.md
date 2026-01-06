@@ -1,154 +1,101 @@
-# 🌌 ABX-One Chrome Extension
+# 🌌 ABX-One: The Intelligent Command Center
 
-ABX-One is a **premium Chrome Extension** that transforms your new tab into a **beautiful, functional homepage** with live weather, sports updates, smart search, and elegant design. Built for productivity and aesthetics.
+**ABX-One** is not just a Chrome Extension; it is a fully immersive **J.A.R.V.I.S.-inspired interface** for your browser.
 
----
-
-## ✨ Features
-
-### 🌤️ **Live Weather Widget**
-- **Real-time weather data** from OpenWeatherMap API
-- **Automatic location detection** or custom city selection
-- **Temperature units**: Celsius/Fahrenheit support
-- **Detailed info**: Temperature, feels like, humidity, wind speed
-- **Smart caching**: Updates every 15 minutes to optimize performance
-- **Manual refresh**: Instant updates with one click
-- **Hybrid API system**: Works out-of-the-box + optional personal API key
-
-### ⚽ **Sports Widget**
-- **Favorite team tracking**: Enter full team name (e.g., Manchester United)
-- **Latest match results**: See your team’s most recent games
-- **Upcoming fixtures**: Stay updated on next matches
-- **Optional personal API key**: For unlimited requests via TheSportsDB
-- **Enable/disable**: Toggle the widget in settings for a clean interface
-
-### ⚡ **Smart Search & Navigation**
-- **Intelligent search**: Detects URLs vs search queries automatically
-- **Quick access bookmarks**: Your most visited sites
-- **Recent history**: Easy access to recent browsing
-- **Google Workspace integration**: Gmail, Docs, Drive, etc.
-- **Collapsible sections**: Minimize/expand Quick Access and Recent sections
-
-### 🎨 **Beautiful Interface**
-- **Dark sci-fi theme** with gradient effects and glassmorphism
-- **Animated particles**: Configurable density and effects
-- **Smooth animations**: 60fps performance with CSS transitions
-- **Responsive design**: Perfect on desktop and mobile
-- **Personalized greetings**: Time-based with custom names
-
-### ⚙️ **Customization & Settings**
-- **Weather preferences**: Location, units, personal API key
-- **Sports preferences**: Favorite team, enable/disable, personal API key
-- **Visual controls**: Animation toggles, particle density
-- **Personal touches**: Custom name for greetings
-- **Section management**: Show/hide different areas
-- **Persistent storage**: All settings saved across sessions
-
-### 🛠️ **Technical Excellence**
-- **Manifest V3**: Modern Chrome extension architecture
-- **Modular JavaScript**: Clean, maintainable code structure
-- **Chrome APIs**: Full integration with bookmarks, history, tabs
-- **Performance optimized**: Efficient memory usage and fast loading
-- **Error handling**: Graceful fallbacks and user feedback
+Combining a cinematic "Void Energy" aesthetic with the power of **Google Gemini 2.5**, ABX-One transforms your new tab into a voice-activated, context-aware AI dashboard. It features live widgets (Weather, Sports, Crypto), a 3D parallax starfield, and a fully conversational AI HUD.
 
 ---
 
-## 📥 Quick Installation
+## ✨ Top Features
 
-### Method 1: Chrome Web Store (Coming Soon)
-- One-click install from Chrome Web Store
-- Automatic updates
-- 🚀 **Most convenient option**
+### 🤖 **J.A.R.V.I.S. AI Core (Gemini 2.5)**
+* **Powered by Gemini 2.5 Flash:** The latest, fastest AI model with full context awareness.
+* **Voice Activation:** Just say **"Hello Jarvis"** to wake the system, or press `Alt + J`.
+* **Conversational Memory:** The AI remembers your previous questions in the session (e.g., "Who is Elon Musk?" -> "How old is he?").
+* **Voice Response (TTS):** The system speaks back to you using a natural, human-sounding voice (Google US English).
+* **Cinema Mode:** All widgets automatically fade into the background when the AI speaks, keeping your focus on the data stream.
+* **Temporal Awareness:** The AI knows the exact current date and time.
 
-### Method 2: Manual Installation
+### 🎨 **Immersive Visuals**
+* **Void Reactor Core:** The AI toggle is a custom-animated "Arc Reactor" that pulses with neon purple energy.
+* **3D Parallax Starfield:** A living background with 90+ stars of varying depths and glow intensities.
+* **Glassmorphism UI:** Frosted glass panels for widgets and inputs.
+* **Dynamic Animations:** Smooth transitions, hover effects, and "breathing" light elements.
 
-1. **Download the Extension**
-   - Download the latest release from [GitHub Releases](#)
-   - Or clone: `git clone https://github.com/yourusername/abx-browser.git`
-
-2. **Install in Chrome**
-   - Open Chrome → navigate to `chrome://extensions/`
-   - Enable **Developer mode** (top-right toggle)
-   - Click **Load unpacked** → select the extension folder
-   - ABX-One is now active! 🎉
-
-3. **First Launch**
-   - Open a new tab to see your new homepage
-   - Weather and sports widgets load automatically
-   - Click the settings button (⚙️) to customize
-
----
-
-## 🚀 Getting Started
-
-### 🌤️ **Weather Widget**
-**Option 1: Use Default (Recommended for most users)**
-- Works immediately with shared API key
-- Perfect for casual use
-- No setup required
-
-**Option 2: Personal API Key**
-1. Get a free API key from [OpenWeatherMap](https://openweathermap.org/api)
-2. Open ABX-One settings → enter your API key
-3. Enjoy unlimited weather updates
-
-### ⚽ **Sports Widget**
-**Option 1: Use Default (Demo API)**
-- Works immediately with shared TheSportsDB demo API key
-- Displays last match and upcoming fixtures
-
-**Option 2: Personal API Key**
-1. Get your own API key from [TheSportsDB](https://www.thesportsdb.com/api.php)
-2. Open ABX-One settings → enter your API key
-3. Enter your favorite team name for live updates
+### 🧩 **Smart Widgets**
+* **🌤️ Live Weather:** Auto-detects location or uses custom cities. Shows humidity, wind, and "feels like" temps.
+* **⚽ Sports Tracker:** Tracks your favorite team (e.g., Manchester United) with latest results and upcoming fixtures.
+* **📈 Finance & Crypto:** Live ticker for Bitcoin (BTC), Ethereum (ETH), and market trends.
+* **⚡ Smart Search:** Intelligent omnibox that differentiates between URLs and search queries.
 
 ### ⚙️ **Customization**
-**Personal Settings:**
-- Set your name for personalized greetings
-- Choose your preferred temperature units
-- Set a custom weather location
-- Enter your favorite sports team
-
-**Visual Preferences:**
-- Toggle animations on/off
-- Adjust particle density
-- Collapse/expand sections as needed
-
-**Pro Tips:**
-- 🔄 Click refresh buttons for instant updates
-- 📍 Allow location access for automatic weather
-- ⚽ Sports widget updates dynamically based on team
+* **Personalization:** Set your preferred name (e.g., "Commander", "Abdullah").
+* **API Management:** Bring your own keys for Gemini, OpenWeather, and TheSportsDB.
+* **Visual Control:** Toggle animations, particle density, and widget visibility.
+* **Data Persistence:** All settings are saved locally and persist across sessions.
 
 ---
 
-## 🔧 Technical Specifications
-### Requirements
-- **Chrome Version**: 88+ (Manifest V3 support)
-- **Permissions**: Bookmarks, History, ActiveTab, Storage, Geolocation
-- **API Dependencies**: OpenWeatherMap, TheSportsDB (optional personal keys)
+## 🎮 Controls & Shortcuts
+
+| Action | Command / Shortcut | Description |
+| :--- | :--- | :--- |
+| **Wake AI** | **`Alt + J`** | Instantly activates the microphone. |
+| **Voice Command** | Say **"Hello Jarvis"** | Wakes the system and opens the AI HUD. |
+| **Close AI** | **`Esc`** | Closes the AI window and restores widgets. |
+| **Stop Speaking** | **Stop Button** | Mutes the AI voice but keeps the text. |
+
+---
+
+## 📥 Installation Guide
+
+### Method 1: Manual Installation (Developer Mode)
+
+1.  **Download the Code**
+    * Clone this repository: `git clone https://github.com/yourusername/abx-one.git`
+    * Or download the ZIP and extract it.
+
+2.  **Load into Chrome**
+    * Open Chrome and go to `chrome://extensions/`
+    * Toggle **Developer mode** (top right corner).
+    * Click **Load unpacked**.
+    * Select the folder where you saved the files.
+
+3.  **Initialize**
+    * Open a new tab.
+    * Click the **Gear Icon (Settings)** in the top right.
+    * Enter your **Gemini API Key** (Get it free from [Google AI Studio](https://aistudio.google.com/)).
+    * *(Optional)* Enter OpenWeather or SportsDB keys.
+    * Reload the page.
+
+---
+
+## 🛠️ Technical Stack
+
+* **Core:** HTML5, CSS3, Vanilla JavaScript (ES6+).
+* **AI Engine:** Google Gemini API (v1beta / Gemini 2.5 Flash).
+* **Voice:** Web Speech API (SpeechRecognition & SpeechSynthesis).
+* **Architecture:** Manifest V3 (Modern Chrome Standard).
+* **Styling:** Custom CSS Animations, Flexbox/Grid, SVG Filters.
 
 ---
 
 ## 📢 Changelog
 
-### Version 2.0.0 (Current)
-- ✨ **NEW**: Live weather widget with location detection
-- ✨ **NEW**: Sports widget with latest matches & upcoming fixtures
-- ✨ **NEW**: Collapsible sections for better organization
-- ✨ **NEW**: Hybrid API key system for weather & sports
-- 🔄 **IMPROVED**: 15-minute smart caching
-- 🔄 **IMPROVED**: Enhanced settings panel
-- 🔄 **IMPROVED**: Better responsive design
-
-
+### Version 3.0.0 (The J.A.R.V.I.S. Update)
+* ✨ **NEW:** Complete AI overhaul with Gemini 2.5 Flash.
+* ✨ **NEW:** Added "Void Reactor" animated toggle button.
+* ✨ **NEW:** Implemented "Hello Jarvis" wake word and `Alt + J` shortcut.
+* ✨ **NEW:** Added Conversational History (Chat Mode).
+* ✨ **NEW:** Integrated Text-to-Speech (TTS) with voice selection logic.
+* ✨ **NEW:** "Cinema Mode" (Widgets fade out during AI interaction).
+* ✨ **NEW:** Finance/Crypto widget added.
+* 🔄 **UPDATED:** Starfield background increased to 90 stars with depth variation.
+* 🔄 **FIXED:** 404 Model Not Found errors by migrating to stable Gemini endpoints.
 
 ---
 
 **Built with ❤️ by [Abdullah Iqbal]**
 
 ### 🏷️ Tags
-`#ABXOne` `#ChromeExtension` `#Weather` `#NewTab` `#Productivity` `#WebDevelopment` `#JavaScript` `#UIUX`
-
----
-
-⭐ **If you like ABX-One, please give it a star on GitHub!** ⭐
+`#AI` `#Jarvis` `#ChromeExtension` `#Gemini` `#Productivity` `#VoiceControl` `#WebDev`
