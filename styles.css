@@ -71,45 +71,39 @@ body {
   overflow: hidden;
 }
 
-/* Enhanced Pulsating Stars */
+/* ================= STARS (REFINED SUBTLETY) ================= */
 .star {
   position: absolute;
   border-radius: 50%;
   background: #ffffff;
-  animation: starPulse 6s ease-in-out infinite;
+  /* Uses the random sizes from JS now! */
+  animation: starPulse 5s ease-in-out infinite;
+  box-shadow: 0 0 2px rgba(255, 255, 255, 0.4); /* Very soft base glow */
 }
 
+/* Keep your original colors, but remove width/height overrides */
 .star:nth-child(odd) {
-  width: 1px;
-  height: 1px;
-  filter: drop-shadow(0 0 4px #60a5fa) drop-shadow(0 0 8px #3b82f6);
-  animation-delay: 0s;
+  filter: drop-shadow(0 0 3px #60a5fa); /* Soft Blue */
 }
 
 .star:nth-child(even) {
-  width: 2px;
-  height: 2px;
-  filter: drop-shadow(0 0 6px #a78bfa) drop-shadow(0 0 12px #8b5cf6);
-  animation-delay: 2s;
+  filter: drop-shadow(0 0 3px #a78bfa); /* Soft Purple */
 }
 
 .star:nth-child(3n) {
-  width: 1.5px;
-  height: 1.5px;
-  filter: drop-shadow(0 0 5px #06b6d4) drop-shadow(0 0 10px #0891b2);
-  animation-delay: 4s;
-  animation-duration: 8s;
+  filter: drop-shadow(0 0 3px #06b6d4); /* Soft Cyan */
 }
 
 @keyframes starPulse {
   0%,
   100% {
-    opacity: 0.2;
-    transform: scale(0.8);
+    opacity: 0.5; /* Never goes below 50% visibility (Fixes "dim" look) */
+    transform: scale(0.9);
   }
   50% {
     opacity: 1;
-    transform: scale(1.2);
+    transform: scale(1.1); /* Gentle pulse, not an explosion */
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.6);
   }
 }
 

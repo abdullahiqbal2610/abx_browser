@@ -565,16 +565,25 @@ class XAIExtension {
 
   createStars() {
     const starsContainer = document.getElementById("starsContainer");
-    const starCount = 40;
+    const starCount = 90; // The sweet spot (User preferred 80, 90 adds a tiny bit more life)
+
+    starsContainer.innerHTML = "";
 
     for (let i = 0; i < starCount; i++) {
       const star = document.createElement("div");
       star.className = "star";
+
+      // Random placement
       star.style.left = Math.random() * 100 + "%";
       star.style.top = Math.random() * 100 + "%";
-      star.style.animationDelay = Math.random() * 4 + "s";
 
-      const size = Math.random() * 2 + 1;
+      // Random timing so they don't blink in unison
+      star.style.animationDelay = Math.random() * 4 + "s";
+      star.style.animationDuration = Math.random() * 3 + 3 + "s"; // Slower, calmer pulsing
+
+      // Random Size (This is key for depth!)
+      // Some are tiny (1px), some are closer (2.5px)
+      const size = Math.random() * 1.5 + 1;
       star.style.width = size + "px";
       star.style.height = size + "px";
 
@@ -1947,7 +1956,7 @@ class XAIExtension {
     // === TUNING THE VOICE ===
 
     // Speed: 1.2 is snappier (1.0 is too slow, 1.5 is too fast)
-    utterance.rate = 1.05;
+    utterance.rate = 1.0;
 
     // Pitch: 1.0 is standard. Lowering slightly (0.9) sometimes hides the "robot" metallic sound.
     utterance.pitch = 1.0;
