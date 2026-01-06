@@ -410,7 +410,7 @@ class XAIExtension {
 
     // === SETTINGS ===
     // Change this to -1 or +1 if the date is off for Pakistan
-    const hijriOffset = 0;
+    const hijriOffset = -1;
 
     // 1. Standard Time
     const timeString = now.toLocaleTimeString([], {
