@@ -188,6 +188,7 @@ class XAIExtension {
         window.speechSynthesis.cancel();
         // REMOVE THE MASTER CLASS
         document.body.classList.remove("ai-active");
+        document.getElementById("searchInput").value = "";
 
         const widgets = [
           ".weather-container",
@@ -1908,7 +1909,7 @@ class XAIExtension {
       // We tell Gemini: "This is the current time. Act accordingly."
       const systemPrompt = `Current Date: ${dateString}\nCurrent Time: ${timeString}\nUser Name: ${
         this.settings.userName || "Commander"
-      }\nYou are JARVIS., an advanced AI assistant. Be  very concise, helpful, and  friendly.`;
+      }\nYou are JARVIS., an advanced AI assistant for ABX-One developed by Muhammad Abdullah Iqbal. Be  very concise, helpful, and  friendly.`;
 
       // 4. Call API with System Instruction
       const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
