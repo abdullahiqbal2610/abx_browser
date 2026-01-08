@@ -1842,6 +1842,25 @@ class XAIExtension {
         return;
       }
 
+      // === NEW: EXIT COMMAND ===
+      // Only runs if AI is currently ENABLED
+      if (
+        this.settings.ai.enabled &&
+        lowerText.includes("jarvis over and out")
+      ) {
+        // 1. Audio confirmation
+        this.speakText("Over and out, Abdullah.");
+
+        // 2. Turn off AI Mode (This reverts the UI/Search bar)
+        this.toggleAIMode();
+
+        // 3. Close the Modal Window if it's open (triggers your cleanup logic)
+        const closeAiBtn = document.getElementById("closeAiModal");
+        if (closeAiBtn) closeAiBtn.click();
+
+        return; // Stop here so it doesn't search for "over and out"
+      }
+
       // === STANDARD BEHAVIOR ===
       // If no wake word, just fill the text box
       input.value = transcript;
