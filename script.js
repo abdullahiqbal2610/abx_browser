@@ -102,8 +102,12 @@ class XAIExtension {
     });
 
     // Suggestion Listeners
-    searchInput.addEventListener("input", (e) =>
-      this.handleSearchInput(e.target.value)
+    // Debounce the search input to prevent API flooding
+    searchInput.addEventListener(
+      "input",
+      this.debounce((e) => {
+        this.handleSearchInput(e.target.value);
+      }, 300)
     );
 
     // Hide suggestions when clicking outside
@@ -245,6 +249,19 @@ class XAIExtension {
         this.startVoiceInput();
       }
     });
+  }
+
+  // === HELPER METHODS ===
+  debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+      const later = () => {
+        clearTimeout(timeout);
+        func(...args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
   }
 
   // === SEARCH SUGGESTION LOGIC ===
@@ -566,7 +583,7 @@ class XAIExtension {
 
   createStars() {
     const starsContainer = document.getElementById("starsContainer");
-    const starCount = 90; // The sweet spot (User preferred 80, 90 adds a tiny bit more life)
+    const starCount = 150; // The sweet spot (User preferred 80, 90 adds a tiny bit more life)
 
     starsContainer.innerHTML = "";
 
