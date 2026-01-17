@@ -31,7 +31,7 @@
               autocomplete="off"
             />
 
-            <button id="micButton" class="mic-button" title="Voice Command">
+            <button id="micButton" class="mic-button" title="Voice Command" aria-label="Voice Command">
               <svg
                 width="20"
                 height="20"
@@ -53,7 +53,7 @@
             <div class="suggestions-container" id="searchSuggestions"></div>
           </div>
 
-          <button class="search-button" id="searchButton" title="Search Google">
+          <button class="search-button" id="searchButton" title="Search Google" aria-label="Search">
             <svg
               width="24"
               height="24"
@@ -68,7 +68,7 @@
           </button>
 
           <div class="action-buttons">
-        <button id="aiToggle" class="action-btn ai-toggle" title="Enable AI Mode">
+        <button id="aiToggle" class="action-btn ai-toggle" title="Enable AI Mode" aria-label="Toggle AI Mode">
                 <svg class="arc-reactor-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"/> <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="1.5"/> <circle cx="12" cy="12" r="2" fill="currentColor"/> <path d="M12 2V5 M12 19V22 M2 12H5 M19 12H22 M4.9 4.9L7 7 M17 17L19.1 19.1 M4.9 19.1L7 17 M17 7L19.1 4.9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
                 </svg>
@@ -138,7 +138,7 @@
       <section class="quick-access-section">
         <div class="section-header" id="quickAccessHeader">
           <h2 class="section-title">Quick Access</h2>
-          <button class="section-toggle" id="quickAccessToggle">
+          <button class="section-toggle" id="quickAccessToggle" aria-label="Toggle Quick Access">
             <svg
               class="toggle-icon"
               width="20"
@@ -160,7 +160,7 @@
       <section class="history-section">
         <div class="section-header" id="recentHeader">
           <h2 class="section-title">Recent</h2>
-          <button class="section-toggle" id="recentToggle">
+          <button class="section-toggle" id="recentToggle" aria-label="Toggle Recent History">
             <svg
               class="toggle-icon"
               width="20"
@@ -202,6 +202,7 @@
                 class="weather-refresh"
                 id="weatherRefresh"
                 title="Refresh weather"
+                aria-label="Refresh Weather"
               >
                 <svg
                   width="16"
@@ -255,6 +256,7 @@
               class="sports-refresh"
               id="sportsRefresh"
               title="Refresh sports"
+              aria-label="Refresh Sports"
             >
               <svg
                 width="16"
@@ -354,7 +356,7 @@
       <div class="finance-widget" id="financeWidget">
         <div class="finance-header">
           <span class="finance-label">Market</span>
-          <button class="finance-refresh" id="financeRefresh" title="Refresh">
+          <button class="finance-refresh" id="financeRefresh" title="Refresh" aria-label="Refresh Market Data">
             <svg
               width="20"
               height="20"
@@ -384,7 +386,8 @@
           <div class="ticker-change" id="tickerTime">Updated just now</div>
         </div>
         <div class="finance-error" id="financeError" style="display: none">
-          Unavailable
+          <div class="error-message">Unavailable</div>
+          <button class="retry-btn" id="retryFinance">Retry</button>
         </div>
         <div class="finance-empty" id="financeEmpty" style="display: none">
           No Pair Set
@@ -399,7 +402,7 @@
           <path d="M12 2L15.09 8.26L22 12L15.09 15.74L12 22L8.91 15.74L2 12L8.91 8.26L12 2Z"></path>
         </svg>
       </a>
-      <button class="settings-button" id="settingsButton" title="Settings">
+      <button class="settings-button" id="settingsButton" title="Settings" aria-label="Settings">
         <svg
           width="24"
           height="24"
@@ -423,20 +426,20 @@
        <div class="ai-header">
                 <div style="display: flex; align-items: center; gap: 15px;">
                     <span class="ai-title">GEMINI INTELLIGENCE</span>
-                    <button id="stopVoiceBtn" class="voice-control-btn" title="Stop Speaking" style="display: none;">
+                    <button id="stopVoiceBtn" class="voice-control-btn" title="Stop Speaking" style="display: none;" aria-label="Stop Voice Output">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <rect x="4" y="4" width="16" height="16"></rect> </svg>
                         <span style="font-size: 0.8rem; margin-left: 5px;">STOP VOICE</span>
                     </button>
                 </div>
-                <button id="closeAiModal" class="close-ai-btn">&times;</button>
+                <button id="closeAiModal" class="close-ai-btn" aria-label="Close AI Interface">&times;</button>
             </div>
         <div id="aiResponseText" class="ai-response-text"></div>
         <div class="ai-input-container">
                 <div class="ai-input-wrapper">
                     <input type="text" id="aiReplyInput" class="ai-reply-input" placeholder="Reply to Gemini..." autocomplete="off">
                     
-                    <button id="aiReplyMic" class="ai-reply-btn" title="Voice Input">
+                    <button id="aiReplyMic" class="ai-reply-btn" title="Voice Input" aria-label="Reply with Voice">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
                             <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
@@ -444,7 +447,7 @@
                         </svg>
                     </button>
 
-                    <button id="aiReplySend" class="ai-reply-btn" title="Send Reply">
+                    <button id="aiReplySend" class="ai-reply-btn" title="Send Reply" aria-label="Send Reply">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <line x1="22" y1="2" x2="11" y2="13"></line>
                             <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>

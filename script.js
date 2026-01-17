@@ -1325,7 +1325,16 @@ class XAIExtension {
 
     // Refresh every 15 mins
     const duration = this.settings.finance.cacheDuration || 900000;
+
     setInterval(() => this.loadFinance(), duration);
+
+    // Retry Button Listener
+    const retryBtn = document.getElementById("retryFinance");
+    if (retryBtn) {
+      retryBtn.addEventListener("click", () => {
+        this.loadFinance(true);
+      });
+    }
   }
 
   async loadFinance(force = false) {
@@ -1974,8 +1983,12 @@ class XAIExtension {
       this.streamAIResponse("Gemini", aiText, responseContainer);
       this.speakText(aiText);
     } catch (error) {
-      this.appendMessageToUI("System", "Error: " + error.message);
-      status.textContent = "CONNECTION LOST";
+      const errorMessage =
+        "Apologies Commander, I am unable to establish a connection to the neural core. Please check your network configuration.";
+      this.appendMessageToUI("System", "CONNECTION ERROR: " + error.message);
+      status.textContent = "SIGNAL LOST";
+      status.style.color = "#ef4444";
+      this.speakText(errorMessage);
     }
   }
   speakText(text) {
