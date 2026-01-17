@@ -13,7 +13,9 @@ class XAIExtension {
       sectionsCollapsed: {
         quickAccess: true,
         recent: true,
+        missionLog: false, // Default open
       },
+      missionLog: [], // Tasks array
       ai: {
         enabled: false,
         apiKey: "", // This loads from your Popup settings
@@ -55,6 +57,7 @@ class XAIExtension {
     this.initWeather();
     this.initSports();
     this.initFinance();
+    this.initMissionLog(); // Initialize Mission Log
     this.updateGreeting();
     this.updateTime();
     this.loadBookmarks();
@@ -925,6 +928,7 @@ class XAIExtension {
 
   initSectionToggles() {
     this.loadSectionStates();
+    // Re-calculate heights after a short delay to ensure content is rendered
     setTimeout(() => {
       this.setSectionMaxHeights();
     }, 500);
@@ -933,6 +937,7 @@ class XAIExtension {
   setupSectionToggleListeners() {
     const quickAccessHeader = document.getElementById("quickAccessHeader");
     const recentHeader = document.getElementById("recentHeader");
+    const missionLogHeader = document.getElementById("missionLogHeader");
 
     if (quickAccessHeader) {
       quickAccessHeader.addEventListener("click", () => {
@@ -943,6 +948,12 @@ class XAIExtension {
     if (recentHeader) {
       recentHeader.addEventListener("click", () => {
         this.toggleSection("recent");
+      });
+    }
+
+    if (missionLogHeader) {
+      missionLogHeader.addEventListener("click", () => {
+        this.toggleSection("missionLog");
       });
     }
   }
@@ -962,6 +973,10 @@ class XAIExtension {
         content: "quickAccessContent",
       },
       recent: { header: "recentHeader", content: "recentContent" },
+      missionLog: {
+        header: "missionLogHeader",
+        content: "missionLogContent",
+      },
     };
 
     const { header: headerId, content: contentId } = sectionIdMap[sectionName];
@@ -982,6 +997,7 @@ class XAIExtension {
   setSectionMaxHeights() {
     const quickAccessContent = document.getElementById("quickAccessContent");
     const recentContent = document.getElementById("recentContent");
+    const missionLogContent = document.getElementById("missionLogContent");
 
     if (quickAccessContent) {
       const height = quickAccessContent.scrollHeight;
@@ -991,6 +1007,14 @@ class XAIExtension {
     if (recentContent) {
       const height = recentContent.scrollHeight;
       recentContent.style.maxHeight = height + "px";
+    }
+
+    // Dynamic height for Mission Log since tasks change
+    if (missionLogContent) {
+        // If not collapsed, set to auto or large number
+        if(!missionLogContent.classList.contains('collapsed')) {
+             missionLogContent.style.maxHeight = "1000px"; 
+        }
     }
   }
 
@@ -1887,6 +1911,24 @@ class XAIExtension {
         return; // Stop here so it doesn't search for "over and out"
       }
 
+      // === NEW: MISSION LOG VOICE COMMAND ===
+      // "Add [Buy Milk] to mission log"
+      const missionMatch =
+        lowerText.match(/^add (.+) to (?:my )?mission log$/) ||
+        lowerText.match(/^add (.+) to (?:my )?list$/);
+
+      if (missionMatch) {
+        const taskText = missionMatch[1];
+        // Capitalize first letter
+        const formattedTask =
+          taskText.charAt(0).toUpperCase() + taskText.slice(1);
+
+        this.addMissionTask(formattedTask);
+        this.speakText(`Added ${formattedTask} to mission log.`);
+        input.value = ""; // Clear input
+        return;
+      }
+
       // === STANDARD BEHAVIOR ===
       // If no wake word, just fill the text box
       input.value = transcript;
@@ -2157,7 +2199,102 @@ class XAIExtension {
     };
     type();
   }
+  // ================= MISSION LOG LOGIC =================
+  initMissionLog() {
+    if (!this.settings.missionLog) {
+      this.settings.missionLog = [];
+    }
+
+    const addBtn = document.getElementById("addMissionBtn");
+    const input = document.getElementById("missionInput");
+
+    if (addBtn && input) {
+      addBtn.addEventListener("click", () => {
+        this.addMissionTask(input.value);
+        input.value = "";
+      });
+
+      input.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+          this.addMissionTask(input.value);
+          input.value = "";
+        }
+      });
+    }
+
+    this.renderMissionLog();
+  }
+
+  addMissionTask(text) {
+    if (!text || !text.trim()) return;
+
+    const newTask = {
+      id: Date.now(),
+      text: text.trim(),
+      completed: false,
+    };
+
+    this.settings.missionLog.unshift(newTask); // Add to top
+    this.saveSettings();
+    this.renderMissionLog();
+  }
+
+  toggleMissionTask(id) {
+    const task = this.settings.missionLog.find((t) => t.id === id);
+    if (task) {
+      task.completed = !task.completed;
+      this.saveSettings();
+      this.renderMissionLog();
+    }
+  }
+
+  deleteMissionTask(id) {
+    this.settings.missionLog = this.settings.missionLog.filter(
+      (t) => t.id !== id
+    );
+    this.saveSettings();
+    this.renderMissionLog();
+  }
+
+  renderMissionLog() {
+    const list = document.getElementById("missionList");
+    if (!list) return;
+
+    if (this.settings.missionLog.length === 0) {
+      list.innerHTML = `
+        <div style="text-align: center; color: #6b7280; padding: 20px; font-style: italic;">
+           No active objectives.
+        </div>
+      `;
+      return;
+    }
+
+    list.innerHTML = this.settings.missionLog
+      .map(
+        (task) => `
+      <div class="mission-item ${task.completed ? "completed" : ""}">
+        <div class="mission-checkbox" role="button" onclick="window.app.toggleMissionTask(${
+          task.id
+        })"></div>
+        <div class="mission-text">${this.escapeHtml(task.text)}</div>
+        <button class="mission-delete" onclick="window.app.deleteMissionTask(${
+          task.id
+        })" aria-label="Delete Task">×</button>
+      </div>
+    `
+      )
+      .join("");
+  }
+
+  escapeHtml(text) {
+    const div = document.createElement("div");
+    div.textContent = text;
+    return div.innerHTML;
+  }
 }
+
+// Global accessor for onclick handlers in HTML string
+window.app = null;
 
 // Fade out widgets on scroll
 const weatherWidget = document.querySelector(".weather-container");
@@ -2191,7 +2328,9 @@ document.head.appendChild(style);
 
 // Initialize the extension safely (Run only ONCE)
 if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", () => new XAIExtension());
+  document.addEventListener("DOMContentLoaded", () => {
+      window.app = new XAIExtension();
+  });
 } else {
-  new XAIExtension();
+  window.app = new XAIExtension();
 }

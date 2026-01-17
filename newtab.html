@@ -135,6 +135,52 @@
         </div>
       </section>
 
+      <section class="mission-log-section">
+        <div class="section-header" id="missionLogHeader">
+          <h2 class="section-title">Mission Log</h2>
+          <button class="section-toggle" id="missionLogToggle" aria-label="Toggle Mission Log">
+            <svg
+              class="toggle-icon"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <polyline points="6,9 12,15 18,9"></polyline>
+            </svg>
+          </button>
+        </div>
+        <div class="section-content" id="missionLogContent">
+          <div class="mission-input-container">
+            <input
+              type="text"
+              id="missionInput"
+              class="mission-input"
+              placeholder="Add new objective..."
+              autocomplete="off"
+            />
+            <button id="addMissionBtn" class="add-mission-btn" aria-label="Add">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+            </button>
+          </div>
+          <div class="mission-list" id="missionList">
+            <!-- Tasks injected here -->
+          </div>
+        </div>
+      </section>
+
       <section class="quick-access-section">
         <div class="section-header" id="quickAccessHeader">
           <h2 class="section-title">Quick Access</h2>
