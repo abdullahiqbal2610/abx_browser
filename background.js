@@ -5,7 +5,7 @@ chrome.runtime.onInstalled.addListener((details) => {
     console.log('xAI Extension installed/updated');
     
     // Set default settings
-    chrome.storage.sync.get(['xaiSettings'], (result) => {
+    chrome.storage.local.get(['xaiSettings'], (result) => {
         if (!result.xaiSettings) {
             const defaultSettings = {
                 animationsEnabled: true,
@@ -14,7 +14,7 @@ chrome.runtime.onInstalled.addListener((details) => {
                 customBookmarks: []
             };
             
-            chrome.storage.sync.set({ xaiSettings: defaultSettings });
+            chrome.storage.local.set({ xaiSettings: defaultSettings });
         }
     });
 });
@@ -29,13 +29,13 @@ chrome.action.onClicked.addListener((tab) => {
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     switch (request.action) {
         case 'getSettings':
-            chrome.storage.sync.get(['xaiSettings'], (result) => {
+            chrome.storage.local.get(['xaiSettings'], (result) => {
                 sendResponse(result.xaiSettings || {});
             });
             return true; // Required for async response
             
         case 'saveSettings':
-            chrome.storage.sync.set({ xaiSettings: request.settings }, () => {
+            chrome.storage.local.set({ xaiSettings: request.settings }, () => {
                 sendResponse({ success: true });
             });
             return true;

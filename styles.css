@@ -2326,3 +2326,211 @@ body > .settings-container {
 .weather-temp {
   line-height: 0.8 !important; /* Removes invisible padding above/below the huge numbers */
 }
+
+/* =========================================
+   TO-DO WIDGET STYLES
+   ========================================= */
+.todo-container {
+  position: relative !important;
+  width: 100%;
+  z-index: 10;
+}
+
+.todo-widget {
+  min-width: 100% !important;
+  width: 100%;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  color: #ffffff;
+  backdrop-filter: blur(25px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.03),
+    0 2px 10px rgba(0, 0, 0, 0.2);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  max-height: 380px; /* Keeps it from growing infinitely long */
+}
+
+.todo-widget:hover {
+  background: rgba(0, 0, 0, 0.5);
+  border-color: rgba(
+    168,
+    85,
+    247,
+    0.2
+  ); /* Subtle purple accent to match Gemini */
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 0 25px rgba(168, 85, 247, 0.15),
+    0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.todo-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.todo-label {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 500;
+}
+
+.todo-count {
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-weight: 400;
+}
+
+.todo-input-wrapper {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.todo-input {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 10px 15px;
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-family: inherit;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.todo-input:focus {
+  background: rgba(0, 0, 0, 0.3);
+  border-color: #a855f7;
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.2);
+}
+
+.todo-add-btn {
+  background: rgba(168, 85, 247, 0.1);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  color: #a855f7;
+  border-radius: 10px;
+  width: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.todo-add-btn:hover {
+  background: rgba(168, 85, 247, 0.2);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(168, 85, 247, 0.2);
+}
+
+/* Custom internal scrollbar for the tasks */
+.todo-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  overflow-y: auto;
+  flex: 1;
+  padding-right: 4px;
+}
+
+.todo-list::-webkit-scrollbar {
+  width: 4px;
+}
+.todo-list::-webkit-scrollbar-thumb {
+  background: rgba(168, 85, 247, 0.3);
+  border-radius: 4px;
+}
+
+.todo-item {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  margin-bottom: 8px;
+  transition: all 0.2s ease;
+  gap: 12px;
+}
+
+.todo-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Custom Checkbox */
+.todo-checkbox {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 5px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.todo-checkbox:checked {
+  background: #a855f7;
+  border-color: #a855f7;
+}
+
+.todo-checkbox:checked::after {
+  content: "✓";
+  position: absolute;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.todo-text {
+  flex: 1;
+  font-size: 0.9rem;
+  color: #e5e7eb;
+  transition: all 0.2s ease;
+  word-break: break-word;
+  line-height: 1.4;
+}
+
+.todo-item.completed .todo-text {
+  text-decoration: line-through;
+  color: #6b7280;
+}
+
+/* Delete Button (Hidden until hover) */
+.todo-delete-btn {
+  background: none;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  padding: 4px;
+  opacity: 0;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.todo-item:hover .todo-delete-btn {
+  opacity: 0.7;
+}
+
+.todo-delete-btn:hover {
+  opacity: 1 !important;
+  transform: scale(1.15);
+}

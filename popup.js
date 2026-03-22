@@ -41,7 +41,7 @@ class PopupController {
 
   async loadSettings() {
     try {
-      const result = await chrome.storage.sync.get(["xaiSettings"]);
+      const result = await chrome.storage.local.get(["xaiSettings"]);
       if (result.xaiSettings) {
         // Merge saved settings with defaults
         this.settings = {
@@ -261,7 +261,7 @@ class PopupController {
     saveBtn.disabled = true;
 
     try {
-      await chrome.storage.sync.set({ xaiSettings: this.settings });
+      await chrome.storage.local.set({ xaiSettings: this.settings });
       this.showStatus("Settings saved successfully!", "success");
 
       // Notify all new tab pages to reload settings

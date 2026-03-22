@@ -44,6 +44,7 @@ class XAIExtension {
         currencyPair2: {},
         cacheDuration: 900000,
       },
+      todoList: [],
     };
     this.init();
   }
@@ -55,6 +56,7 @@ class XAIExtension {
     this.initWeather();
     this.initSports();
     this.initFinance();
+    this.initTodo();
     this.updateGreeting();
     this.updateTime();
     this.loadBookmarks();
@@ -69,7 +71,8 @@ class XAIExtension {
 
   async loadSettings() {
     try {
-      const result = await chrome.storage.sync.get(["xaiSettings"]);
+      // Changed from .sync to .local
+      const result = await chrome.storage.local.get(["xaiSettings"]);
       if (result.xaiSettings) {
         this.settings = { ...this.settings, ...result.xaiSettings };
       }
@@ -80,7 +83,8 @@ class XAIExtension {
 
   async saveSettings() {
     try {
-      await chrome.storage.sync.set({ xaiSettings: this.settings });
+      // Changed from .sync to .local
+      await chrome.storage.local.set({ xaiSettings: this.settings });
     } catch (error) {
       console.log("Could not save settings");
     }
@@ -107,7 +111,7 @@ class XAIExtension {
       "input",
       this.debounce((e) => {
         this.handleSearchInput(e.target.value);
-      }, 300)
+      }, 300),
     );
 
     // Hide suggestions when clicking outside
@@ -281,8 +285,8 @@ class XAIExtension {
     try {
       const res = await fetch(
         `https://suggestqueries.google.com/complete/search?client=firefox&q=${encodeURIComponent(
-          query
-        )}`
+          query,
+        )}`,
       );
       const data = await res.json();
       this.showSuggestions(data[1]);
@@ -311,7 +315,7 @@ class XAIExtension {
         </svg>
         <span>${s}</span>
       </div>
-    `
+    `,
       )
       .join("");
 
@@ -355,7 +359,7 @@ class XAIExtension {
       window.location.href = url;
     } else {
       window.location.href = `https://www.google.com/search?q=${encodeURIComponent(
-        query
+        query,
       )}`;
     }
   }
@@ -454,7 +458,7 @@ class XAIExtension {
         day: "numeric",
         month: "long",
         year: "numeric",
-      }
+      },
     ).format(islamicDate);
 
     // Result: 11:30 AM • Sunday, January 4 • Rajab 14, 1447 AH
@@ -476,7 +480,7 @@ class XAIExtension {
       const bookmarkTree = await chrome.bookmarks.getTree();
       const bookmarks = this.extractBookmarks(
         bookmarkTree[0],
-        8 - shortcuts.length
+        8 - shortcuts.length,
       );
 
       const allItems = [...shortcuts, ...bookmarks];
@@ -498,7 +502,7 @@ class XAIExtension {
           <div class="bookmark-title">${this.truncateText(item.title, 30)}</div>
           <div class="bookmark-url">${this.getDomainFromUrl(item.url)}</div>
         </a>
-      `
+      `,
         )
         .join("");
     } catch (error) {
@@ -544,12 +548,12 @@ class XAIExtension {
           <div class="history-content">
             <div class="history-title">${this.truncateText(
               item.title || "Untitled",
-              50
+              50,
             )}</div>
             <div class="history-url">${this.getDomainFromUrl(item.url)}</div>
           </div>
         </a>
-      `
+      `,
         )
         .join("");
     } catch (error) {
@@ -583,7 +587,7 @@ class XAIExtension {
 
   createStars() {
     const starsContainer = document.getElementById("starsContainer");
-    const starCount = 150; // The sweet spot 
+    const starCount = 150; // The sweet spot
 
     starsContainer.innerHTML = "";
 
@@ -1148,14 +1152,14 @@ class XAIExtension {
           }
           reject(new Error(message));
         },
-        { timeout: 15000, enableHighAccuracy: false, maximumAge: 300000 }
+        { timeout: 15000, enableHighAccuracy: false, maximumAge: 300000 },
       );
     });
   }
 
   async geocodeLocation(locationName) {
     const geocodeUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(
-      locationName
+      locationName,
     )}&limit=1&appid=${this.settings.weather.apiKey}`;
 
     try {
@@ -1250,13 +1254,13 @@ class XAIExtension {
     weatherError.style.display = "none";
 
     document.getElementById("weatherTemp").textContent = `${Math.round(
-      data.main.temp
+      data.main.temp,
     )}°`;
     document.getElementById("weatherDesc").textContent =
       data.weather[0].description;
     document.getElementById("weatherLocation").textContent = data.name;
     document.getElementById("feelsLike").textContent = `${Math.round(
-      data.main.feels_like
+      data.main.feels_like,
     )}°`;
     document.getElementById("humidity").textContent = `${data.main.humidity}%`;
     const windSpeed =
@@ -1508,7 +1512,7 @@ class XAIExtension {
       // Search for team
       const teamData = await this.searchTeam(
         this.settings.sports.teamName,
-        apiKey
+        apiKey,
       );
 
       if (!teamData) {
@@ -1552,7 +1556,7 @@ class XAIExtension {
   async searchTeam(teamName, apiKey) {
     try {
       const searchUrl = `https://www.thesportsdb.com/api/v1/json/${apiKey}/searchteams.php?t=${encodeURIComponent(
-        teamName
+        teamName,
       )}`;
 
       console.log("Searching for team:", teamName);
@@ -1691,9 +1695,8 @@ class XAIExtension {
     if (type === "last") {
       const homeScore = match.intHomeScore !== null ? match.intHomeScore : "-";
       const awayScore = match.intAwayScore !== null ? match.intAwayScore : "-";
-      document.getElementById(
-        "lastScore"
-      ).textContent = `${homeScore} : ${awayScore}`;
+      document.getElementById("lastScore").textContent =
+        `${homeScore} : ${awayScore}`;
     }
 
     // Competition/League
@@ -2156,6 +2159,126 @@ class XAIExtension {
       }
     };
     type();
+  }
+  // ==========================================
+  //           TO-DO WIDGET LOGIC
+  // ==========================================
+
+  initTodo() {
+    // Ensure array exists if loading from old storage
+    if (!this.settings.todoList) {
+      this.settings.todoList = [];
+    }
+
+    const addBtn = document.getElementById("addTodoBtn");
+    const input = document.getElementById("todoInput");
+
+    if (addBtn && input) {
+      // Add on button click
+      addBtn.addEventListener("click", () => {
+        this.addTodo(input.value);
+        input.value = "";
+      });
+
+      // Add on Enter key
+      input.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+          this.addTodo(input.value);
+          input.value = "";
+        }
+      });
+    }
+
+    this.renderTodoList();
+  }
+
+  addTodo(text) {
+    const trimmedText = text.trim();
+    if (!trimmedText) return;
+
+    const newTask = {
+      id: Date.now().toString(),
+      text: trimmedText,
+      completed: false,
+    };
+
+    this.settings.todoList.unshift(newTask); // Add to the top of the list
+    this.saveSettings(); // Save to Chrome sync storage
+    this.renderTodoList();
+  }
+
+  toggleTodo(id) {
+    const task = this.settings.todoList.find((t) => t.id === id);
+    if (task) {
+      task.completed = !task.completed;
+      this.saveSettings();
+      this.renderTodoList();
+    }
+  }
+
+  deleteTodo(id) {
+    this.settings.todoList = this.settings.todoList.filter((t) => t.id !== id);
+    this.saveSettings();
+    this.renderTodoList();
+  }
+
+  renderTodoList() {
+    const list = document.getElementById("todoList");
+    const countSpan = document.getElementById("todoCount");
+    if (!list || !countSpan) return;
+
+    list.innerHTML = "";
+    let completedCount = 0;
+
+    this.settings.todoList.forEach((task) => {
+      if (task.completed) completedCount++;
+
+      const li = document.createElement("li");
+      li.className = `todo-item ${task.completed ? "completed" : ""}`;
+
+      li.innerHTML = `
+        <input type="checkbox" class="todo-checkbox" ${task.completed ? "checked" : ""}>
+        <span class="todo-text">${this.escapeHTML(task.text)}</span>
+        <button class="todo-delete-btn" aria-label="Delete task" title="Delete">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 6h18"></path>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+        </button>
+      `;
+
+      // Bind events to the dynamically created elements
+      const checkbox = li.querySelector(".todo-checkbox");
+      checkbox.addEventListener("change", () => this.toggleTodo(task.id));
+
+      const deleteBtn = li.querySelector(".todo-delete-btn");
+      deleteBtn.addEventListener("click", () => this.deleteTodo(task.id));
+
+      list.appendChild(li);
+    });
+
+    // Update the counter
+    const total = this.settings.todoList.length;
+    if (total === 0) {
+      countSpan.textContent = "0 tasks";
+    } else {
+      countSpan.textContent = `${completedCount}/${total} done`;
+    }
+  }
+
+  escapeHTML(str) {
+    // Prevents code injection if you type HTML tags into the task input
+    return str.replace(
+      /[&<>'"]/g,
+      (tag) =>
+        ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          "'": "&#39;",
+          '"': "&quot;",
+        })[tag],
+    );
   }
 }
 

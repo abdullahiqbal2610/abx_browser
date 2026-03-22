@@ -520,6 +520,46 @@
             </div>
           </div>
         </div>
+
+        <div class="todo-container">
+          <div class="todo-widget" id="todoWidget">
+            <div class="todo-header">
+              <span class="todo-label">Tasks</span>
+              <span class="todo-count" id="todoCount">0 done</span>
+            </div>
+
+            <div class="todo-input-wrapper">
+              <input
+                type="text"
+                id="todoInput"
+                class="todo-input"
+                placeholder="Add a new task..."
+                autocomplete="off"
+              />
+              <button
+                id="addTodoBtn"
+                class="todo-add-btn"
+                aria-label="Add task"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+              </button>
+            </div>
+
+            <ul id="todoList" class="todo-list"></ul>
+          </div>
+        </div>
       </aside>
     </div>
 
