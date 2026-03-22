@@ -2534,3 +2534,105 @@ body > .settings-container {
   opacity: 1 !important;
   transform: scale(1.15);
 }
+
+/* =========================================
+   VERTICAL RHYTHM & OVERFLOW FIXES
+   ========================================= */
+
+/* 1. Reduce master top/bottom padding to give the grid more room */
+.dashboard-layout {
+  padding: 20px !important; /* Reduced from 40px top/bottom */
+  align-items: center; /* Vertically centers the whole UI on large screens */
+}
+
+/* 2. Tighten the massive gaps in the Center Hub */
+.header-section {
+  margin-bottom: 25px !important; /* Cut down from 60px */
+}
+
+.search-section {
+  margin-bottom: 30px !important; /* Cut down from 80px */
+}
+
+.google-services-section {
+  margin-bottom: 30px !important; /* Cut down from 50px */
+}
+
+/* 3. Slightly compact the Sports widget internals to save vertical pixels */
+.match-card {
+  padding: 12px !important; /* Tightened from 16px */
+  margin-bottom: 10px !important;
+}
+
+.matches-container {
+  gap: 10px !important; /* Reduced gap between the two match cards */
+}
+
+/* =========================================
+   FINAL VERTICAL MICRO-SQUEEZE
+   ========================================= */
+
+/* 1. Shave pixels off the center gaps */
+.header-section {
+  margin-bottom: 15px !important;
+}
+.search-section {
+  margin-bottom: 20px !important;
+}
+.google-services-section {
+  margin-bottom: 20px !important;
+}
+.quick-access-section {
+  margin-bottom: 15px !important;
+}
+
+/* 2. Compact the Gmail/Apps buttons slightly */
+.google-app-item {
+  padding: 16px 20px !important;
+}
+.app-icon {
+  width: 42px !important;
+  height: 42px !important;
+}
+
+/* 3. Slim down the Quick Access/Recent tab bars */
+.section-header {
+  padding: 10px 20px !important;
+  margin-bottom: 10px !important;
+}
+/* =========================================
+   SPORTS WIDGET HEIGHT REDUCTION
+   ========================================= */
+
+/* 1. Reduce overall widget padding */
+.sports-widget {
+  padding: 16px !important; /* Reduced from 20px */
+}
+
+/* 2. Tighten the header (Team Logo area) */
+.sports-header {
+  margin-bottom: 12px !important; /* Reduced from 20px */
+  padding-bottom: 12px !important; /* Reduced from 15px */
+}
+.team-badge {
+  width: 40px !important; /* Scaled down from 48px */
+  height: 40px !important;
+}
+
+/* 3. Compact the Match Cards internals */
+.match-label {
+  margin-bottom: 8px !important; /* Reduced from 12px */
+}
+.match-info {
+  gap: 6px !important; /* Reduced from 10px */
+}
+.match-team-badge {
+  width: 28px !important; /* Scaled down from 32px */
+  height: 28px !important;
+}
+.match-score {
+  font-size: 1.2rem !important; /* Slightly smaller to fit tight space */
+}
+.match-details {
+  padding-top: 6px !important; /* Reduced from 8px */
+}
