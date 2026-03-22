@@ -2636,3 +2636,20 @@ body > .settings-container {
 .match-details {
   padding-top: 6px !important; /* Reduced from 8px */
 }
+
+/* =========================================
+   FIX ACCORDION DISTORTION & STICKY SIDEBARS
+   ========================================= */
+
+/* 1. Anchor everything to the top instead of the center */
+.dashboard-layout {
+  align-items: start !important;
+}
+
+/* 2. Make the sidebars float alongside you when you scroll */
+.left-sidebar,
+.right-sidebar {
+  position: sticky !important;
+  top: 30px !important;
+  height: fit-content !important;
+}
