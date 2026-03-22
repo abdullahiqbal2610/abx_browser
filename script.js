@@ -587,7 +587,7 @@ class XAIExtension {
 
   createStars() {
     const starsContainer = document.getElementById("starsContainer");
-    const starCount = 150; // The sweet spot
+    const starCount = 240; // The sweet spot
 
     starsContainer.innerHTML = "";
 
