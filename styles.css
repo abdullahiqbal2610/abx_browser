@@ -11,6 +11,13 @@
   outline-offset: 2px;
 }
 
+/* Utility: Flex Center */
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 body {
   font-family:
     "Inter",
@@ -42,14 +49,17 @@ body {
     radial-gradient(ellipse at center, #050508 0%, #000000 70%, #000000 100%);
 }
 
+/* Shared: Absolute full-screen overlay */
+.background-container::before,
+.particle-canvas,
+.stars-container {
+  position: absolute;
+  inset: 0;
+}
+
 /* Grid Overlay */
 .background-container::before {
   content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
   background-image:
     linear-gradient(rgba(255, 255, 255, 0.01) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.01) 1px, transparent 1px);
@@ -68,16 +78,10 @@ body {
 }
 
 .particle-canvas {
-  position: absolute;
-  width: 100%;
-  height: 100%;
   pointer-events: none;
 }
 
 .stars-container {
-  position: absolute;
-  width: 100%;
-  height: 100%;
   overflow: hidden;
 }
 
@@ -329,9 +333,6 @@ body {
   border-radius: 14px;
   color: #ffffff;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   flex-shrink: 0; /* Prevents squishing */
 }
@@ -354,9 +355,6 @@ body {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: rgba(255, 255, 255, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   cursor: pointer;
   transition: all 0.3s;
   text-decoration: none; /* For the <a> tag */
@@ -460,21 +458,12 @@ body {
   width: 50px;
   height: 50px;
   margin-right: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   border-radius: 14px;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-.gmail-icon {
-  background: linear-gradient(135deg, #333333, #555555);
-  color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-}
-
+.gmail-icon,
 .apps-icon {
   background: linear-gradient(135deg, #333333, #555555);
   color: #ffffff;
@@ -585,9 +574,6 @@ body {
   padding: 8px;
   border-radius: 8px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -736,9 +722,8 @@ body {
   z-index: 999; /* ensure it stays above other elements */
 }
 
-.weather-widget {
-  min-width: 280px;
-  padding: 20px;
+/* Reusable Glass Panel Base */
+.glass-panel {
   background: rgba(0, 0, 0, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px;
@@ -750,21 +735,27 @@ body {
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.weather-widget:hover {
+.glass-panel:hover {
   background: rgba(0, 0, 0, 0.5);
-  border-color: rgba(96, 165, 250, 0.2);
   transform: translateY(-2px);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 0 25px rgba(96, 165, 250, 0.15),
     0 8px 25px rgba(0, 0, 0, 0.3);
 }
 
+.weather-widget {
+  min-width: 280px;
+  padding: 20px;
+}
+
+.weather-widget:hover {
+  border-color: rgba(96, 165, 250, 0.2);
+  box-shadow: 0 0 25px rgba(96, 165, 250, 0.15);
+}
+
 /* Weather Loading State */
-.weather-loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.weather-loading,
+.sports-loading {
   gap: 12px;
   padding: 20px;
   color: #9ca3af;
@@ -800,9 +791,6 @@ body {
 .weather-icon {
   width: 60px;
   height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   background: rgba(255, 255, 255, 0.05);
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -959,37 +947,12 @@ body {
   max-width: 1200px; /* optional: limit width for large screens */
   margin: 20px auto; /* center horizontally and add spacing */
   padding: 20px;
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
-  color: #ffffff;
-  backdrop-filter: blur(25px);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.03),
-    0 2px 10px rgba(0, 0, 0, 0.2);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative; /* ensures it scrolls with the page */
 }
 
 .sports-widget:hover {
-  background: rgba(0, 0, 0, 0.5);
   border-color: rgba(16, 185, 129, 0.2);
-  transform: translateY(-2px);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 0 25px rgba(16, 185, 129, 0.15),
-    0 8px 25px rgba(0, 0, 0, 0.3);
-}
-
-/* Sports Loading State */
-.sports-loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  padding: 20px;
-  color: #9ca3af;
-  font-size: 0.9rem;
+  box-shadow: 0 0 25px rgba(16, 185, 129, 0.15);
 }
 
 /* Sports Header */
