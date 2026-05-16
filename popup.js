@@ -15,7 +15,6 @@ class PopupController {
       sports: {
         enabled: true,
         teamName: "",
-        apiKey: "",
       },
       // Simplified Finance Settings (Single Ticker)
       finance: {
@@ -143,13 +142,6 @@ class PopupController {
       });
     }
 
-    const sportsApiKey = document.getElementById("sportsApiKey");
-    if (sportsApiKey) {
-      sportsApiKey.addEventListener("input", (e) => {
-        if (!this.settings.sports) this.settings.sports = {};
-        this.settings.sports.apiKey = e.target.value || "";
-      });
-    }
 
     // --- Finance Settings (NEW SIMPLIFIED LOGIC) ---
     const financeEnabled = document.getElementById("financeEnabled");
@@ -238,8 +230,6 @@ class PopupController {
         this.settings.sports.enabled !== false;
       document.getElementById("sportsTeamName").value =
         this.settings.sports.teamName || "";
-      document.getElementById("sportsApiKey").value =
-        this.settings.sports.apiKey || "";
     }
 
     // Finance (NEW)
@@ -317,7 +307,6 @@ class PopupController {
         sports: {
           enabled: true,
           teamName: "",
-          apiKey: "",
         },
         finance: {
           enabled: true,

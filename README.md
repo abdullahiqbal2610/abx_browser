@@ -30,7 +30,7 @@ Combining a cinematic "Void Energy" aesthetic with the power of **Google Gemini 
 ### 🧩 **Smart Widgets**
 
 - **🌤️ Live Weather:** Auto-detects your location via GPS or uses a custom city name. Shows temperature, "feels like", humidity, and wind speed. Supports Celsius and Fahrenheit.
-- **⚽ Sports Tracker:** Tracks your favorite team using TheSportsDB API. Shows the last match result (score, competition, date) and the next upcoming fixture.
+- **⚽ Sports Tracker:** Tracks your favorite team using ESPN's unofficial API. Shows the last match result (score, competition, date) and the next upcoming fixture.
 - **💹 Finance Ticker:** Live currency/crypto exchange rate for any configurable pair (e.g., BTC → USD) powered by the AlphaVantage API.
 - **✅ Tasks (To-Do):** A persistent to-do list widget. Add, complete, and delete tasks — all saved locally so they survive browser restarts.
 - **⚡ Smart Search:** Intelligent omnibox that differentiates between URLs and search queries. Includes real-time **Google Autocomplete** suggestions as you type.
@@ -56,7 +56,7 @@ Combining a cinematic "Void Energy" aesthetic with the power of **Google Gemini 
 
 - **Personalization:** Set your name for time-based greetings (Good Morning/Afternoon/Evening, \<name\>).
 - **Animations:** Toggle animations on/off, and control the particle density via a slider.
-- **API Management:** Bring your own keys for Gemini, OpenWeatherMap, TheSportsDB, and AlphaVantage.
+- **API Management:** Bring your own keys for Gemini, OpenWeatherMap, and AlphaVantage.
 - **Widget Visibility:** Enable or disable each widget (Weather, Sports, Finance) independently.
 - **Finance Pair:** Set any currency or crypto pair (e.g., ETH → USD, EUR → JPY).
 - **Data Persistence:** All settings are saved to `chrome.storage.local` and persist across sessions.
@@ -99,7 +99,7 @@ Combining a cinematic "Void Energy" aesthetic with the power of **Google Gemini 
     - Click the **⚙️ Gear Icon** (Settings) in the top-right corner of the new tab.
     - Enter your **Gemini API Key** (Get it free from [Google AI Studio](https://aistudio.google.com/)).
     - _(Optional)_ Enter your **OpenWeatherMap** key for live weather data.
-    - _(Optional)_ Enter your **TheSportsDB** key and a team name for sports tracking.
+    - _(Optional)_ Enter a team name for sports tracking (e.g., Barcelona, Inter Miami).
     - _(Optional)_ Enter your **AlphaVantage** key and a currency pair for the Finance ticker.
     - Click **Save Settings** and reload the tab.
 
@@ -114,7 +114,7 @@ Combining a cinematic "Void Energy" aesthetic with the power of **Google Gemini 
 | **Voice Input** | Web Speech API (`webkitSpeechRecognition`)                  |
 | **Voice Output**| Web Speech API (`SpeechSynthesis`)                          |
 | **Weather**     | OpenWeatherMap API (Geocoding + Current Weather)            |
-| **Sports**      | TheSportsDB API (Team Search, Last/Next Events)             |
+| **Sports**      | ESPN Unofficial API (Team Search, Last/Next Events)             |
 | **Finance**     | AlphaVantage API (`CURRENCY_EXCHANGE_RATE`)                 |
 | **Search**      | Google Suggest API (Autocomplete)                           |
 | **Storage**     | `chrome.storage.local`                                      |

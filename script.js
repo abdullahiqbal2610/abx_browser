@@ -31,8 +31,6 @@ class XAIExtension {
       sports: {
         enabled: true,
         teamName: "",
-        apiKey: "",
-        defaultApiKey: "123",
         lastUpdate: null,
         cacheData: null,
         cacheDuration: 15 * 60 * 1000,
@@ -1437,24 +1435,6 @@ class XAIExtension {
     }, this.settings.sports.cacheDuration);
   }
 
-  getActiveSportsApiKey() {
-    if (
-      this.settings.sports.apiKey &&
-      this.settings.sports.apiKey.trim() !== "" &&
-      this.settings.sports.apiKey !== "YOUR_API_KEY"
-    ) {
-      console.log("Using user-provided sports API key");
-      return this.settings.sports.apiKey;
-    }
-
-    if (this.settings.sports.defaultApiKey) {
-      console.log("Using shared sports API key");
-      return this.settings.sports.defaultApiKey;
-    }
-
-    return null;
-  }
-
   setupSportsEventListeners() {
     const retryBtn = document.getElementById("retrySports");
     if (retryBtn) {
@@ -1503,32 +1483,19 @@ class XAIExtension {
     sportsEmpty.style.display = "none";
 
     try {
-      const apiKey = this.getActiveSportsApiKey();
-
-      if (!apiKey) {
-        throw new Error("No API key available");
+      const teamQuery = this.settings.sports.teamName || "Barcelona";
+      
+      const espnTeam = await this.searchESPNTeam(teamQuery);
+      if (!espnTeam) {
+        throw new Error("Team not found on ESPN");
       }
-
-      // Search for team
-      const teamData = await this.searchTeam(
-        this.settings.sports.teamName,
-        apiKey,
-      );
-
-      if (!teamData) {
-        throw new Error("Team not found");
-      }
-
-      // Fetch last and next matches
-      const lastMatches = await this.fetchLastMatches(teamData.idTeam, apiKey);
-      const nextMatches = await this.fetchNextMatches(teamData.idTeam, apiKey);
+      
+      const { teamData, lastMatch, nextMatch } = await this.fetchESPNFixtures(espnTeam.id, espnTeam.leagueSlug);
 
       const sportsData = {
         team: teamData,
-        lastMatch:
-          lastMatches && lastMatches.length > 0 ? lastMatches[0] : null,
-        nextMatch:
-          nextMatches && nextMatches.length > 0 ? nextMatches[0] : null,
+        lastMatch: lastMatch,
+        nextMatch: nextMatch,
       };
 
       // Cache the data
@@ -1549,70 +1516,108 @@ class XAIExtension {
       return false;
     }
 
+    // Don't use cache if it contains empty matches, try to refetch
+    if (!this.settings.sports.cacheData.lastMatch && !this.settings.sports.cacheData.nextMatch) {
+      return false;
+    }
+
     const timeSinceUpdate = Date.now() - this.settings.sports.lastUpdate;
     return timeSinceUpdate < this.settings.sports.cacheDuration;
   }
 
-  async searchTeam(teamName, apiKey) {
+  async searchESPNTeam(query) {
     try {
-      const searchUrl = `https://www.thesportsdb.com/api/v1/json/${apiKey}/searchteams.php?t=${encodeURIComponent(
-        teamName,
-      )}`;
-
-      console.log("Searching for team:", teamName);
+      const searchUrl = `https://site.web.api.espn.com/apis/search/v2?query=${encodeURIComponent(query)}`;
       const response = await fetch(searchUrl);
-
-      if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
-      }
-
+      if (!response.ok) throw new Error("Search API error");
       const data = await response.json();
-
-      if (data.teams && data.teams.length > 0) {
-        console.log("Team found:", data.teams[0].strTeam);
-        return data.teams[0];
+      
+      const teamResultBlock = data.results?.find(r => r.type === "team" || r.type === "teams");
+      if (!teamResultBlock || !teamResultBlock.contents || teamResultBlock.contents.length === 0) {
+        return null;
       }
-
+      
+      const soccerTeam = teamResultBlock.contents.find(t => t.sport === "soccer");
+      if (!soccerTeam) return null;
+      
+      const uidParts = soccerTeam.uid.split("t:");
+      if (uidParts.length < 2) return null;
+      
+      const teamId = uidParts[1];
+      const leagueSlug = soccerTeam.defaultLeagueSlug || "esp.1";
+      
+      return {
+        id: teamId,
+        leagueSlug: leagueSlug,
+        name: soccerTeam.displayName
+      };
+    } catch (error) {
+      console.error("ESPN Search Error:", error);
       return null;
-    } catch (error) {
-      console.error("Team search error:", error);
-      throw new Error("Failed to search team");
     }
   }
 
-  async fetchLastMatches(teamId, apiKey) {
+  async fetchESPNFixtures(teamId, leagueSlug) {
     try {
-      const url = `https://www.thesportsdb.com/api/v1/json/${apiKey}/eventslast.php?id=${teamId}`;
-
+      const url = `https://site.api.espn.com/apis/site/v2/sports/soccer/${leagueSlug}/teams/${teamId}/schedule`;
       const response = await fetch(url);
-
-      if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
-      }
-
+      
+      if (!response.ok) throw new Error(`ESPN API error: ${response.status}`);
       const data = await response.json();
-      return data.results || [];
+
+      const teamData = {
+        id: data.team.id,
+        name: data.team.displayName,
+        logo: data.team.logo
+      };
+
+      let fixtures = data.events || [];
+
+      // Map ESPN structure to our expected structure
+      const mappedFixtures = fixtures.map(event => {
+        const comp = event.competitions[0];
+        const homeComp = comp.competitors.find(c => c.homeAway === "home");
+        const awayComp = comp.competitors.find(c => c.homeAway === "away");
+
+        return {
+          fixture: {
+            date: event.date,
+            timestamp: new Date(event.date).getTime() / 1000
+          },
+          league: {
+            name: event.season?.displayName || event.name
+          },
+          teams: {
+            home: {
+              name: homeComp?.team?.displayName || "--",
+              logo: homeComp?.team?.logos?.[0]?.href || null
+            },
+            away: {
+              name: awayComp?.team?.displayName || "--",
+              logo: awayComp?.team?.logos?.[0]?.href || null
+            }
+          },
+          goals: {
+            home: homeComp?.score ? homeComp.score.value : null,
+            away: awayComp?.score ? awayComp.score.value : null
+          }
+        };
+      });
+
+      // Sort fixtures by timestamp
+      mappedFixtures.sort((a, b) => a.fixture.timestamp - b.fixture.timestamp);
+      
+      const currentTimestamp = Math.floor(Date.now() / 1000);
+      const pastMatches = mappedFixtures.filter(f => f.fixture.timestamp < currentTimestamp);
+      const upcomingMatches = mappedFixtures.filter(f => f.fixture.timestamp >= currentTimestamp);
+
+      const lastMatch = pastMatches.length > 0 ? pastMatches[pastMatches.length - 1] : null;
+      const nextMatch = upcomingMatches.length > 0 ? upcomingMatches[0] : null;
+
+      return { teamData, lastMatch, nextMatch };
     } catch (error) {
-      console.error("Last matches error:", error);
-      return [];
-    }
-  }
-
-  async fetchNextMatches(teamId, apiKey) {
-    try {
-      const url = `https://www.thesportsdb.com/api/v1/json/${apiKey}/eventsnext.php?id=${teamId}`;
-
-      const response = await fetch(url);
-
-      if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
-      }
-
-      const data = await response.json();
-      return data.events || [];
-    } catch (error) {
-      console.error("Next matches error:", error);
-      return [];
+      console.error("ESPN Fixtures error:", error);
+      throw new Error("Failed to load ESPN data");
     }
   }
 
@@ -1632,29 +1637,33 @@ class XAIExtension {
     const teamName = document.getElementById("teamName");
     const teamLeague = document.getElementById("teamLeague");
 
-    if (data.team.strTeamBadge) {
-      teamBadge.src = data.team.strTeamBadge;
-      teamBadge.alt = data.team.strTeam;
+    if (data.team.logo) {
+      teamBadge.src = data.team.logo;
+      teamBadge.alt = data.team.name;
       teamBadge.style.display = "block";
     } else {
       teamBadge.style.display = "none";
     }
 
-    teamName.textContent = data.team.strTeam || "--";
-    teamLeague.textContent = data.team.strLeague || "--";
+    teamName.textContent = data.team.name || "--";
+    teamLeague.textContent = "--";
 
     // Display last match
+    const lastMatchCard = document.querySelector(".match-card.last-match");
     if (data.lastMatch) {
-      this.displayMatch(data.lastMatch, "last", data.team.strTeam);
+      lastMatchCard.style.display = "block";
+      this.displayMatch(data.lastMatch, "last", data.team.name);
     } else {
-      this.displayNoMatch("last");
+      lastMatchCard.style.display = "none";
     }
 
     // Display next match
+    const nextMatchCard = document.querySelector(".match-card.next-match");
     if (data.nextMatch) {
-      this.displayMatch(data.nextMatch, "next", data.team.strTeam);
+      nextMatchCard.style.display = "block";
+      this.displayMatch(data.nextMatch, "next", data.team.name);
     } else {
-      this.displayNoMatch("next");
+      nextMatchCard.style.display = "none";
     }
 
     // Show sports content
@@ -1665,8 +1674,8 @@ class XAIExtension {
     const prefix = type === "last" ? "last" : "next";
 
     // Team names
-    const homeTeam = match.strHomeTeam || "--";
-    const awayTeam = match.strAwayTeam || "--";
+    const homeTeam = match.teams.home.name || "--";
+    const awayTeam = match.teams.away.name || "--";
 
     document.getElementById(`${prefix}HomeTeam`).textContent = homeTeam;
     document.getElementById(`${prefix}AwayTeam`).textContent = awayTeam;
@@ -1675,16 +1684,16 @@ class XAIExtension {
     const homeBadge = document.getElementById(`${prefix}HomeBadge`);
     const awayBadge = document.getElementById(`${prefix}AwayBadge`);
 
-    if (match.strHomeTeamBadge) {
-      homeBadge.src = match.strHomeTeamBadge;
+    if (match.teams.home.logo) {
+      homeBadge.src = match.teams.home.logo;
       homeBadge.alt = homeTeam;
       homeBadge.style.display = "block";
     } else {
       homeBadge.style.display = "none";
     }
 
-    if (match.strAwayTeamBadge) {
-      awayBadge.src = match.strAwayTeamBadge;
+    if (match.teams.away.logo) {
+      awayBadge.src = match.teams.away.logo;
       awayBadge.alt = awayTeam;
       awayBadge.style.display = "block";
     } else {
@@ -1693,18 +1702,18 @@ class XAIExtension {
 
     // Score (for last match) or VS (for next match)
     if (type === "last") {
-      const homeScore = match.intHomeScore !== null ? match.intHomeScore : "-";
-      const awayScore = match.intAwayScore !== null ? match.intAwayScore : "-";
+      const homeScore = match.goals.home !== null ? match.goals.home : "-";
+      const awayScore = match.goals.away !== null ? match.goals.away : "-";
       document.getElementById("lastScore").textContent =
         `${homeScore} : ${awayScore}`;
     }
 
     // Competition/League
     document.getElementById(`${prefix}Competition`).textContent =
-      match.strLeague || "--";
+      match.league.name || "--";
 
     // Date
-    const matchDate = this.formatMatchDate(match.dateEvent, match.strTime);
+    const matchDate = this.formatMatchDate(match.fixture.date, "");
     document.getElementById(`${prefix}Date`).textContent = matchDate;
   }
 
