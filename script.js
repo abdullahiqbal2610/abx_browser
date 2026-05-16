@@ -678,27 +678,7 @@ class XAIExtension {
   }
 
   handleMouseMove(e) {
-    if (!this.settings.animationsEnabled) return;
-
-    const trail = document.createElement("div");
-    trail.style.position = "fixed";
-    trail.style.left = e.clientX + "px";
-    trail.style.top = e.clientY + "px";
-    trail.style.width = "4px";
-    trail.style.height = "4px";
-    trail.style.background = "rgba(124, 58, 237, 0.5)";
-    trail.style.borderRadius = "50%";
-    trail.style.pointerEvents = "none";
-    trail.style.zIndex = "1000";
-    trail.style.animation = "fadeOut 1s ease-out forwards";
-
-    document.body.appendChild(trail);
-
-    setTimeout(() => {
-      if (trail.parentNode) {
-        trail.parentNode.removeChild(trail);
-      }
-    }, 1000);
+    // Smoke trail is now handled by the Canvas engine in newtab.html
   }
 
   openSettings() {

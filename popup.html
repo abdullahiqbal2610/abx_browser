@@ -3,319 +3,353 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>xAI Extension Settings</title>
+    <title>ABX — Settings</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400&family=Geist+Mono:wght@400&display=swap" rel="stylesheet" />
     <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
+      /* ═══════════════════════════════════════
+         x.ai POPUP — AGGRESSIVE MINIMALIST DARK
+         ═══════════════════════════════════════ */
+      *{margin:0;padding:0;box-sizing:border-box}
+
+      html{width:380px;height:600px}
+
+      body{
+        width:380px;height:600px;
+        overflow-y:auto;overflow-x:hidden;
+        background:#0a0a0a;
+        color:#ffffff;
+        font-family:'Inter',sans-serif;
+        font-weight:400;
+        letter-spacing:-0.02em;
+        padding:28px 24px;
       }
 
-      html {
-        width: 350px;
-        height: 600px;
+      /* ── Scrollbar ── */
+      body::-webkit-scrollbar{width:4px}
+      body::-webkit-scrollbar-track{background:transparent}
+      body::-webkit-scrollbar-thumb{background:#212327;border-radius:9999px}
+
+      /* ── Typography ── */
+      .eyebrow{
+        font-family:'Geist Mono',monospace;
+        font-size:0.65rem;
+        text-transform:uppercase;
+        letter-spacing:0.15em;
+        color:rgba(255,255,255,0.35);
+        margin-bottom:20px;
+      }
+      .section-label{
+        font-family:'Geist Mono',monospace;
+        font-size:0.6rem;
+        text-transform:uppercase;
+        letter-spacing:0.14em;
+        color:rgba(255,255,255,0.3);
+        margin-bottom:14px;
+        padding-bottom:10px;
+        border-bottom:1px solid #212327;
+      }
+      .field-label{
+        display:block;
+        font-size:0.8rem;
+        color:rgba(255,255,255,0.6);
+        margin-bottom:6px;
+        letter-spacing:-0.01em;
       }
 
-      body {
-        width: 350px;
-        height: 600px;
-        overflow-y: auto;
-        overflow-x: hidden;
-        background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
-        background-attachment: fixed;
-        color: #ffffff;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          sans-serif;
-        padding: 20px;
+      /* ── Header ── */
+      .popup-header{
+        text-align:center;
+        margin-bottom:32px;
+        padding-bottom:24px;
+        border-bottom:1px solid #212327;
+      }
+      .popup-header h1{
+        font-family:'Inter',sans-serif;
+        font-size:1.4rem;
+        font-weight:400;
+        letter-spacing:-0.04em;
+        color:#fff;
+        margin-bottom:6px;
+      }
+      .popup-header p{
+        font-family:'Geist Mono',monospace;
+        font-size:0.6rem;
+        text-transform:uppercase;
+        letter-spacing:0.14em;
+        color:rgba(255,255,255,0.25);
       }
 
-      .header {
-        text-align: center;
-        margin-bottom: 25px;
+      /* ── Setting Group ── */
+      .setting-group{
+        margin-bottom:16px;
       }
 
-      .header h1 {
-        font-size: 1.5rem;
-        font-weight: 300;
-        background: linear-gradient(
-          135deg,
-          #ffffff 0%,
-          #a855f7 50%,
-          #3b82f6 100%
-        );
-        background-clip: text;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 5px;
+      /* ── Inputs & Selects ── */
+      .setting-input, select.setting-input{
+        width:100%;
+        padding:10px 16px;
+        background:transparent;
+        border:1px solid #212327;
+        border-radius:9999px;
+        color:#ffffff;
+        font-family:'Inter',sans-serif;
+        font-size:0.82rem;
+        font-weight:400;
+        letter-spacing:-0.01em;
+        outline:none;
+        transition:border-color 0.2s ease;
+        -webkit-appearance:none;
+        appearance:none;
+      }
+      .setting-input:focus{
+        border-color:rgba(255,255,255,0.25);
+      }
+      .setting-input::placeholder{
+        color:rgba(255,255,255,0.2);
+      }
+      select.setting-input{
+        background-image:url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%23555' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+        background-repeat:no-repeat;
+        background-position:right 16px center;
+        padding-right:36px;
+      }
+      select.setting-input option{
+        background:#191919;
+        color:#fff;
       }
 
-      .header p {
-        color: #9ca3af;
-        font-size: 0.9rem;
+      /* ── Toggle (Checkbox) ── */
+      .toggle-row{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        padding:10px 0;
+        cursor:pointer;
+      }
+      .toggle-row .toggle-label{
+        font-size:0.82rem;
+        color:rgba(255,255,255,0.7);
+      }
+      .toggle-switch{
+        position:relative;
+        width:36px;height:20px;
+        -webkit-appearance:none;appearance:none;
+        background:#191919;
+        border:1px solid #212327;
+        border-radius:9999px;
+        cursor:pointer;
+        transition:background 0.2s,border-color 0.2s;
+        outline:none;
+        flex-shrink:0;
+      }
+      .toggle-switch::after{
+        content:'';
+        position:absolute;
+        top:2px;left:2px;
+        width:14px;height:14px;
+        background:rgba(255,255,255,0.3);
+        border-radius:50%;
+        transition:transform 0.2s,background 0.2s;
+      }
+      .toggle-switch:checked{
+        background:rgba(255,255,255,0.1);
+        border-color:rgba(255,255,255,0.3);
+      }
+      .toggle-switch:checked::after{
+        transform:translateX(16px);
+        background:#fff;
       }
 
-      .setting-group {
-        margin-bottom: 20px;
-        padding: 15px;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 10px;
+      /* ── Slider ── */
+      .slider-wrap{margin-top:4px}
+      .slider{
+        width:100%;height:2px;
+        background:#212327;
+        border-radius:9999px;
+        outline:none;
+        -webkit-appearance:none;appearance:none;
+        cursor:pointer;
+      }
+      .slider::-webkit-slider-thumb{
+        -webkit-appearance:none;
+        width:14px;height:14px;
+        background:#fff;
+        border-radius:50%;
+        border:none;
+        cursor:pointer;
+      }
+      .slider-meta{
+        display:flex;
+        justify-content:space-between;
+        margin-top:6px;
+        font-family:'Geist Mono',monospace;
+        font-size:0.6rem;
+        text-transform:uppercase;
+        letter-spacing:0.1em;
+        color:rgba(255,255,255,0.2);
       }
 
-      .setting-label {
-        display: block;
-        margin-bottom: 8px;
-        color: #e5e7eb;
-        font-weight: 500;
-        font-size: 0.9rem;
+      /* ── Hint Text ── */
+      .hint-text{
+        font-size:0.68rem;
+        color:rgba(255,255,255,0.2);
+        margin-top:6px;
+        line-height:1.5;
+        letter-spacing:-0.01em;
+      }
+      .hint-text a{
+        color:rgba(255,255,255,0.4);
+        text-decoration:none;
+        border-bottom:1px solid rgba(255,255,255,0.15);
+        transition:color 0.2s;
+      }
+      .hint-text a:hover{color:rgba(255,255,255,0.7)}
+
+      /* ── Currency Pair Row ── */
+      .pair-row{
+        display:flex;gap:10px;align-items:center;
+      }
+      .pair-row .setting-input{text-align:center;text-transform:uppercase}
+      .pair-arrow{
+        color:rgba(255,255,255,0.15);
+        font-size:0.9rem;
+        flex-shrink:0;
       }
 
-      .setting-input {
-        width: 100%;
-        padding: 10px 12px;
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 8px;
-        color: #ffffff;
-        font-size: 0.9rem;
-        transition: all 0.3s ease;
+      /* ── Section Divider ── */
+      .section-divider{
+        height:1px;
+        background:#212327;
+        margin:24px 0;
       }
 
-      .setting-input:focus {
-        outline: none;
-        border-color: #7c3aed;
-        box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.2);
+      /* ── Buttons ── */
+      .btn-row{
+        display:flex;gap:10px;
+        margin-top:28px;
+      }
+      .btn{
+        flex:1;
+        padding:11px 0;
+        border-radius:9999px;
+        font-family:'Inter',sans-serif;
+        font-size:0.8rem;
+        font-weight:400;
+        letter-spacing:-0.01em;
+        cursor:pointer;
+        transition:all 0.2s ease;
+        border:1px solid #212327;
+        background:transparent;
+        color:rgba(255,255,255,0.5);
+      }
+      .btn:hover{
+        border-color:rgba(255,255,255,0.25);
+        color:#fff;
+      }
+      .btn-primary{
+        background:#fff;
+        color:#0a0a0a;
+        border-color:#fff;
+      }
+      .btn-primary:hover{
+        background:rgba(255,255,255,0.85);
+        border-color:rgba(255,255,255,0.85);
       }
 
-      .setting-input::placeholder {
-        color: #6b7280;
+      /* ── Quick Actions ── */
+      .quick-actions{
+        margin-top:20px;
+        padding-top:20px;
+        border-top:1px solid #212327;
+        display:flex;
+        flex-direction:column;
+        gap:8px;
+      }
+      .quick-action-btn{
+        width:100%;
+        padding:10px 0;
+        background:transparent;
+        border:1px solid #212327;
+        border-radius:9999px;
+        color:rgba(255,255,255,0.4);
+        font-family:'Inter',sans-serif;
+        font-size:0.78rem;
+        cursor:pointer;
+        transition:all 0.2s ease;
+      }
+      .quick-action-btn:hover{
+        border-color:rgba(255,255,255,0.25);
+        color:rgba(255,255,255,0.8);
       }
 
-      .checkbox-container {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        cursor: pointer;
+      /* ── Status ── */
+      .status-message{
+        text-align:center;
+        padding:10px;
+        border-radius:9999px;
+        margin-top:14px;
+        font-size:0.75rem;
+        opacity:0;
+        transition:opacity 0.3s ease;
+        font-family:'Geist Mono',monospace;
+        letter-spacing:0.05em;
+        text-transform:uppercase;
       }
-
-      .checkbox-input {
-        width: 18px;
-        height: 18px;
-        margin: 0;
+      .status-message.success{
+        background:rgba(255,255,255,0.03);
+        color:rgba(255,255,255,0.5);
+        border:1px solid #212327;
       }
-
-      .slider-container {
-        margin-top: 10px;
+      .status-message.error{
+        background:rgba(255,60,60,0.05);
+        color:rgba(255,100,100,0.7);
+        border:1px solid rgba(255,60,60,0.15);
       }
+      .status-message.show{opacity:1}
 
-      .slider {
-        width: 100%;
-        height: 6px;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 3px;
-        outline: none;
-        appearance: none;
-      }
-
-      .slider::-webkit-slider-thumb {
-        appearance: none;
-        width: 18px;
-        height: 18px;
-        background: linear-gradient(135deg, #7c3aed, #3b82f6);
-        border-radius: 50%;
-        cursor: pointer;
-      }
-
-      .slider::-moz-range-thumb {
-        width: 18px;
-        height: 18px;
-        background: linear-gradient(135deg, #7c3aed, #3b82f6);
-        border-radius: 50%;
-        cursor: pointer;
-        border: none;
-      }
-
-      .section-divider {
-        height: 1px;
-        background: rgba(255, 255, 255, 0.1);
-        margin: 25px 0;
-      }
-
-      .section-title {
-        font-size: 1.1rem;
-        font-weight: 500;
-        color: #a855f7;
-        margin-bottom: 15px;
-        text-align: center;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-      }
-
-      .hint-text {
-        font-size: 0.75rem;
-        color: #6b7280;
-        margin-top: 5px;
-        line-height: 1.4;
-      }
-
-      .button-group {
-        display: flex;
-        gap: 10px;
-        margin-top: 25px;
-      }
-
-      .btn {
-        flex: 1;
-        padding: 12px;
-        border: none;
-        border-radius: 8px;
-        font-size: 0.9rem;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.3s ease;
-      }
-
-      .btn-primary {
-        background: linear-gradient(135deg, #7c3aed, #3b82f6);
-        color: #ffffff;
-      }
-
-      .btn-primary:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 5px 15px rgba(124, 58, 237, 0.4);
-      }
-
-      .btn-secondary {
-        background: rgba(255, 255, 255, 0.08);
-        color: #e5e7eb;
-        border: 1px solid rgba(255, 255, 255, 0.15);
-      }
-
-      .btn-secondary:hover {
-        background: rgba(255, 255, 255, 0.12);
-      }
-
-      .status-message {
-        text-align: center;
-        padding: 10px;
-        border-radius: 6px;
-        margin-top: 15px;
-        font-size: 0.85rem;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-      }
-
-      .status-message.success {
-        background: rgba(34, 197, 94, 0.1);
-        color: #10b981;
-        border: 1px solid rgba(34, 197, 94, 0.2);
-      }
-
-      .status-message.error {
-        background: rgba(239, 68, 68, 0.1);
-        color: #ef4444;
-        border: 1px solid rgba(239, 68, 68, 0.2);
-      }
-
-      .status-message.show {
-        opacity: 1;
-      }
-
-      .quick-actions {
-        margin-top: 20px;
-        padding-top: 20px;
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
-      }
-
-      .quick-action-btn {
-        width: 100%;
-        padding: 12px;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 8px;
-        color: #e5e7eb;
-        font-size: 0.9rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        margin-bottom: 8px;
-      }
-
-      .quick-action-btn:hover {
-        background: rgba(255, 255, 255, 0.08);
-        border-color: #7c3aed;
-      }
-
-      .version-info {
-        text-align: center;
-        color: #6b7280;
-        font-size: 0.75rem;
-        margin-top: 15px;
-      }
-
-      /* Custom scrollbar */
-      body::-webkit-scrollbar {
-        width: 6px;
-      }
-
-      body::-webkit-scrollbar-track {
-        background: rgba(0, 0, 0, 0.2);
-      }
-
-      body::-webkit-scrollbar-thumb {
-        background: rgba(124, 58, 237, 0.5);
-        border-radius: 3px;
-      }
-
-      body::-webkit-scrollbar-thumb:hover {
-        background: rgba(124, 58, 237, 0.7);
+      /* ── Version ── */
+      .version-info{
+        text-align:center;
+        font-family:'Geist Mono',monospace;
+        font-size:0.55rem;
+        text-transform:uppercase;
+        letter-spacing:0.14em;
+        color:rgba(255,255,255,0.12);
+        margin-top:20px;
+        padding-top:16px;
+        border-top:1px solid #212327;
       }
     </style>
   </head>
   <body>
-    <div class="header">
-      <h1>ABX-One Extension</h1>
-      <p>Customize your experience</p>
+    <!-- Header -->
+    <div class="popup-header">
+      <h1>ABX-One</h1>
+      <p>Configuration Terminal</p>
     </div>
 
-    <!-- 1️⃣ User Name -->
+    <!-- ── General ── -->
+    <div class="section-label">General</div>
+
     <div class="setting-group">
-      <label class="setting-label" for="userName">Your Name</label>
-      <input
-        type="text"
-        id="userName"
-        class="setting-input"
-        placeholder="Enter your name for personalized greetings"
-      />
+      <label class="field-label" for="userName">Name</label>
+      <input type="text" id="userName" class="setting-input" placeholder="Enter your name" />
     </div>
 
-    <!-- 2️⃣ Animations & Particle Settings -->
     <div class="setting-group">
-      <label class="checkbox-container">
-        <input type="checkbox" id="animationsEnabled" class="checkbox-input" />
-        <span class="setting-label">Enable Animations</span>
+      <label class="toggle-row">
+        <span class="toggle-label">Animations</span>
+        <input type="checkbox" id="animationsEnabled" class="toggle-switch" />
       </label>
     </div>
 
     <div class="setting-group">
-      <label class="setting-label" for="particleCount">Particle Density</label>
-      <div class="slider-container">
-        <input
-          type="range"
-          id="particleCount"
-          class="slider"
-          min="10"
-          max="100"
-          value="50"
-        />
-        <div
-          style="
-            display: flex;
-            justify-content: space-between;
-            margin-top: 5px;
-            font-size: 0.8rem;
-            color: #9ca3af;
-          "
-        >
+      <label class="field-label" for="particleCount">Particle Density</label>
+      <div class="slider-wrap">
+        <input type="range" id="particleCount" class="slider" min="10" max="100" value="50" />
+        <div class="slider-meta">
           <span>Low</span>
           <span id="particleValue">50</span>
           <span>High</span>
@@ -325,53 +359,37 @@
 
     <div class="section-divider"></div>
 
-    <div class="section-title">🧠 AI Intelligence</div>
+    <!-- ── AI ── -->
+    <div class="section-label">AI Intelligence</div>
 
     <div class="setting-group">
-      <label class="setting-label" for="geminiApiKey">Gemini API Key</label>
-      <input
-        type="password"
-        id="geminiApiKey"
-        class="setting-input"
-        placeholder="Paste your key here"
-      />
+      <label class="field-label" for="geminiApiKey">Gemini API Key</label>
+      <input type="password" id="geminiApiKey" class="setting-input" placeholder="Paste your key here" />
       <div class="hint-text">
-        Required for the AI features. Get a free key from
-        <a
-          href="https://aistudio.google.com/app/apikey"
-          target="_blank"
-          style="color: #a855f7"
-          >Google AI Studio</a
-        >.
+        Required for AI features. Get a free key from
+        <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio</a>.
       </div>
     </div>
 
     <div class="section-divider"></div>
 
-    <!-- 3️⃣ Weather Settings -->
-    <div class="section-title">🌤️ Weather Widget</div>
+    <!-- ── Weather ── -->
+    <div class="section-label">Weather</div>
 
     <div class="setting-group">
-      <label class="checkbox-container">
-        <input type="checkbox" id="weatherEnabled" class="checkbox-input" />
-        <span class="setting-label">Enable Weather Widget</span>
+      <label class="toggle-row">
+        <span class="toggle-label">Enable Weather Widget</span>
+        <input type="checkbox" id="weatherEnabled" class="toggle-switch" />
       </label>
     </div>
 
     <div class="setting-group">
-      <label class="setting-label" for="weatherLocation"
-        >Weather Location</label
-      >
-      <input
-        type="text"
-        id="weatherLocation"
-        class="setting-input"
-        placeholder="Enter city name (leave empty for current location)"
-      />
+      <label class="field-label" for="weatherLocation">Location</label>
+      <input type="text" id="weatherLocation" class="setting-input" placeholder="City name or leave empty for auto" />
     </div>
 
     <div class="setting-group">
-      <label class="setting-label" for="weatherUnit">Temperature Unit</label>
+      <label class="field-label" for="weatherUnit">Temperature Unit</label>
       <select id="weatherUnit" class="setting-input">
         <option value="metric">Celsius (°C)</option>
         <option value="imperial">Fahrenheit (°F)</option>
@@ -379,115 +397,74 @@
     </div>
 
     <div class="setting-group">
-      <label class="setting-label" for="weatherApiKey"
-        >Personal Weather API Key (Optional)</label
-      >
-      <input
-        type="password"
-        id="weatherApiKey"
-        class="setting-input"
-        placeholder="Enter your OpenWeatherMap API key"
-      />
+      <label class="field-label" for="weatherApiKey">Weather API Key</label>
+      <input type="password" id="weatherApiKey" class="setting-input" placeholder="OpenWeatherMap API key (optional)" />
       <div class="hint-text">
-        <strong>Default:</strong> Uses shared demo API key (limited usage)<br />
-        <strong>Personal:</strong> Get unlimited weather updates from
-        <a
-          href="https://openweathermap.org/api"
-          target="_blank"
-          style="color: #60a5fa"
-          >openweathermap.org</a
-        >
+        Default uses a shared demo key. Get unlimited updates from
+        <a href="https://openweathermap.org/api" target="_blank">openweathermap.org</a>.
       </div>
     </div>
 
     <div class="section-divider"></div>
 
-    <!-- 4️⃣ Sports Settings -->
-    <div class="section-title">⚽ Sports Widget</div>
+    <!-- ── Sports ── -->
+    <div class="section-label">Sports</div>
 
     <div class="setting-group">
-      <label class="checkbox-container">
-        <input type="checkbox" id="sportsEnabled" class="checkbox-input" />
-        <span class="setting-label">Enable Sports Widget</span>
+      <label class="toggle-row">
+        <span class="toggle-label">Enable Sports Widget</span>
+        <input type="checkbox" id="sportsEnabled" class="toggle-switch" />
       </label>
     </div>
 
     <div class="setting-group">
-      <label class="setting-label" for="sportsTeamName">Favorite Team</label>
-      <input
-        type="text"
-        id="sportsTeamName"
-        class="setting-input"
-        placeholder="Enter full team name (e.g., Manchester United)"
-      />
-      <div class="hint-text">
-        Enter the complete team name for best results. The widget will show last
-        match results and upcoming fixtures.
-      </div>
+      <label class="field-label" for="sportsTeamName">Favorite Team</label>
+      <input type="text" id="sportsTeamName" class="setting-input" placeholder="e.g. Manchester United" />
+      <div class="hint-text">Enter the full team name for best results.</div>
     </div>
 
     <div class="section-divider"></div>
 
-    <div class="section-title">💹 Market Ticker</div>
+    <!-- ── Market ── -->
+    <div class="section-label">Market Ticker</div>
 
     <div class="setting-group">
-      <label class="checkbox-container">
-        <input type="checkbox" id="financeEnabled" class="checkbox-input" />
-        <span class="setting-label">Enable Market Ticker</span>
+      <label class="toggle-row">
+        <span class="toggle-label">Enable Market Ticker</span>
+        <input type="checkbox" id="financeEnabled" class="toggle-switch" />
       </label>
     </div>
 
     <div class="setting-group">
-      <label class="setting-label">Currency Pair (e.g. BTC to USD)</label>
-      <div style="display: flex; gap: 10px; align-items: center">
-        <input
-          type="text"
-          id="financeFrom"
-          class="setting-input"
-          placeholder="BTC"
-          style="text-transform: uppercase; text-align: center"
-        />
-        <span style="color: #666">→</span>
-        <input
-          type="text"
-          id="financeTo"
-          class="setting-input"
-          placeholder="USD"
-          style="text-transform: uppercase; text-align: center"
-        />
+      <label class="field-label">Currency Pair</label>
+      <div class="pair-row">
+        <input type="text" id="financeFrom" class="setting-input" placeholder="BTC" />
+        <span class="pair-arrow">→</span>
+        <input type="text" id="financeTo" class="setting-input" placeholder="USD" />
       </div>
-      <div class="hint-text">Shows as a central ticker bar.</div>
     </div>
 
     <div class="setting-group">
-      <label class="setting-label" for="financeApiKey"
-        >AlphaVantage API Key</label
-      >
-      <input
-        type="password"
-        id="financeApiKey"
-        class="setting-input"
-        placeholder="Your API Key"
-      />
+      <label class="field-label" for="financeApiKey">AlphaVantage API Key</label>
+      <input type="password" id="financeApiKey" class="setting-input" placeholder="Your API Key" />
     </div>
 
     <div class="section-divider"></div>
 
-    <div class="button-group">
-      <button class="btn btn-secondary" id="resetBtn">Reset</button>
-      <button class="btn btn-primary" id="saveBtn">Save Settings</button>
+    <!-- ── Actions ── -->
+    <div class="btn-row">
+      <button class="btn" id="resetBtn">Reset</button>
+      <button class="btn btn-primary" id="saveBtn">Save</button>
     </div>
 
     <div class="quick-actions">
       <button class="quick-action-btn" id="openNewTabBtn">Open New Tab</button>
-      <button class="quick-action-btn" id="refreshExtensionBtn">
-        Refresh Extension
-      </button>
+      <button class="quick-action-btn" id="refreshExtensionBtn">Refresh Extension</button>
     </div>
 
     <div class="status-message" id="statusMessage"></div>
 
-    <div class="version-info">Version 3.0.0</div>
+    <div class="version-info">ABX-One v3.0.0</div>
 
     <script src="popup.js"></script>
   </body>
