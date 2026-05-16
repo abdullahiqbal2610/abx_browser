@@ -4,13 +4,22 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Welcome back</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400&family=Geist+Mono:wght@400&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div class="background-container">
-      <div class="particle-canvas" id="particleCanvas"></div>
-      <div class="stars-container" id="starsContainer"></div>
-    </div>
+    <div class="background-container"></div>
+
+    <!-- Nebula Canvas — animated smoky aurora -->
+    <canvas id="nebulaCanvas" class="nebula-canvas"></canvas>
+
+    <!-- Noise Grain Overlay -->
+    <div id="noiseOverlay" class="noise-overlay"></div>
+
+    <!-- Floating Dust -->
+    <div id="dustField" class="dust-field"></div>
 
     <div class="dashboard-layout">
       <aside class="sidebar left-sidebar">
@@ -315,7 +324,7 @@
           <div class="google-apps-container">
             <a
               href="https://mail.google.com"
-              class="google-app-item gmail-app"
+              class="google-app-item gmail-app glass-panel"
               target="_self"
             >
               <div class="app-icon gmail-icon flex-center">
@@ -342,7 +351,7 @@
               <div class="app-glow"></div>
             </a>
 
-            <div class="google-app-item apps-launcher" id="appsLauncher">
+            <div class="google-app-item apps-launcher glass-panel" id="appsLauncher">
               <div class="app-icon apps-icon flex-center">
                 <svg
                   width="24"
@@ -469,7 +478,7 @@
         </div>
 
         <div class="finance-container">
-          <div class="finance-widget" id="financeWidget">
+          <div class="finance-widget glass-panel" id="financeWidget">
             <div class="finance-header">
               <span class="finance-label">Market</span>
               <button
@@ -522,10 +531,18 @@
         </div>
 
         <div class="todo-container">
-          <div class="todo-widget" id="todoWidget">
+          <div class="todo-widget glass-panel" id="todoWidget">
             <div class="todo-header">
               <span class="todo-label">Tasks</span>
-              <span class="todo-count" id="todoCount">0 done</span>
+              <div class="todo-header-actions">
+                <span class="todo-count" id="todoCount">0 done</span>
+                <button id="clearTodoBtn" class="todo-clear-btn" title="Clear All Tasks">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                </button>
+              </div>
             </div>
 
             <div class="todo-input-wrapper">
@@ -653,7 +670,7 @@
       </div>
     </div>
 
-    <div class="floating-elements" id="floatingElements"></div>
+    <script src="effects.js"></script>
     <script src="script.js"></script>
   </body>
 </html>

@@ -1,4 +1,6 @@
-/* Reset and Base Styles */
+/* x.ai Aesthetic — ABX-One Extension */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400&family=Geist+Mono:wght@400&display=swap');
+
 * {
   margin: 0;
   padding: 0;
@@ -7,7 +9,7 @@
 
 /* Accessibility: Visible Focus Indicators */
 :focus-visible {
-  outline: 2px solid #a78bfa;
+  outline: 1px solid rgba(255,255,255,0.2);
   outline-offset: 2px;
 }
 
@@ -19,23 +21,17 @@
 }
 
 body {
-  font-family:
-    "Inter",
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    sans-serif;
-  background-color: #000000;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: #0a0a0a;
   color: #ffffff;
   overflow-x: hidden;
   min-height: 100vh;
   position: relative;
-  font-weight: 300;
-  letter-spacing: 0.3px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
 }
 
-/* Enhanced Background System */
+/* Background System — Pure Void */
 .background-container {
   position: fixed;
   top: 0;
@@ -43,131 +39,92 @@ body {
   width: 100%;
   height: 100%;
   z-index: -2;
-  background:
-    radial-gradient(circle at 20% 80%, #0a0a0f 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, #0f0a0a 0%, transparent 50%),
-    radial-gradient(ellipse at center, #050508 0%, #000000 70%, #000000 100%);
+  background: #0a0a0a;
 }
 
-/* Shared: Absolute full-screen overlay */
-.background-container::before,
-.particle-canvas,
-.stars-container {
-  position: absolute;
-  inset: 0;
-}
-
-/* Grid Overlay */
+/* Grid Overlay — Invisible Structure */
 .background-container::before {
   content: "";
+  position: absolute;
+  inset: 0;
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.01) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.01) 1px, transparent 1px);
-  background-size: 60px 60px;
-  opacity: 0.3;
-  animation: gridShift 20s linear infinite;
+    linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+  background-size: 80px 80px;
+  opacity: 0.2;
+  animation: gridShift 30s linear infinite;
 }
 
 @keyframes gridShift {
-  0% {
-    transform: translate(0, 0);
-  }
-  100% {
-    transform: translate(60px, 60px);
-  }
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(60px, 60px); }
 }
 
-.particle-canvas {
+/* Nebula Canvas — Full-screen animated aurora */
+.nebula-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
   pointer-events: none;
 }
 
-.stars-container {
+/* Noise Grain Overlay */
+.noise-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.04;
+  background-size: 200px 200px;
+}
+
+/* Floating Dust */
+.dust-field {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
   overflow: hidden;
 }
 
-/* ================= STARS (REFINED SUBTLETY) ================= */
-.star {
+.dust {
   position: absolute;
+  width: 2px;
+  height: 2px;
   border-radius: 50%;
-  background: #ffffff;
-  /* Uses the random sizes from JS now! */
-  animation: starPulse 5s ease-in-out infinite;
-  box-shadow: 0 0 2px rgba(255, 255, 255, 0.4); /* Very soft base glow */
+  animation: dustFloat linear infinite;
 }
 
-/* Keep your original colors, but remove width/height overrides */
-.star:nth-child(odd) {
-  filter: drop-shadow(0 0 3px #60a5fa); /* Soft Blue */
-}
-
-.star:nth-child(even) {
-  filter: drop-shadow(0 0 3px #a78bfa); /* Soft Purple */
-}
-
-.star:nth-child(3n) {
-  filter: drop-shadow(0 0 3px #06b6d4); /* Soft Cyan */
-}
-
-@keyframes starPulse {
-  0%,
+@keyframes dustFloat {
+  0% {
+    transform: translateY(110vh) translateX(0px);
+    opacity: 0;
+  }
+  10% { opacity: 0.8; }
+  90% { opacity: 0.8; }
   100% {
-    opacity: 0.5; /* Never goes below 50% visibility (Fixes "dim" look) */
-    transform: scale(0.9);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.1); /* Gentle pulse, not an explosion */
-    box-shadow: 0 0 5px rgba(255, 255, 255, 0.6);
-  }
-}
-
-/* Enhanced Particles */
-.particle {
-  position: absolute;
-  border-radius: 50%;
-  animation: particleFloat 25s linear infinite;
-}
-
-@keyframes particleFloat {
-  from {
-    transform: translateY(100vh) translateX(-50px) rotate(0deg);
-    opacity: 0;
-  }
-  5% {
-    opacity: 0.6;
-  }
-  95% {
-    opacity: 0.6;
-  }
-  to {
-    transform: translateY(-10vh) translateX(50px) rotate(180deg);
+    transform: translateY(-10vh) translateX(50px);
     opacity: 0;
   }
 }
 
-@keyframes particleGlow {
-  from {
-    transform: translateY(100vh) translateX(-30px) scale(0.5);
-    opacity: 0;
-    box-shadow: 0 0 0px rgba(139, 92, 246, 0);
-  }
-  10% {
-    opacity: 0.8;
-    box-shadow: 0 0 10px rgba(139, 92, 246, 0.4);
-  }
-  50% {
-    transform: translateY(50vh) translateX(30px) scale(1.2);
-    box-shadow: 0 0 20px rgba(139, 92, 246, 0.6);
-  }
-  90% {
-    opacity: 0.8;
-    box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
-  }
-  to {
-    transform: translateY(-10vh) translateX(60px) scale(0.7);
-    opacity: 0;
-    box-shadow: 0 0 5px rgba(139, 92, 246, 0.2);
-  }
+/* ═══════════════════════════════════════
+   GLASSMORPHISM PANEL SYSTEM
+   ═══════════════════════════════════════ */
+.glass-panel {
+  background: rgba(15, 15, 25, 0.6) !important;
+  backdrop-filter: blur(20px) saturate(1.5);
+  -webkit-backdrop-filter: blur(20px) saturate(1.5);
+  border: 1px solid rgba(139, 92, 246, 0.12) !important;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-panel:hover {
+  background: rgba(20, 20, 35, 0.7) !important;
+  border-color: rgba(139, 92, 246, 0.25) !important;
 }
 
 /* Main Container */
@@ -191,31 +148,28 @@ body {
 }
 
 .greeting-text {
-  font-size: 3.8rem;
-  font-weight: 100;
+  font-size: 3.2rem;
+  font-weight: 400;
   margin-bottom: 10px;
-  background: linear-gradient(
-    135deg,
-    #ffffff 0%,
-    #e5e7eb 25%,
-    #60a5fa 50%,
-    #a78bfa 75%,
-    #ffffff 100%
-  );
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-size: 200% 200%;
-  animation: gradientFlow 4s ease-in-out infinite;
-  text-shadow: none;
-  letter-spacing: -1px;
-  line-height: 1.2;
+  color: #ffffff;
+  letter-spacing: -0.04em;
+  line-height: 1.15;
   display: block;
   position: relative;
   z-index: 1;
   overflow: visible;
   padding-bottom: 10px;
 }
+
+.username-glow {
+  background: linear-gradient(135deg, #8b5cf6, #3b82f6, #22d3ee);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% auto;
+  animation: gradientFlow 3s ease infinite;
+  text-shadow: 0 0 25px rgba(139, 92, 246, 0.3);
+}
+
 
 @keyframes gradientFlow {
   0%,
@@ -228,10 +182,11 @@ body {
 }
 
 .time-display {
-  font-size: 1.1rem;
-  color: #6b7280;
-  font-weight: 300;
-  letter-spacing: 1px;
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.25);
+  font-weight: 400;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   margin-top: 15px;
   display: block;
@@ -266,22 +221,21 @@ body {
 /* 2. The Input Field */
 .search-input {
   width: 100%;
-  padding: 22px 50px 22px 25px; /* Right padding 50px for Mic */
-  font-size: 1.1rem;
-  font-weight: 300;
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
+  padding: 22px 50px 22px 25px;
+  font-size: 1rem;
+  font-weight: 400;
+  background: transparent;
+  border: 1px solid #212327;
+  border-radius: 9999px;
   color: #ffffff;
   outline: none;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(20px);
+  transition: border-color 0.2s ease;
+  letter-spacing: -0.01em;
 }
-
 .search-input:focus {
-  background: rgba(0, 0, 0, 0.6);
-  border-color: rgba(96, 165, 250, 0.4);
-  box-shadow: 0 0 20px rgba(96, 165, 250, 0.15);
+  background: rgba(139,92,246,0.04);
+  border-color: rgba(139,92,246,0.35);
+  box-shadow: 0 0 25px rgba(139,92,246,0.08), inset 0 0 15px rgba(139,92,246,0.03);
 }
 
 /* 3. The Mic Button (Inside the Input) */
@@ -306,24 +260,19 @@ body {
 /* 4. The Main Search Button */
 .search-button {
   width: 54px;
-  height: 54px; /* Fixed square */
+  height: 54px;
   padding: 0;
-  background: linear-gradient(
-    135deg,
-    rgba(96, 165, 250, 0.9),
-    rgba(139, 92, 246, 0.9)
-  );
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 14px;
-  color: #ffffff;
+  background: transparent;
+  border: 1px solid #212327;
+  border-radius: 9999px;
+  color: rgba(255,255,255,0.5);
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  flex-shrink: 0; /* Prevents squishing */
+  transition: all 0.2s ease;
+  flex-shrink: 0;
 }
-
 .search-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+  border-color: rgba(255,255,255,0.25);
+  color: #fff;
 }
 
 /* 5. The Action Group (Gemini + Brain) */
@@ -335,36 +284,23 @@ body {
 .action-btn {
   width: 54px;
   height: 54px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.6);
+  border-radius: 9999px;
+  background: transparent;
+  border: 1px solid #212327;
+  color: rgba(255,255,255,0.4);
   cursor: pointer;
-  transition: all 0.3s;
-  text-decoration: none; /* For the <a> tag */
+  transition: all 0.2s ease;
+  text-decoration: none;
   flex-shrink: 0;
 }
-
 .action-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255,255,255,0.25);
   color: #fff;
-  border-color: rgba(255, 255, 255, 0.3);
-  transform: translateY(-2px);
 }
 
-/* Glow Effect Container (Keep existing) */
+/* Glow Effect — Disabled for x.ai */
 .search-glow {
-  position: absolute;
-  inset: -2px;
-  background: linear-gradient(45deg, #60a5fa, #8b5cf6, #06b6d4);
-  border-radius: 18px;
-  opacity: 0;
-  z-index: -1;
-  filter: blur(5px);
-  transition: opacity 0.4s;
-}
-.search-input:focus + .search-glow {
-  opacity: 0.6;
+  display: none;
 }
 
 /* Enhanced Google Services */
@@ -386,49 +322,19 @@ body {
   display: flex;
   align-items: center;
   padding: 24px 28px;
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 18px;
+  background: #191919;
+  border: 1px solid #212327;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  backdrop-filter: blur(25px);
+  transition: all 0.2s ease;
   text-decoration: none;
   color: inherit;
   overflow: hidden;
   min-width: 180px;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.03),
-    0 2px 10px rgba(0, 0, 0, 0.2);
 }
-
-.google-app-item::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.05) 0%,
-    rgba(255, 255, 255, 0.01) 100%
-  );
-  opacity: 0;
-  transition: opacity 0.4s ease;
-}
-
-.google-app-item:hover::before {
-  opacity: 1;
-}
-
 .google-app-item:hover {
-  background: rgba(0, 0, 0, 0.5);
-  border-color: rgba(96, 165, 250, 0.3);
-  transform: translateY(-8px) scale(1.02);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 0 30px rgba(96, 165, 250, 0.2),
-    0 15px 35px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255,255,255,0.15);
+  background: #1e1e1e;
 }
 
 .app-icon {
@@ -437,20 +343,17 @@ body {
   margin-right: 18px;
   border-radius: 14px;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .gmail-icon,
 .apps-icon {
-  background: linear-gradient(135deg, #333333, #555555);
-  color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  background: #191919;
+  color: rgba(255,255,255,0.5);
+  border: 1px solid #212327;
 }
 
 .google-app-item:hover .app-icon {
   transform: rotate(5deg) scale(1.1);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
 }
 
 .app-info {
@@ -471,31 +374,7 @@ body {
   font-weight: 300;
 }
 
-.app-glow {
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  background: linear-gradient(
-    45deg,
-    rgba(96, 165, 250, 0.3),
-    rgba(139, 92, 246, 0.3),
-    rgba(6, 182, 212, 0.3),
-    rgba(96, 165, 250, 0.3)
-  );
-  border-radius: 20px;
-  opacity: 0;
-  z-index: -1;
-  transition: opacity 0.4s ease;
-  background-size: 400% 400%;
-  animation: gradientShift 8s ease infinite;
-  filter: blur(3px);
-}
-
-.google-app-item:hover .app-glow {
-  opacity: 1;
-}
+.app-glow { display: none; }
 
 /* Enhanced Sections */
 .quick-access-section,
@@ -512,35 +391,30 @@ body {
   gap: 15px;
   margin-bottom: 35px;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s ease;
   padding: 12px 20px;
-  border-radius: 12px;
-  background: rgba(0, 0, 0, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
+  border-radius: 8px;
+  background: transparent;
+  border: 1px solid #212327;
 }
-
 .section-header:hover {
-  background: rgba(0, 0, 0, 0.25);
-  border-color: rgba(96, 165, 250, 0.2);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(96, 165, 250, 0.1);
+  border-color: rgba(255,255,255,0.15);
 }
 
 .section-title {
-  font-size: 1.6rem;
-  font-weight: 200;
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.7rem;
+  font-weight: 400;
   margin: 0;
-  color: #d1d5db;
-  letter-spacing: 1px;
+  color: rgba(255,255,255,0.35);
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   flex: 1;
   text-align: center;
-  transition: color 0.3s ease;
+  transition: color 0.2s ease;
 }
-
 .section-header:hover .section-title {
-  color: #ffffff;
+  color: rgba(255,255,255,0.6);
 }
 
 .section-toggle {
@@ -557,8 +431,8 @@ body {
 
 .section-toggle:hover {
   color: #ffffff;
-  background: rgba(96, 165, 250, 0.2);
-  border-color: rgba(96, 165, 250, 0.3);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
   transform: scale(1.1);
 }
 
@@ -595,28 +469,18 @@ body {
 
 .bookmark-item {
   padding: 22px 26px;
-  background: rgba(0, 0, 0, 0.25);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 16px;
+  background: #191919;
+  border: 1px solid #212327;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  backdrop-filter: blur(20px);
+  transition: all 0.2s ease;
   text-decoration: none;
   color: inherit;
   display: block;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.02),
-    0 2px 8px rgba(0, 0, 0, 0.1);
 }
-
 .bookmark-item:hover {
-  background: rgba(0, 0, 0, 0.4);
-  border-color: rgba(96, 165, 250, 0.25);
-  transform: translateY(-6px);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    0 0 25px rgba(96, 165, 250, 0.15),
-    0 12px 30px rgba(0, 0, 0, 0.2);
+  border-color: rgba(255,255,255,0.15);
+  background: #1e1e1e;
 }
 
 .bookmark-title {
@@ -644,22 +508,18 @@ body {
   display: flex;
   align-items: center;
   padding: 18px 24px;
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.04);
-  border-radius: 12px;
+  background: #191919;
+  border: 1px solid #212327;
+  border-radius: 8px;
   margin-bottom: 12px;
   cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s ease;
   text-decoration: none;
   color: inherit;
-  backdrop-filter: blur(15px);
 }
-
 .history-item:hover {
-  background: rgba(0, 0, 0, 0.35);
-  border-color: rgba(96, 165, 250, 0.2);
-  transform: translateX(12px);
-  box-shadow: 0 0 20px rgba(96, 165, 250, 0.1);
+  border-color: rgba(255,255,255,0.15);
+  background: #1e1e1e;
 }
 
 .history-favicon {
@@ -699,25 +559,16 @@ body {
   z-index: 999; /* ensure it stays above other elements */
 }
 
-/* Reusable Glass Panel Base */
+/* Glass Panel — x.ai Surface */
 .glass-panel {
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
+  background: #191919;
+  border: 1px solid #212327;
+  border-radius: 8px;
   color: #ffffff;
-  backdrop-filter: blur(25px);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.03),
-    0 2px 10px rgba(0, 0, 0, 0.2);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s ease;
 }
-
 .glass-panel:hover {
-  background: rgba(0, 0, 0, 0.5);
-  transform: translateY(-2px);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 8px 25px rgba(0, 0, 0, 0.3);
+  border-color: rgba(139,92,246,0.25);
 }
 
 .weather-widget {
@@ -726,8 +577,8 @@ body {
 }
 
 .weather-widget:hover {
-  border-color: rgba(96, 165, 250, 0.2);
-  box-shadow: 0 0 25px rgba(96, 165, 250, 0.15);
+  border-color: rgba(59,130,246,0.3);
+  box-shadow: 0 0 30px rgba(59,130,246,0.08);
 }
 
 /* Weather Loading State */
@@ -742,8 +593,8 @@ body {
 .loading-spinner {
   width: 20px;
   height: 20px;
-  border: 2px solid rgba(96, 165, 250, 0.2);
-  border-top: 2px solid #60a5fa;
+  border: 1px solid #212327;
+  border-top: 1px solid rgba(255,255,255,0.5);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -776,7 +627,6 @@ body {
 .weather-icon img {
   width: 48px;
   height: 48px;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 .weather-info {
@@ -785,13 +635,10 @@ body {
 
 .weather-temp {
   font-size: 2.2rem;
-  font-weight: 200;
+  font-weight: 400;
   color: #ffffff;
   margin-bottom: 4px;
-  background: linear-gradient(135deg, #ffffff 0%, #60a5fa 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.03em;
 }
 
 .weather-desc {
@@ -833,10 +680,10 @@ body {
 }
 
 .weather-refresh:hover {
-  background: rgba(96, 165, 250, 0.1);
-  border-color: rgba(96, 165, 250, 0.2);
-  color: #60a5fa;
-  transform: rotate(180deg); /* This makes it spin! */
+  background: rgba(59,130,246,0.1);
+  border-color: rgba(59,130,246,0.3);
+  color: rgba(59,130,246,0.9);
+  transform: rotate(180deg);
 }
 
 .weather-refresh:active {
@@ -896,19 +743,19 @@ body {
 
 .retry-btn {
   padding: 8px 16px;
-  background: rgba(96, 165, 250, 0.1);
-  border: 1px solid rgba(96, 165, 250, 0.2);
-  border-radius: 8px;
-  color: #60a5fa;
+  background: transparent;
+  border: 1px solid #212327;
+  border-radius: 9999px;
+  color: rgba(255,255,255,0.5);
   cursor: pointer;
   transition: all 0.3s ease;
   font-size: 0.85rem;
 }
 
 .retry-btn:hover {
-  background: rgba(96, 165, 250, 0.2);
-  border-color: rgba(96, 165, 250, 0.4);
-  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #fff;
 }
 
 /* Sports Widget Styles */
@@ -928,8 +775,8 @@ body {
 }
 
 .sports-widget:hover {
-  border-color: rgba(16, 185, 129, 0.2);
-  box-shadow: 0 0 25px rgba(16, 185, 129, 0.15);
+  border-color: rgba(34,211,238,0.3);
+  box-shadow: 0 0 30px rgba(34,211,238,0.08);
 }
 
 /* Sports Header */
@@ -992,10 +839,10 @@ body {
 }
 
 .sports-refresh:hover {
-  background: rgba(16, 185, 129, 0.1);
-  border-color: rgba(16, 185, 129, 0.2);
-  color: #10b981;
-  transform: rotate(180deg); /* This makes it spin! */
+  background: rgba(34,211,238,0.1);
+  border-color: rgba(34,211,238,0.3);
+  color: rgba(34,211,238,0.9);
+  transform: rotate(180deg);
 }
 .sports-refresh:active {
   transform: scale(0.95);
@@ -1037,11 +884,11 @@ body {
 }
 
 .last-match .match-label {
-  color: #60a5fa;
+  color: rgba(139,92,246,0.7);
 }
 
 .next-match .match-label {
-  color: #10b981;
+  color: rgba(34,211,238,0.7);
 }
 
 .match-info {
@@ -1166,74 +1013,22 @@ body {
 
 .settings-button {
   padding: 18px;
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 14px;
-  color: #ffffff;
+  background: transparent;
+  border: 1px solid #212327;
+  border-radius: 9999px;
+  color: rgba(255,255,255,0.4);
   cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  backdrop-filter: blur(25px);
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.03),
-    0 2px 10px rgba(0, 0, 0, 0.2);
 }
-
 .settings-button:hover {
-  background: rgba(0, 0, 0, 0.6);
-  border-color: rgba(96, 165, 250, 0.3);
-  transform: rotate(90deg) scale(1.05);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 0 25px rgba(96, 165, 250, 0.2),
-    0 8px 25px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255,255,255,0.2);
+  color: #fff;
 }
 
-/* Enhanced Floating Elements */
-.floating-elements {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: -1;
-}
-
-.floating-element {
-  position: absolute;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    rgba(96, 165, 250, 0.15) 0%,
-    rgba(139, 92, 246, 0.1) 50%,
-    transparent 100%
-  );
-  border: 1px solid rgba(96, 165, 250, 0.1);
-  animation: enhancedFloat 25s linear infinite;
-}
-
-@keyframes enhancedFloat {
-  0% {
-    transform: translateY(100vh) translateX(-100px) rotate(0deg) scale(0.5);
-    opacity: 0;
-  }
-  10% {
-    opacity: 0.6;
-  }
-  50% {
-    transform: translateY(50vh) translateX(0px) rotate(180deg) scale(1.2);
-  }
-  90% {
-    opacity: 0.6;
-  }
-  100% {
-    transform: translateY(-10vh) translateX(100px) rotate(360deg) scale(0.8);
-    opacity: 0;
-  }
-}
+/* (Floating elements removed — replaced by cursor spotlight + noise grain) */
 
 /* Enhanced Animations */
 @keyframes fadeInUp {
@@ -1248,24 +1043,10 @@ body {
 }
 
 /* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(96, 165, 250, 0.3);
-  border-radius: 4px;
-  transition: background 0.3s ease;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(96, 165, 250, 0.5);
-}
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #212327; border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
 
 /* Enhanced Responsive Design */
 @media (max-width: 768px) {
@@ -1404,7 +1185,7 @@ body {
 .search-input:focus,
 .google-app-item:hover,
 .bookmark-item:hover {
-  will-change: transform, box-shadow;
+  will-change: transform;
 }
 
 /* High contrast mode support */
@@ -1433,30 +1214,19 @@ body {
 }
 
 .finance-widget {
-  min-width: 220px; /* Compact width */
+  min-width: 220px;
   padding: 20px;
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px; /* Matches Weather/Sports */
+  background: #191919;
+  border: 1px solid #212327;
+  border-radius: 8px;
   color: #ffffff;
-  backdrop-filter: blur(25px);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.03),
-    0 2px 10px rgba(0, 0, 0, 0.2);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s ease;
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
-
 .finance-widget:hover {
-  background: rgba(0, 0, 0, 0.5);
-  border-color: rgba(96, 165, 250, 0.2);
-  transform: translateY(-2px);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 0 25px rgba(96, 165, 250, 0.15),
-    0 8px 25px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255,255,255,0.12);
 }
 
 /* Header (Label + Refresh) */
@@ -1468,11 +1238,12 @@ body {
 }
 
 .finance-label {
-  font-size: 0.75rem;
-  color: #9ca3af;
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.65rem;
+  color: rgba(255,255,255,0.3);
   text-transform: uppercase;
-  letter-spacing: 1px;
-  font-weight: 500;
+  letter-spacing: 0.14em;
+  font-weight: 400;
 }
 
 .finance-refresh {
@@ -1490,9 +1261,9 @@ body {
 }
 
 .finance-refresh:hover {
-  background: rgba(96, 165, 250, 0.1);
-  border-color: rgba(96, 165, 250, 0.2);
-  color: #60a5fa;
+  background: rgba(251,191,36,0.1);
+  border-color: rgba(251,191,36,0.3);
+  color: rgba(251,191,36,0.9);
   transform: rotate(180deg);
 }
 
@@ -1503,17 +1274,10 @@ body {
 }
 
 .ticker-rate {
-  font-size: 2rem; /* Big like Weather Temp */
-  font-weight: 200;
+  font-size: 2rem;
+  font-weight: 400;
   color: #ffffff;
-  background: linear-gradient(
-    135deg,
-    #ffffff 0%,
-    #10b981 100%
-  ); /* Greenish tint */
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.03em;
   line-height: 1.2;
 }
 
@@ -1552,13 +1316,11 @@ body {
   top: 100%;
   left: 0;
   width: 100%;
-  background: rgba(0, 0, 0, 0.85); /* Darker background for readability */
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
+  background: #191919;
+  border: 1px solid #212327;
+  border-radius: 8px;
   margin-top: 10px;
   padding: 10px 0;
-  backdrop-filter: blur(25px);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
   z-index: 1000;
   display: none; /* Hidden by default */
   transform-origin: top;
@@ -1604,26 +1366,19 @@ body {
 }
 
 .suggestion-item:hover .suggestion-icon {
-  color: #60a5fa; /* Blue glow on hover */
+  color: rgba(139,92,246,0.8);
 }
 
 /* The blinking cursor effect */
 .typewriter-cursor {
   display: inline-block;
-  border-right: 3px solid #64ffda; /* CHANGE THIS HEX CODE to your accent color */
-  margin-left: 5px;
+  border-right: 2px solid rgba(255,255,255,0.4);
+  margin-left: 3px;
   animation: blink-caret 0.75s step-end infinite;
 }
-
-/* The animation keyframes */
 @keyframes blink-caret {
-  from,
-  to {
-    border-color: transparent;
-  }
-  50% {
-    border-color: #64ffda;
-  } /* MATCH THIS with the color above */
+  from, to { border-color: transparent; }
+  50% { border-color: rgba(255,255,255,0.4); }
 }
 
 /* Optional: Make the greeting look sleek */
@@ -1635,36 +1390,32 @@ body {
 
 /* ================= AI MODE STYLES ================= */
 
-/* 1. Purple Glow when AI is ON */
 .ai-mode-active .search-input {
-  border-color: #a855f7 !important;
-  box-shadow: 0 0 25px rgba(168, 85, 247, 0.25) !important;
+  border-color: rgba(255,255,255,0.25) !important;
 }
-
 .ai-mode-active .ai-toggle {
-  color: #a855f7;
-  border-color: #a855f7;
-  background: rgba(168, 85, 247, 0.1);
-  box-shadow: 0 0 15px rgba(168, 85, 247, 0.2);
+  color: #fff;
+  border-color: rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.05);
 }
 
 /* 2. Microphone Active Pulse (Red) */
 .listening-mode {
-  color: #ef4444 !important;
+  color: #ffffff !important;
   animation: pulseMic 1.5s infinite;
 }
 @keyframes pulseMic {
   0% {
     transform: scale(1);
-    filter: drop-shadow(0 0 0 red);
+    opacity: 0.6;
   }
   50% {
     transform: scale(1.2);
-    filter: drop-shadow(0 0 8px red);
+    opacity: 1;
   }
   100% {
     transform: scale(1);
-    filter: drop-shadow(0 0 0 red);
+    opacity: 0.6;
   }
 }
 
@@ -1675,8 +1426,7 @@ body {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(15px);
+  background: rgba(10, 10, 10, 0.92);
   z-index: 99999;
   display: flex;
   justify-content: center;
@@ -1691,33 +1441,33 @@ body {
   pointer-events: auto;
 }
 
+/* AI Modal — x.ai */
 .ai-modal-content {
   width: 90%;
   max-width: 800px;
   height: 60vh;
-  background: rgba(10, 10, 15, 0.9);
-  border: 1px solid rgba(168, 85, 247, 0.3);
-  border-radius: 20px;
+  background: #0a0a0a;
+  border: 1px solid #212327;
+  border-radius: 8px;
   padding: 30px;
-  box-shadow: 0 0 60px rgba(168, 85, 247, 0.15);
   display: flex;
   flex-direction: column;
 }
-
 .ai-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid #212327;
   padding-bottom: 15px;
   margin-bottom: 15px;
 }
-
 .ai-title {
-  color: #a855f7;
-  font-family: "Courier New", monospace;
-  font-weight: bold;
-  letter-spacing: 2px;
+  font-family: 'Geist Mono', monospace;
+  color: rgba(255,255,255,0.5);
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  font-size: 0.7rem;
+  text-transform: uppercase;
 }
 
 .close-ai-btn {
@@ -1735,11 +1485,12 @@ body {
 .ai-response-text {
   flex: 1;
   overflow-y: auto;
-  font-family: "Segoe UI", sans-serif;
-  font-size: 1.1rem;
-  line-height: 1.6;
-  color: #e5e7eb;
-  white-space: pre-wrap; /* Keeps formatting */
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: rgba(255,255,255,0.7);
+  white-space: pre-wrap;
+  letter-spacing: -0.01em;
 }
 
 /* Scrollbar for AI text */
@@ -1764,20 +1515,12 @@ body {
   transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* 1. The Gradient Glow on Hover */
 .gemini-trigger:hover {
-  background: linear-gradient(135deg, #4b90ff 0%, #a768f6 50%, #ff5546 100%);
-  border-color: transparent;
-  box-shadow:
-    0 0 25px rgba(167, 104, 246, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  border-color: rgba(255,255,255,0.25);
   color: #fff;
 }
-
-/* 2. The 180 Degree Spin */
 .gemini-trigger:hover svg {
-  transform: rotate(180deg) scale(1.15);
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  transform: rotate(180deg) scale(1.1);
 }
 
 /* Ensure link behaves like a button */
@@ -1790,21 +1533,22 @@ body {
 
 /* AI Voice Control Button */
 .voice-control-btn {
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  color: #ef4444; /* Red Text */
-  border-radius: 4px;
+  background: transparent;
+  border: 1px solid #212327;
+  color: rgba(255,255,255,0.5);
+  border-radius: 9999px;
   padding: 4px 10px;
   cursor: pointer;
   display: flex;
   align-items: center;
   transition: all 0.2s;
-  font-family: "Courier New", monospace;
+  font-family: 'Geist Mono', monospace;
 }
 
 .voice-control-btn:hover {
-  background: rgba(239, 68, 68, 0.2);
-  box-shadow: 0 0 10px rgba(239, 68, 68, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #fff;
 }
 /* === AI CHAT INPUT (Bottom of Modal) === */
 .ai-input-container {
@@ -1822,15 +1566,14 @@ body {
   gap: 10px;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  border-radius: 9999px;
   padding: 8px 15px;
   transition: all 0.3s ease;
 }
 
 .ai-input-wrapper:focus-within {
-  background: rgba(0, 0, 0, 0.3);
-  border-color: #a855f7;
-  box-shadow: 0 0 15px rgba(168, 85, 247, 0.2);
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255,255,255,0.25);
 }
 
 .ai-reply-input {
@@ -1861,8 +1604,8 @@ body {
 }
 
 .ai-reply-btn:hover {
-  color: #a855f7;
-  background: rgba(168, 85, 247, 0.1);
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
   transform: scale(1.1);
 }
 
@@ -1873,24 +1616,24 @@ body {
 }
 
 .chat-user {
-  color: #60a5fa; /* Blue for User */
+  color: rgba(59,130,246,0.8);
   font-size: 0.9rem;
   font-weight: bold;
   margin-bottom: 5px;
   text-transform: uppercase;
   letter-spacing: 1px;
-  border-left: 2px solid #60a5fa;
+  border-left: 2px solid rgba(59,130,246,0.5);
   padding-left: 10px;
 }
 
 .chat-ai {
-  color: #a855f7; /* Purple for AI */
+  color: rgba(139,92,246,0.7);
   font-size: 0.9rem;
   font-weight: bold;
   margin-bottom: 5px;
   text-transform: uppercase;
   letter-spacing: 1px;
-  border-left: 2px solid #a855f7;
+  border-left: 2px solid rgba(139,92,246,0.4);
   padding-left: 10px;
 }
 
@@ -1915,73 +1658,29 @@ body.ai-active .finance-container {
    VOID REACTOR (PURPLE) STYLES
    ========================================= */
 
-/* Base state (Dim Violet) */
 #aiToggle {
-  color: #7c3aed; /* Deep Purple */
-  transition: all 0.4s ease-in-out;
+  color: rgba(255,255,255,0.3);
+  transition: all 0.2s ease;
   overflow: visible;
 }
-
-.arc-reactor-icon {
-  transition: all 0.4s ease-in-out;
-}
-
-/* --- HOVER STATE: VOID PULSE --- */
 #aiToggle:hover {
-  color: #d8b4fe; /* Bright Lavender Core */
-  background: rgba(168, 85, 247, 0.1);
-  border-color: rgba(168, 85, 247, 0.6);
-  /* The purple heartbeat */
-  animation: reactorPulse 2s infinite ease-in-out;
+  color: #fff;
+  border-color: rgba(255,255,255,0.25);
 }
-
-/* Make the SVG icon glow purple */
 #aiToggle:hover .arc-reactor-icon {
-  /* Purple + White Core Glow */
-  filter: drop-shadow(0 0 5px #a855f7) drop-shadow(0 0 12px #ffffff);
-  transform: scale(1.05);
+  opacity: 1;
 }
-
-/* Keyframe Animation for the Purple Pulse */
-@keyframes reactorPulse {
-  0% {
-    box-shadow:
-      0 0 15px rgba(168, 85, 247, 0.4),
-      inset 0 0 5px rgba(168, 85, 247, 0.2);
-  }
-  50% {
-    /* Bright burst */
-    box-shadow:
-      0 0 35px rgba(168, 85, 247, 0.8),
-      0 0 60px rgba(168, 85, 247, 0.3),
-      inset 0 0 15px rgba(168, 85, 247, 0.6);
-  }
-  100% {
-    box-shadow:
-      0 0 15px rgba(168, 85, 247, 0.4),
-      inset 0 0 5px rgba(168, 85, 247, 0.2);
-  }
-}
-
-/* --- ACTIVE STATE (When AI is ON) --- */
 .ai-mode-active #aiToggle {
-  color: #d8b4fe !important;
-  border-color: #a855f7 !important;
-  background: rgba(168, 85, 247, 0.2) !important;
-  box-shadow:
-    0 0 40px rgba(168, 85, 247, 0.6),
-    inset 0 0 20px rgba(168, 85, 247, 0.4) !important;
+  color: #fff !important;
+  border-color: rgba(255,255,255,0.3) !important;
+  background: rgba(255,255,255,0.06) !important;
   animation: none;
 }
-
 .ai-mode-active #aiToggle .arc-reactor-icon {
-  filter: drop-shadow(0 0 8px #a855f7) drop-shadow(0 0 15px #fff) !important;
+  opacity: 1;
 }
-
-/* UPDATE SEARCH BAR TO MATCH PURPLE GLOW */
 .ai-mode-active .search-input {
-  border-color: #a855f7 !important;
-  box-shadow: 0 0 30px rgba(168, 85, 247, 0.25) !important;
+  border-color: rgba(255,255,255,0.2) !important;
 }
 
 /* =========================================
@@ -2216,33 +1915,17 @@ body > .settings-container {
   min-width: 100% !important;
   width: 100%;
   padding: 20px;
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
+  background: #191919;
+  border: 1px solid #212327;
+  border-radius: 8px;
   color: #ffffff;
-  backdrop-filter: blur(25px);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.03),
-    0 2px 10px rgba(0, 0, 0, 0.2);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s ease;
   display: flex;
   flex-direction: column;
-  max-height: 380px; /* Keeps it from growing infinitely long */
+  max-height: 380px;
 }
-
 .todo-widget:hover {
-  background: rgba(0, 0, 0, 0.5);
-  border-color: rgba(
-    168,
-    85,
-    247,
-    0.2
-  ); /* Subtle purple accent to match Gemini */
-  transform: translateY(-2px);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 0 25px rgba(168, 85, 247, 0.15),
-    0 8px 25px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255,255,255,0.12);
 }
 
 .todo-header {
@@ -2253,11 +1936,12 @@ body > .settings-container {
 }
 
 .todo-label {
-  font-size: 0.75rem;
-  color: #9ca3af;
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.65rem;
+  color: rgba(255,255,255,0.3);
   text-transform: uppercase;
-  letter-spacing: 1px;
-  font-weight: 500;
+  letter-spacing: 0.14em;
+  font-weight: 400;
 }
 
 .todo-count {
@@ -2265,6 +1949,30 @@ body > .settings-container {
   color: #6b7280;
   font-weight: 400;
 }
+
+.todo-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.todo-clear-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+.todo-clear-btn:hover {
+  color: rgba(239, 68, 68, 0.9);
+  background: rgba(239, 68, 68, 0.1);
+}
+
 
 .todo-input-wrapper {
   display: flex;
@@ -2274,40 +1982,35 @@ body > .settings-container {
 
 .todo-input {
   flex: 1;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
+  background: transparent;
+  border: 1px solid #212327;
+  border-radius: 9999px;
   padding: 10px 15px;
   color: #ffffff;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-family: inherit;
   outline: none;
-  transition: all 0.3s ease;
+  transition: border-color 0.2s ease;
 }
-
 .todo-input:focus {
-  background: rgba(0, 0, 0, 0.3);
-  border-color: #a855f7;
-  box-shadow: 0 0 10px rgba(168, 85, 247, 0.2);
+  border-color: rgba(255,255,255,0.2);
 }
 
 .todo-add-btn {
-  background: rgba(168, 85, 247, 0.1);
-  border: 1px solid rgba(168, 85, 247, 0.3);
-  color: #a855f7;
-  border-radius: 10px;
+  background: transparent;
+  border: 1px solid #212327;
+  color: rgba(255,255,255,0.4);
+  border-radius: 9999px;
   width: 42px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
-
 .todo-add-btn:hover {
-  background: rgba(168, 85, 247, 0.2);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(168, 85, 247, 0.2);
+  border-color: rgba(255,255,255,0.2);
+  color: #fff;
 }
 
 /* Custom internal scrollbar for the tasks */
@@ -2324,8 +2027,8 @@ body > .settings-container {
   width: 4px;
 }
 .todo-list::-webkit-scrollbar-thumb {
-  background: rgba(168, 85, 247, 0.3);
-  border-radius: 4px;
+  background: rgba(139,92,246,0.25);
+  border-radius: 9999px;
 }
 
 .todo-item {
@@ -2359,14 +2062,13 @@ body > .settings-container {
 }
 
 .todo-checkbox:checked {
-  background: #a855f7;
-  border-color: #a855f7;
+  background: #fff;
+  border-color: #fff;
 }
-
 .todo-checkbox:checked::after {
   content: "✓";
   position: absolute;
-  color: white;
+  color: #0a0a0a;
   font-size: 12px;
   font-weight: bold;
   top: 50%;
@@ -2392,7 +2094,7 @@ body > .settings-container {
 .todo-delete-btn {
   background: none;
   border: none;
-  color: #ef4444;
+  color: rgba(255,255,255,0.4);
   cursor: pointer;
   padding: 4px;
   opacity: 0;
