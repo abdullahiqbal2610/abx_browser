@@ -42,17 +42,11 @@ body {
   background: #0a0a0a;
 }
 
-/* Shared: Absolute full-screen overlay */
-.background-container::before,
-.particle-canvas,
-.stars-container {
-  position: absolute;
-  inset: 0;
-}
-
 /* Grid Overlay — Invisible Structure */
 .background-container::before {
   content: "";
+  position: absolute;
+  inset: 0;
   background-image:
     linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
@@ -62,85 +56,75 @@ body {
 }
 
 @keyframes gridShift {
-  0% {
-    transform: translate(0, 0);
-  }
-  100% {
-    transform: translate(60px, 60px);
-  }
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(60px, 60px); }
 }
 
-.particle-canvas {
+/* Nebula Canvas — Full-screen animated aurora */
+.nebula-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
   pointer-events: none;
 }
 
-.stars-container {
+/* Noise Grain Overlay */
+.noise-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.04;
+  background-size: 200px 200px;
+}
+
+/* Floating Dust */
+.dust-field {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
   overflow: hidden;
 }
 
-/* Stars — Monochromatic */
-.star {
+.dust {
   position: absolute;
+  width: 2px;
+  height: 2px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.6);
-  animation: starPulse 6s ease-in-out infinite;
-}
-.star:nth-child(odd) { opacity: 0.4; }
-.star:nth-child(even) { opacity: 0.25; }
-.star:nth-child(3n) { opacity: 0.5; }
-
-@keyframes starPulse {
-  0%, 100% { opacity: 0.3; transform: scale(0.9); }
-  50% { opacity: 0.7; transform: scale(1.05); }
+  animation: dustFloat linear infinite;
 }
 
-/* Enhanced Particles */
-.particle {
-  position: absolute;
-  border-radius: 50%;
-  animation: particleFloat 25s linear infinite;
-}
-
-@keyframes particleFloat {
-  from {
-    transform: translateY(100vh) translateX(-50px) rotate(0deg);
+@keyframes dustFloat {
+  0% {
+    transform: translateY(110vh) translateX(0px);
     opacity: 0;
   }
-  5% {
-    opacity: 0.6;
-  }
-  95% {
-    opacity: 0.6;
-  }
-  to {
-    transform: translateY(-10vh) translateX(50px) rotate(180deg);
+  10% { opacity: 0.8; }
+  90% { opacity: 0.8; }
+  100% {
+    transform: translateY(-10vh) translateX(50px);
     opacity: 0;
   }
 }
 
-@keyframes particleGlow {
-  from {
-    transform: translateY(100vh) translateX(-30px) scale(0.5);
-    opacity: 0;
-    box-shadow: 0 0 0px rgba(139, 92, 246, 0);
-  }
-  10% {
-    opacity: 0.8;
-    box-shadow: 0 0 10px rgba(139, 92, 246, 0.4);
-  }
-  50% {
-    transform: translateY(50vh) translateX(30px) scale(1.2);
-    box-shadow: 0 0 20px rgba(139, 92, 246, 0.6);
-  }
-  90% {
-    opacity: 0.8;
-    box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
-  }
-  to {
-    transform: translateY(-10vh) translateX(60px) scale(0.7);
-    opacity: 0;
-    box-shadow: 0 0 5px rgba(139, 92, 246, 0.2);
-  }
+/* ═══════════════════════════════════════
+   GLASSMORPHISM PANEL SYSTEM
+   ═══════════════════════════════════════ */
+.glass-panel {
+  background: rgba(15, 15, 25, 0.6) !important;
+  backdrop-filter: blur(20px) saturate(1.5);
+  -webkit-backdrop-filter: blur(20px) saturate(1.5);
+  border: 1px solid rgba(139, 92, 246, 0.12) !important;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-panel:hover {
+  background: rgba(20, 20, 35, 0.7) !important;
+  border-color: rgba(139, 92, 246, 0.25) !important;
 }
 
 /* Main Container */
@@ -176,6 +160,16 @@ body {
   overflow: visible;
   padding-bottom: 10px;
 }
+
+.username-glow {
+  background: linear-gradient(135deg, #8b5cf6, #3b82f6, #22d3ee);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% auto;
+  animation: gradientFlow 5s ease infinite;
+  text-shadow: 0 0 25px rgba(139, 92, 246, 0.3);
+}
+
 
 @keyframes gradientFlow {
   0%,
@@ -239,8 +233,9 @@ body {
   letter-spacing: -0.01em;
 }
 .search-input:focus {
-  background: rgba(255,255,255,0.02);
-  border-color: rgba(255,255,255,0.2);
+  background: rgba(139,92,246,0.04);
+  border-color: rgba(139,92,246,0.35);
+  box-shadow: 0 0 25px rgba(139,92,246,0.08), inset 0 0 15px rgba(139,92,246,0.03);
 }
 
 /* 3. The Mic Button (Inside the Input) */
@@ -348,7 +343,6 @@ body {
   margin-right: 18px;
   border-radius: 14px;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .gmail-icon,
@@ -360,7 +354,6 @@ body {
 
 .google-app-item:hover .app-icon {
   transform: rotate(5deg) scale(1.1);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
 }
 
 .app-info {
@@ -438,8 +431,8 @@ body {
 
 .section-toggle:hover {
   color: #ffffff;
-  background: rgba(96, 165, 250, 0.2);
-  border-color: rgba(96, 165, 250, 0.3);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
   transform: scale(1.1);
 }
 
@@ -575,7 +568,7 @@ body {
   transition: all 0.2s ease;
 }
 .glass-panel:hover {
-  border-color: rgba(255,255,255,0.12);
+  border-color: rgba(139,92,246,0.25);
 }
 
 .weather-widget {
@@ -584,8 +577,8 @@ body {
 }
 
 .weather-widget:hover {
-  border-color: rgba(96, 165, 250, 0.2);
-  box-shadow: 0 0 25px rgba(96, 165, 250, 0.15);
+  border-color: rgba(59,130,246,0.3);
+  box-shadow: 0 0 30px rgba(59,130,246,0.08);
 }
 
 /* Weather Loading State */
@@ -634,7 +627,6 @@ body {
 .weather-icon img {
   width: 48px;
   height: 48px;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 .weather-info {
@@ -688,10 +680,10 @@ body {
 }
 
 .weather-refresh:hover {
-  background: rgba(96, 165, 250, 0.1);
-  border-color: rgba(96, 165, 250, 0.2);
-  color: #60a5fa;
-  transform: rotate(180deg); /* This makes it spin! */
+  background: rgba(59,130,246,0.1);
+  border-color: rgba(59,130,246,0.3);
+  color: rgba(59,130,246,0.9);
+  transform: rotate(180deg);
 }
 
 .weather-refresh:active {
@@ -751,19 +743,19 @@ body {
 
 .retry-btn {
   padding: 8px 16px;
-  background: rgba(96, 165, 250, 0.1);
-  border: 1px solid rgba(96, 165, 250, 0.2);
-  border-radius: 8px;
-  color: #60a5fa;
+  background: transparent;
+  border: 1px solid #212327;
+  border-radius: 9999px;
+  color: rgba(255,255,255,0.5);
   cursor: pointer;
   transition: all 0.3s ease;
   font-size: 0.85rem;
 }
 
 .retry-btn:hover {
-  background: rgba(96, 165, 250, 0.2);
-  border-color: rgba(96, 165, 250, 0.4);
-  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #fff;
 }
 
 /* Sports Widget Styles */
@@ -783,8 +775,8 @@ body {
 }
 
 .sports-widget:hover {
-  border-color: rgba(16, 185, 129, 0.2);
-  box-shadow: 0 0 25px rgba(16, 185, 129, 0.15);
+  border-color: rgba(34,211,238,0.3);
+  box-shadow: 0 0 30px rgba(34,211,238,0.08);
 }
 
 /* Sports Header */
@@ -847,10 +839,10 @@ body {
 }
 
 .sports-refresh:hover {
-  background: rgba(16, 185, 129, 0.1);
-  border-color: rgba(16, 185, 129, 0.2);
-  color: #10b981;
-  transform: rotate(180deg); /* This makes it spin! */
+  background: rgba(34,211,238,0.1);
+  border-color: rgba(34,211,238,0.3);
+  color: rgba(34,211,238,0.9);
+  transform: rotate(180deg);
 }
 .sports-refresh:active {
   transform: scale(0.95);
@@ -892,11 +884,11 @@ body {
 }
 
 .last-match .match-label {
-  color: #60a5fa;
+  color: rgba(139,92,246,0.7);
 }
 
 .next-match .match-label {
-  color: #10b981;
+  color: rgba(34,211,238,0.7);
 }
 
 .match-info {
@@ -1036,49 +1028,7 @@ body {
   color: #fff;
 }
 
-/* Enhanced Floating Elements */
-.floating-elements {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: -1;
-}
-
-.floating-element {
-  position: absolute;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    rgba(96, 165, 250, 0.15) 0%,
-    rgba(139, 92, 246, 0.1) 50%,
-    transparent 100%
-  );
-  border: 1px solid rgba(96, 165, 250, 0.1);
-  animation: enhancedFloat 25s linear infinite;
-}
-
-@keyframes enhancedFloat {
-  0% {
-    transform: translateY(100vh) translateX(-100px) rotate(0deg) scale(0.5);
-    opacity: 0;
-  }
-  10% {
-    opacity: 0.6;
-  }
-  50% {
-    transform: translateY(50vh) translateX(0px) rotate(180deg) scale(1.2);
-  }
-  90% {
-    opacity: 0.6;
-  }
-  100% {
-    transform: translateY(-10vh) translateX(100px) rotate(360deg) scale(0.8);
-    opacity: 0;
-  }
-}
+/* (Floating elements removed — replaced by cursor spotlight + noise grain) */
 
 /* Enhanced Animations */
 @keyframes fadeInUp {
@@ -1235,7 +1185,7 @@ body {
 .search-input:focus,
 .google-app-item:hover,
 .bookmark-item:hover {
-  will-change: transform, box-shadow;
+  will-change: transform;
 }
 
 /* High contrast mode support */
@@ -1311,9 +1261,9 @@ body {
 }
 
 .finance-refresh:hover {
-  background: rgba(96, 165, 250, 0.1);
-  border-color: rgba(96, 165, 250, 0.2);
-  color: #60a5fa;
+  background: rgba(251,191,36,0.1);
+  border-color: rgba(251,191,36,0.3);
+  color: rgba(251,191,36,0.9);
   transform: rotate(180deg);
 }
 
@@ -1366,13 +1316,11 @@ body {
   top: 100%;
   left: 0;
   width: 100%;
-  background: rgba(0, 0, 0, 0.85); /* Darker background for readability */
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
+  background: #191919;
+  border: 1px solid #212327;
+  border-radius: 8px;
   margin-top: 10px;
   padding: 10px 0;
-  backdrop-filter: blur(25px);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
   z-index: 1000;
   display: none; /* Hidden by default */
   transform-origin: top;
@@ -1418,7 +1366,7 @@ body {
 }
 
 .suggestion-item:hover .suggestion-icon {
-  color: #60a5fa; /* Blue glow on hover */
+  color: rgba(139,92,246,0.8);
 }
 
 /* The blinking cursor effect */
@@ -1453,21 +1401,21 @@ body {
 
 /* 2. Microphone Active Pulse (Red) */
 .listening-mode {
-  color: #ef4444 !important;
+  color: #ffffff !important;
   animation: pulseMic 1.5s infinite;
 }
 @keyframes pulseMic {
   0% {
     transform: scale(1);
-    filter: drop-shadow(0 0 0 red);
+    opacity: 0.6;
   }
   50% {
     transform: scale(1.2);
-    filter: drop-shadow(0 0 8px red);
+    opacity: 1;
   }
   100% {
     transform: scale(1);
-    filter: drop-shadow(0 0 0 red);
+    opacity: 0.6;
   }
 }
 
@@ -1478,8 +1426,7 @@ body {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(15px);
+  background: rgba(10, 10, 10, 0.92);
   z-index: 99999;
   display: flex;
   justify-content: center;
@@ -1586,21 +1533,22 @@ body {
 
 /* AI Voice Control Button */
 .voice-control-btn {
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  color: #ef4444; /* Red Text */
-  border-radius: 4px;
+  background: transparent;
+  border: 1px solid #212327;
+  color: rgba(255,255,255,0.5);
+  border-radius: 9999px;
   padding: 4px 10px;
   cursor: pointer;
   display: flex;
   align-items: center;
   transition: all 0.2s;
-  font-family: "Courier New", monospace;
+  font-family: 'Geist Mono', monospace;
 }
 
 .voice-control-btn:hover {
-  background: rgba(239, 68, 68, 0.2);
-  box-shadow: 0 0 10px rgba(239, 68, 68, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #fff;
 }
 /* === AI CHAT INPUT (Bottom of Modal) === */
 .ai-input-container {
@@ -1618,15 +1566,14 @@ body {
   gap: 10px;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  border-radius: 9999px;
   padding: 8px 15px;
   transition: all 0.3s ease;
 }
 
 .ai-input-wrapper:focus-within {
-  background: rgba(0, 0, 0, 0.3);
-  border-color: #a855f7;
-  box-shadow: 0 0 15px rgba(168, 85, 247, 0.2);
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255,255,255,0.25);
 }
 
 .ai-reply-input {
@@ -1657,8 +1604,8 @@ body {
 }
 
 .ai-reply-btn:hover {
-  color: #a855f7;
-  background: rgba(168, 85, 247, 0.1);
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
   transform: scale(1.1);
 }
 
@@ -1669,24 +1616,24 @@ body {
 }
 
 .chat-user {
-  color: #60a5fa; /* Blue for User */
+  color: rgba(59,130,246,0.8);
   font-size: 0.9rem;
   font-weight: bold;
   margin-bottom: 5px;
   text-transform: uppercase;
   letter-spacing: 1px;
-  border-left: 2px solid #60a5fa;
+  border-left: 2px solid rgba(59,130,246,0.5);
   padding-left: 10px;
 }
 
 .chat-ai {
-  color: #a855f7; /* Purple for AI */
+  color: rgba(139,92,246,0.7);
   font-size: 0.9rem;
   font-weight: bold;
   margin-bottom: 5px;
   text-transform: uppercase;
   letter-spacing: 1px;
-  border-left: 2px solid #a855f7;
+  border-left: 2px solid rgba(139,92,246,0.4);
   padding-left: 10px;
 }
 
@@ -1721,7 +1668,7 @@ body.ai-active .finance-container {
   border-color: rgba(255,255,255,0.25);
 }
 #aiToggle:hover .arc-reactor-icon {
-  filter: drop-shadow(0 0 4px rgba(255,255,255,0.3));
+  opacity: 1;
 }
 .ai-mode-active #aiToggle {
   color: #fff !important;
@@ -1730,7 +1677,7 @@ body.ai-active .finance-container {
   animation: none;
 }
 .ai-mode-active #aiToggle .arc-reactor-icon {
-  filter: drop-shadow(0 0 6px rgba(255,255,255,0.4)) !important;
+  opacity: 1;
 }
 .ai-mode-active .search-input {
   border-color: rgba(255,255,255,0.2) !important;
@@ -2003,6 +1950,30 @@ body > .settings-container {
   font-weight: 400;
 }
 
+.todo-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.todo-clear-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+.todo-clear-btn:hover {
+  color: rgba(239, 68, 68, 0.9);
+  background: rgba(239, 68, 68, 0.1);
+}
+
+
 .todo-input-wrapper {
   display: flex;
   gap: 10px;
@@ -2056,8 +2027,8 @@ body > .settings-container {
   width: 4px;
 }
 .todo-list::-webkit-scrollbar-thumb {
-  background: rgba(168, 85, 247, 0.3);
-  border-radius: 4px;
+  background: rgba(139,92,246,0.25);
+  border-radius: 9999px;
 }
 
 .todo-item {
@@ -2123,7 +2094,7 @@ body > .settings-container {
 .todo-delete-btn {
   background: none;
   border: none;
-  color: #ef4444;
+  color: rgba(255,255,255,0.4);
   cursor: pointer;
   padding: 4px;
   opacity: 0;

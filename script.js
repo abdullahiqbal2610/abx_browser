@@ -1,10 +1,7 @@
 // xAI Chrome Extension - Main Script with Sports Widget
 class XAIExtension {
   constructor() {
-    this.particles = [];
     this.chatHistory = [];
-    this.activeParticles = 0;
-    this.animationId = null;
     this.settings = {
       animationsEnabled: true,
       particleCount: 15,
@@ -59,11 +56,6 @@ class XAIExtension {
     this.updateTime();
     this.loadBookmarks();
     this.loadHistory();
-    this.createStars();
-    this.createFloatingElements();
-    if (this.settings.animationsEnabled) {
-      this.initParticleSystem();
-    }
     setInterval(() => this.updateTime(), 1000);
   }
 
@@ -132,10 +124,6 @@ class XAIExtension {
         this.showGoogleApps();
       });
     }
-
-    document.addEventListener("mousemove", (e) => {
-      this.handleMouseMove(e);
-    });
 
     this.setupSectionToggleListeners();
 
@@ -365,62 +353,52 @@ class XAIExtension {
   updateGreeting() {
     const greetingElement = document.getElementById("greetingText");
     const hour = new Date().getHours();
-    let greeting = "Welcome back";
+    let timeGreeting = "Good Evening";
+    if (hour < 12) timeGreeting = "Good Morning";
+    else if (hour < 18) timeGreeting = "Good Afternoon";
 
-    // 1. Calculate the correct text (Your existing logic)
-    if (this.settings.userName) {
-      if (hour < 12) {
-        greeting = `Good Morning, ${this.settings.userName}`;
-      } else if (hour < 18) {
-        greeting = `Good Afternoon, ${this.settings.userName}`;
-      } else {
-        greeting = `Good Evening, ${this.settings.userName}`;
-      }
-    } else {
-      if (hour < 12) {
-        greeting = "Good Morning";
-      } else if (hour < 18) {
-        greeting = "Good Afternoon";
-      } else {
-        greeting = "Good Evening";
-      }
-    }
+    const hasName = this.settings.userName && this.settings.userName.trim() !== "";
+    const nameStr = hasName ? `, ${this.settings.userName}` : "";
+    const fullText = timeGreeting + nameStr;
+    const immediateHTML = timeGreeting + (hasName ? `, <span class="username-glow">${this.settings.userName}</span>` : "");
 
-    // 2. The Typewriter Logic (New addition)
     // Check if we have already shown the animation in this session
     if (sessionStorage.getItem("greetingShown")) {
-      // If yes, just show the text immediately (no animation)
-      greetingElement.textContent = greeting;
+      // If yes, just show the HTML immediately (no animation)
+      greetingElement.innerHTML = immediateHTML;
     } else {
       // If no, run the typewriter effect
-
-      // Clear existing text and add the cursor
       greetingElement.innerHTML = '<span class="typewriter-cursor"></span>';
-
       let i = 0;
-      const typeWriter = () => {
-        if (i < greeting.length) {
-          let cursor = greetingElement.querySelector(".typewriter-cursor");
-          // Create the letter node
-          let letter = document.createTextNode(greeting.charAt(i));
+      let currentContainer = greetingElement;
 
-          // Insert letter BEFORE the cursor so the cursor stays at the end
-          if (cursor) {
-            greetingElement.insertBefore(letter, cursor);
+      const typeWriter = () => {
+        if (i < fullText.length) {
+          let cursor = greetingElement.querySelector(".typewriter-cursor");
+          
+          // Switch to writing inside the span when we reach the username
+          if (hasName && i === timeGreeting.length + 2) {
+            let nameSpan = document.createElement("span");
+            nameSpan.className = "username-glow";
+            greetingElement.insertBefore(nameSpan, cursor);
+            currentContainer = nameSpan;
+          }
+
+          let letter = document.createTextNode(fullText.charAt(i));
+          
+          if (currentContainer === greetingElement) {
+             greetingElement.insertBefore(letter, cursor);
+          } else {
+             currentContainer.appendChild(letter);
           }
 
           i++;
-
-          // Humanize the typing speed (random between 50ms and 150ms)
           let randomSpeed = Math.floor(Math.random() * (150 - 50 + 1) + 50);
           setTimeout(typeWriter, randomSpeed);
         } else {
-          // Animation finished: set the flag so it doesn't run again on refresh
           sessionStorage.setItem("greetingShown", "true");
         }
       };
-
-      // Start the loop
       typeWriter();
     }
   }
@@ -583,103 +561,7 @@ class XAIExtension {
     return current;
   }
 
-  createStars() {
-    const starsContainer = document.getElementById("starsContainer");
-    const starCount = 240; // The sweet spot
-
-    starsContainer.innerHTML = "";
-
-    for (let i = 0; i < starCount; i++) {
-      const star = document.createElement("div");
-      star.className = "star";
-
-      // Random placement
-      star.style.left = Math.random() * 100 + "%";
-      star.style.top = Math.random() * 100 + "%";
-
-      // Random timing so they don't blink in unison
-      star.style.animationDelay = Math.random() * 4 + "s";
-      star.style.animationDuration = Math.random() * 3 + 3 + "s"; // Slower, calmer pulsing
-
-      // Random Size (This is key for depth!)
-      // Some are tiny (1px), some are closer (2.5px)
-      const size = Math.random() * 1.5 + 1;
-      star.style.width = size + "px";
-      star.style.height = size + "px";
-
-      starsContainer.appendChild(star);
-    }
-  }
-
-  createFloatingElements() {
-    const floatingContainer = document.getElementById("floatingElements");
-    const elementCount = 5;
-
-    for (let i = 0; i < elementCount; i++) {
-      const element = document.createElement("div");
-      element.className = "floating-element floating-circle";
-      element.style.left = Math.random() * 100 + "%";
-      element.style.animationDelay = Math.random() * 20 + "s";
-      element.style.animationDuration = Math.random() * 15 + 20 + "s";
-
-      const size = Math.random() * 6 + 3;
-      element.style.width = size + "px";
-      element.style.height = size + "px";
-
-      floatingContainer.appendChild(element);
-    }
-  }
-
-  initParticleSystem() {
-    for (let i = 0; i < this.settings.particleCount; i++) {
-      this.createParticle();
-    }
-    this.animateParticles();
-  }
-
-  createParticle() {
-    if (this.activeParticles >= this.settings.particleCount) return;
-
-    const particle = document.createElement("div");
-    const particleTypes = ["circle", "glow"];
-    const randomType =
-      particleTypes[Math.floor(Math.random() * particleTypes.length)];
-
-    particle.className = `particle particle-${randomType}`;
-    particle.style.left = Math.random() * window.innerWidth + "px";
-
-    const size = Math.random() * 4 + 1;
-    particle.style.width = size + "px";
-    particle.style.height = size + "px";
-
-    particle.style.animationDelay = Math.random() * 5 + "s";
-    particle.style.animationDuration = Math.random() * 10 + 20 + "s";
-
-    document.getElementById("particleCanvas").appendChild(particle);
-    this.activeParticles++;
-
-    setTimeout(() => {
-      if (particle.parentNode) {
-        particle.parentNode.removeChild(particle);
-        this.activeParticles--;
-      }
-    }, 30000);
-  }
-
-  animateParticles() {
-    setInterval(() => {
-      if (
-        this.settings.animationsEnabled &&
-        this.activeParticles < this.settings.particleCount
-      ) {
-        this.createParticle();
-      }
-    }, 1500);
-  }
-
-  handleMouseMove(e) {
-    // Smoke trail is now handled by the Canvas engine in newtab.html
-  }
+  // Mouse tracking is now handled by the Cursor Spotlight engine in newtab.html
 
   openSettings() {
     try {
@@ -2174,6 +2056,17 @@ class XAIExtension {
         if (e.key === "Enter") {
           this.addTodo(input.value);
           input.value = "";
+        }
+      });
+    }
+
+    const clearBtn = document.getElementById("clearTodoBtn");
+    if (clearBtn) {
+      clearBtn.addEventListener("click", () => {
+        if (this.settings.todoList.length > 0 && confirm("Are you sure you want to clear all tasks?")) {
+          this.settings.todoList = [];
+          this.saveSettings();
+          this.renderTodoList();
         }
       });
     }

@@ -10,13 +10,16 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div class="background-container">
-      <div class="particle-canvas" id="particleCanvas"></div>
-      <div class="stars-container" id="starsContainer"></div>
-    </div>
+    <div class="background-container"></div>
 
-    <!-- Smoke Trail Canvas -->
-    <canvas id="smokeCanvas" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;"></canvas>
+    <!-- Nebula Canvas — animated smoky aurora -->
+    <canvas id="nebulaCanvas" class="nebula-canvas"></canvas>
+
+    <!-- Noise Grain Overlay -->
+    <div id="noiseOverlay" class="noise-overlay"></div>
+
+    <!-- Floating Dust -->
+    <div id="dustField" class="dust-field"></div>
 
     <div class="dashboard-layout">
       <aside class="sidebar left-sidebar">
@@ -321,7 +324,7 @@
           <div class="google-apps-container">
             <a
               href="https://mail.google.com"
-              class="google-app-item gmail-app"
+              class="google-app-item gmail-app glass-panel"
               target="_self"
             >
               <div class="app-icon gmail-icon flex-center">
@@ -348,7 +351,7 @@
               <div class="app-glow"></div>
             </a>
 
-            <div class="google-app-item apps-launcher" id="appsLauncher">
+            <div class="google-app-item apps-launcher glass-panel" id="appsLauncher">
               <div class="app-icon apps-icon flex-center">
                 <svg
                   width="24"
@@ -475,7 +478,7 @@
         </div>
 
         <div class="finance-container">
-          <div class="finance-widget" id="financeWidget">
+          <div class="finance-widget glass-panel" id="financeWidget">
             <div class="finance-header">
               <span class="finance-label">Market</span>
               <button
@@ -528,10 +531,18 @@
         </div>
 
         <div class="todo-container">
-          <div class="todo-widget" id="todoWidget">
+          <div class="todo-widget glass-panel" id="todoWidget">
             <div class="todo-header">
               <span class="todo-label">Tasks</span>
-              <span class="todo-count" id="todoCount">0 done</span>
+              <div class="todo-header-actions">
+                <span class="todo-count" id="todoCount">0 done</span>
+                <button id="clearTodoBtn" class="todo-clear-btn" title="Clear All Tasks">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                </button>
+              </div>
             </div>
 
             <div class="todo-input-wrapper">
@@ -659,86 +670,7 @@
       </div>
     </div>
 
-    <div class="floating-elements" id="floatingElements"></div>
-
-    <!-- Smoke Trail Engine -->
-    <script>
-    (function(){
-      const c=document.getElementById('smokeCanvas');
-      if(!c)return;
-      const ctx=c.getContext('2d');
-      let w,h;
-      function resize(){w=c.width=window.innerWidth;h=c.height=window.innerHeight;}
-      resize();
-      window.addEventListener('resize',resize);
-      let mx=0,my=0,px=0,py=0,particles=[];
-      document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
-      class P{
-        constructor(x,y,vx,vy,size){
-          this.x=x;this.y=y;this.vx=vx;this.vy=vy;
-          this.size=size;this.life=1;
-          this.decay=0.008+Math.random()*0.012;
-          this.noise=Math.random()*6.28;
-          this.noiseSpeed=0.02+Math.random()*0.03;
-        }
-        update(){
-          this.noise+=this.noiseSpeed;
-          this.x+=this.vx+Math.sin(this.noise)*0.3;
-          this.y+=this.vy+Math.cos(this.noise)*0.3;
-          this.vx*=0.98;this.vy*=0.98;
-          this.life-=this.decay;
-          this.size*=0.995;
-        }
-        draw(){
-          if(this.life<=0)return;
-          let flicker=0.7+Math.sin(this.noise*3)*0.3;
-          let a=this.life*0.12*flicker;
-          ctx.beginPath();
-          ctx.arc(this.x,this.y,this.size,0,Math.PI*2);
-          ctx.fillStyle='rgba(255,255,255,'+a+')';
-          ctx.fill();
-        }
-      }
-      function loop(){
-        ctx.globalCompositeOperation='source-over';
-        ctx.fillStyle='rgba(10,10,10,0.08)';
-        ctx.fillRect(0,0,w,h);
-        ctx.globalCompositeOperation='lighter';
-        let dx=mx-px,dy=my-py;
-        let speed=Math.sqrt(dx*dx+dy*dy);
-        let count=Math.min(Math.floor(speed*0.4),12);
-        for(let i=0;i<count;i++){
-          let t=i/count;
-          let x=px+dx*t;
-          let y=py+dy*t;
-          let spread=Math.min(speed*0.15,8);
-          let size=Math.min(speed*0.3,25)+Math.random()*4;
-          particles.push(new P(
-            x+(Math.random()-0.5)*spread*2,
-            y+(Math.random()-0.5)*spread*2,
-            (Math.random()-0.5)*spread*0.3,
-            (Math.random()-0.5)*spread*0.3-0.2,
-            size
-          ));
-        }
-        if(speed<2&&Math.random()<0.3){
-          particles.push(new P(mx,my,
-            (Math.random()-0.5)*0.2,(Math.random()-0.5)*0.2,
-            6+Math.random()*4));
-        }
-        for(let i=particles.length-1;i>=0;i--){
-          particles[i].update();
-          particles[i].draw();
-          if(particles[i].life<=0||particles[i].size<0.3)particles.splice(i,1);
-        }
-        if(particles.length>600)particles.splice(0,particles.length-600);
-        px=mx;py=my;
-        requestAnimationFrame(loop);
-      }
-      loop();
-    })();
-    </script>
-
+    <script src="effects.js"></script>
     <script src="script.js"></script>
   </body>
 </html>

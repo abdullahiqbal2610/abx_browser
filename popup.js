@@ -2,8 +2,6 @@
 class PopupController {
   constructor() {
     this.settings = {
-      animationsEnabled: true,
-      particleCount: 15,
       userName: "",
       customBookmarks: [],
       weather: {
@@ -63,25 +61,6 @@ class PopupController {
         this.settings.userName = e.target.value;
       });
     }
-
-    const animationsToggle = document.getElementById("animationsEnabled");
-    if (animationsToggle) {
-      animationsToggle.addEventListener("change", (e) => {
-        this.settings.animationsEnabled = e.target.checked;
-      });
-    }
-
-    const particleSlider = document.getElementById("particleCount");
-    const particleValue = document.getElementById("particleValue");
-    if (particleSlider) {
-      particleSlider.addEventListener("input", (e) => {
-        const value = parseInt(e.target.value);
-        this.settings.particleCount = value;
-        particleValue.textContent = value;
-      });
-    }
-
-    // ... inside setupEventListeners, after Finance settings ...
 
     // --- AI Settings ---
     const geminiApiKey = document.getElementById("geminiApiKey");
@@ -199,12 +178,6 @@ class PopupController {
   updateUI() {
     // Basic
     document.getElementById("userName").value = this.settings.userName || "";
-    document.getElementById("animationsEnabled").checked =
-      this.settings.animationsEnabled;
-    document.getElementById("particleCount").value =
-      this.settings.particleCount;
-    document.getElementById("particleValue").textContent =
-      this.settings.particleCount;
 
     // AI
     if (this.settings.ai) {
@@ -294,8 +267,6 @@ class PopupController {
   handleReset() {
     if (confirm("Reset all settings to default?")) {
       const defaultSettings = {
-        animationsEnabled: true,
-        particleCount: 15,
         userName: "",
         customBookmarks: [],
         weather: {
