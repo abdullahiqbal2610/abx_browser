@@ -166,7 +166,7 @@ body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-size: 200% auto;
-  animation: gradientFlow 5s ease infinite;
+  animation: gradientFlow 3s ease infinite;
   text-shadow: 0 0 25px rgba(139, 92, 246, 0.3);
 }
 
