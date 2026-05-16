@@ -1,8 +1,8 @@
 # 🌌 ABX-One: The Intelligent Command Center
 
-**ABX-One** is not just a Chrome Extension; it is a fully immersive **J.A.R.V.I.S.-inspired interface** for your browser.
+**ABX-One** is not just a Chrome Extension; it is a fully immersive **sci-fi inspired command center** for your browser.
 
-Combining a cinematic "Void Energy" aesthetic with the power of **Google Gemini 2.5 Flash**, ABX-One transforms your new tab into a voice-activated, context-aware AI dashboard. It features live widgets (Weather, Sports, Finance Ticker, Tasks), a 3D parallax starfield, and a fully conversational AI HUD.
+Combining an aggressive, minimalist **x.ai aesthetic** with the power of **Google Gemini**, ABX-One transforms your new tab into a voice-activated, context-aware AI dashboard. It features a dynamic **Nebula Effects Engine**, glassmorphic live widgets, and a fully conversational AI HUD.
 
 ---
 
@@ -20,19 +20,20 @@ Combining a cinematic "Void Energy" aesthetic with the power of **Google Gemini 
 
 ### 🎨 **Immersive Visuals**
 
-- **Void Reactor Core:** The AI toggle is a custom-animated "Arc Reactor" SVG that pulses with neon purple energy.
-- **3D Parallax Starfield:** A living background with **240 stars** of varying depths, sizes, and glow intensities.
-- **Glassmorphism UI:** Frosted glass panels for widgets and inputs.
-- **Dynamic Animations:** Smooth transitions, hover effects, and "breathing" light elements.
-- **Mouse Trail Effect:** A subtle purple particle trail follows your cursor when animations are enabled.
-- **Typewriter Greeting:** Your personalized greeting types out letter-by-letter on the first visit of each session.
+- **x.ai Minimalist Dark Mode:** An aggressive, clean aesthetic featuring solid #0a0a0a surfaces, pill-shaped components, and 1px hairline borders.
+- **Nebula Effects Engine:** A high-performance, canvas-based background system rendering a multi-colored animated aurora that subtly tracks your cursor.
+- **Procedural Noise Overlay:** A fine-grain texture overlay that adds organic depth and a premium film-grain feel.
+- **Floating Dust Particles:** Over 200 color-tinted "dust" particles that drift upward, creating a living, breathing atmosphere.
+- **Glassmorphism 2.0:** Deep frosted-glass panels (`backdrop-filter: blur`) for all widgets, allowing the nebula effects to shimmer through.
+- **Sci-Fi Accent Glows:** Interactive components feature vibrant color-tinted glows (Purple, Blue, Cyan, Gold) on hover and focus.
+- **Dynamic Shimmer Greeting:** Your personalized greeting types out with a shimmering, animated color-gradient on your username.
 
 ### 🧩 **Smart Widgets**
 
 - **🌤️ Live Weather:** Auto-detects your location via GPS or uses a custom city name. Shows temperature, "feels like", humidity, and wind speed. Supports Celsius and Fahrenheit.
 - **⚽ Sports Tracker:** Tracks your favorite team using ESPN's unofficial API. Shows the last match result (score, competition, date) and the next upcoming fixture.
 - **💹 Finance Ticker:** Live currency/crypto exchange rate for any configurable pair (e.g., BTC → USD) powered by the AlphaVantage API.
-- **✅ Tasks (To-Do):** A persistent to-do list widget. Add, complete, and delete tasks — all saved locally so they survive browser restarts.
+- **✅ Tasks (To-Do):** A persistent to-do list widget. Add, complete, and delete tasks. Includes a **Clear All** feature with a secure confirmation prompt.
 - **⚡ Smart Search:** Intelligent omnibox that differentiates between URLs and search queries. Includes real-time **Google Autocomplete** suggestions as you type.
 
 ### 📌 **Quick Access & History**
@@ -143,6 +144,20 @@ Combining a cinematic "Void Energy" aesthetic with the power of **Google Gemini 
 - 🔄 **UPDATED:** Starfield background expanded to **240 stars** with depth variation.
 - 🔄 **UPDATED:** Sports widget shows both last match score and next upcoming fixture.
 - 🔄 **FIXED:** 404 Model Not Found errors by migrating to stable Gemini endpoints.
+
+### Version 4.0.0 (The Nebula Update)
+
+- ✨ **NEW:** Comprehensive UI overhaul inspired by the **x.ai** minimalist aesthetic.
+- ✨ **NEW:** **Nebula Background Engine** — Animated, color-blended aurora effect using externalized `effects.js` (CSP Compliant).
+- ✨ **NEW:** **Atmospheric Dust Field** — 200+ procedural particles with randomized drift and color tints.
+- ✨ **NEW:** **Glassmorphism Overhaul** — Frosted glass panels applied to all widgets, including Gmail, Apps, and Settings.
+- ✨ **NEW:** **Sci-Fi Color System** — Targeted accent glows for interactive states (Purple/Blue/Cyan/Gold palette).
+- ✨ **NEW:** **Shimmer Greeting** — Username now features a shimmering, animated color gradient during the typewriter effect.
+- ✨ **NEW:** **Clear All Tasks** — Added a trash icon to the Todo widget for batch-clearing tasks.
+- 🔄 **UPDATED:** Settings Popup redesigned with a nebula-inspired background and glassmorphic inputs.
+- 🔄 **UPDATED:** Removed legacy particle/starfield logic in favor of the new high-performance Canvas engine.
+- 🔄 **TECHNICAL:** Fully CSP-compliant background effects (removed all inline scripts).
+- 🔄 **FIXED:** Resolved stray syntax errors in `popup.js` that caused settings to hang.
 
 ---
 
