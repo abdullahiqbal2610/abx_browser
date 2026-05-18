@@ -573,36 +573,40 @@ class XAIExtension {
 
   showGoogleApps() {
     const modal = document.createElement("div");
+    modal.id = "googleAppsModal";
     modal.style.cssText = `
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.9);
+      background: rgba(10, 10, 10, 0.6);
       display: flex;
       align-items: center;
       justify-content: center;
       z-index: 10000;
-      backdrop-filter: blur(15px);
+      backdrop-filter: blur(12px);
+      animation: modalBackdropFade 0.3s ease forwards;
     `;
 
     const modalContent = document.createElement("div");
     modalContent.style.cssText = `
-      background: rgba(0, 0, 0, 0.98);
-      border: 1px solid rgba(255, 255, 255, 0.03);
+      background: rgba(15, 15, 25, 0.65);
+      border: 1px solid rgba(139, 92, 246, 0.2);
       border-radius: 20px;
       padding: 40px;
       max-width: 500px;
       width: 90%;
       color: white;
-      backdrop-filter: blur(30px);
-      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(25px);
+      box-shadow: 0 0 40px rgba(139, 92, 246, 0.15), 0 25px 50px rgba(0, 0, 0, 0.5);
+      animation: modalSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     `;
 
     // Updated with SVG Icons instead of Emojis
+    // Updated with SVG Icons instead of Emojis
     modalContent.innerHTML = `
-      <h3 style="margin-bottom: 30px; font-size: 1.8rem; color: #a855f7; text-align: center;">Google Workspace</h3>
+      <h3 style="margin-bottom: 30px; font-size: 1.8rem; color: #c4b5fd; text-shadow: 0 0 15px rgba(139,92,246,0.5); text-align: center; letter-spacing: -0.02em;">Google Workspace</h3>
       <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px;">
         
         <a href="https://drive.google.com" target="_self" class="app-link">
@@ -654,49 +658,83 @@ class XAIExtension {
 
     const modalStyle = document.createElement("style");
     modalStyle.textContent = `
+      @keyframes modalBackdropFade {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      @keyframes modalSlideUp {
+        from { opacity: 0; transform: translateY(20px) scale(0.98); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+      }
+      @keyframes appLinkFade {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
       .app-link {
         display: flex;
         flex-direction: column;
         align-items: center;
         padding: 18px;
-        background: rgba(255,255,255,0.008);
-        border: 1px solid rgba(255,255,255,0.02);
+        background: rgba(15, 15, 25, 0.4);
+        border: 1px solid rgba(255,255,255,0.05);
         border-radius: 12px;
         text-decoration: none;
-        color: white;
-        transition: all 0.3s ease;
-        font-size: 0.9rem;
+        color: rgba(255,255,255,0.8);
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        font-size: 0.85rem;
+        letter-spacing: 0.02em;
+        opacity: 0;
+        animation: appLinkFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
       }
+      .app-link:nth-child(1) { animation-delay: 0.05s; }
+      .app-link:nth-child(2) { animation-delay: 0.1s; }
+      .app-link:nth-child(3) { animation-delay: 0.15s; }
+      .app-link:nth-child(4) { animation-delay: 0.2s; }
+      .app-link:nth-child(5) { animation-delay: 0.25s; }
+      .app-link:nth-child(6) { animation-delay: 0.3s; }
+      
       .app-link:hover {
-        background: rgba(255,255,255,0.03);
-        transform: translateY(-3px);
-        border-color: rgba(124,58,237,0.3);
+        background: rgba(139, 92, 246, 0.1);
+        transform: translateY(-4px);
+        border-color: rgba(139, 92, 246, 0.4);
+        color: #ffffff;
+        box-shadow: 0 8px 20px rgba(139, 92, 246, 0.15);
       }
       .app-icon-dark {
-        width: 36px;
-        height: 36px;
-        background: linear-gradient(135deg, #333333, #555555);
-        border: 1px solid rgba(255,255,255,0.1);
-        border-radius: 8px;
-        margin-bottom: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-      }
-      .close-modal-btn {
-        padding: 12px 24px;
+        width: 40px;
+        height: 40px;
         background: rgba(255,255,255,0.03);
         border: 1px solid rgba(255,255,255,0.08);
         border-radius: 10px;
-        color: white;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #c4b5fd;
+        transition: all 0.3s ease;
+      }
+      .app-link:hover .app-icon-dark {
+        background: rgba(139, 92, 246, 0.2);
+        color: #ffffff;
+        border-color: rgba(139, 92, 246, 0.5);
+        box-shadow: 0 0 15px rgba(139, 92, 246, 0.3) inset;
+      }
+      .close-modal-btn {
+        padding: 10px 28px;
+        background: rgba(15, 15, 25, 0.6);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 9999px;
+        color: rgba(255,255,255,0.5);
         cursor: pointer;
         transition: all 0.3s ease;
-        font-size: 14px;
+        font-size: 0.85rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
       }
       .close-modal-btn:hover {
-        background: rgba(255,255,255,0.08);
-        border-color: rgba(124,58,237,0.3);
+        background: rgba(255,255,255,0.05);
+        border-color: rgba(255,255,255,0.25);
+        color: #ffffff;
       }
     `;
     document.head.appendChild(modalStyle);
