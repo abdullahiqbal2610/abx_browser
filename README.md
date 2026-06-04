@@ -145,6 +145,14 @@ Combining an aggressive, minimalist **x.ai aesthetic** with the power of **Googl
 - 🔄 **UPDATED:** Sports widget shows both last match score and next upcoming fixture.
 - 🔄 **FIXED:** 404 Model Not Found errors by migrating to stable Gemini endpoints.
 
+### Version 4.1.0 (The Refinement Update)
+
+- ✨ **NEW:** **Edit Tasks** — Double-click or click the edit icon on any Todo task to modify its text.
+- ✨ **NEW:** **Auto-Cleanup Completed Tasks** — Tasks marked as complete are automatically removed after 5 seconds of inactivity.
+- ✨ **NEW:** **Compact AI Chat Terminal** — Reduced message spacing and improved prompt container sizes to show more chat history at once.
+- 🔄 **UPDATED:** **Workspace Panel glassmorphism** — Translucent glass panel effects extended to the Google Workspace apps launcher modal.
+- 🔄 **UPDATED:** **Prominent Shimmer Glow** — Fast purple-to-white-to-blue shimmering color-gradient animation for the username greeting.
+
 ### Version 4.0.0 (The Nebula Update)
 
 - ✨ **NEW:** Comprehensive UI overhaul inspired by the **x.ai** minimalist aesthetic.

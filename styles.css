@@ -2090,8 +2090,8 @@ body > .settings-container {
   color: #6b7280;
 }
 
-/* Delete Button (Hidden until hover) */
-.todo-delete-btn {
+/* Action Buttons (Hidden until hover) */
+.todo-action-btn {
   background: none;
   border: none;
   color: rgba(255,255,255,0.4);
@@ -2104,13 +2104,21 @@ body > .settings-container {
   justify-content: center;
 }
 
-.todo-item:hover .todo-delete-btn {
+.todo-item:hover .todo-action-btn {
   opacity: 0.7;
 }
 
-.todo-delete-btn:hover {
+.todo-action-btn:hover {
   opacity: 1 !important;
   transform: scale(1.15);
+}
+
+.todo-edit-btn:hover {
+  color: rgba(59,130,246,0.9); /* Blue hover for edit */
+}
+
+.todo-delete-btn:hover {
+  color: rgba(239,68,68,0.9); /* Red hover for delete */
 }
 
 /* =========================================
