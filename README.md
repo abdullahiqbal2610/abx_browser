@@ -33,6 +33,7 @@ Combining an aggressive, minimalist **x.ai aesthetic** with the power of **Googl
 - **🌤️ Live Weather:** Auto-detects your location via GPS or uses a custom city name. Shows temperature, "feels like", humidity, and wind speed. Supports Celsius and Fahrenheit.
 - **⚽ Sports Tracker:** Tracks your favorite team using ESPN's unofficial API. Shows the last match result (score, competition, date) and the next upcoming fixture.
 - **💹 Finance Ticker:** Live currency/crypto exchange rate for any configurable pair (e.g., BTC → USD) powered by the AlphaVantage API.
+- **🪙 Gold Price Ticker:** Live gold ounce price in USD with percentage change, cached refresh logic, and manual retry/refresh controls powered by GoldPrice API.
 - **✅ Tasks (To-Do):** A persistent to-do list widget. Add, complete, and delete tasks. Includes a **Clear All** feature with a secure confirmation prompt.
 - **⚡ Smart Search:** Intelligent omnibox that differentiates between URLs and search queries. Includes real-time **Google Autocomplete** suggestions as you type.
 
@@ -117,6 +118,7 @@ Combining an aggressive, minimalist **x.ai aesthetic** with the power of **Googl
 | **Weather**     | OpenWeatherMap API (Geocoding + Current Weather)            |
 | **Sports**      | ESPN Unofficial API (Team Search, Last/Next Events)             |
 | **Finance**     | AlphaVantage API (`CURRENCY_EXCHANGE_RATE`)                 |
+| **Gold**        | GoldPrice API (`data-asg.goldprice.org/dbXRates/USD`)      |
 | **Search**      | Google Suggest API (Autocomplete)                           |
 | **Storage**     | `chrome.storage.local`                                      |
 | **Architecture**| Chrome Extension Manifest V3                               |
@@ -125,6 +127,13 @@ Combining an aggressive, minimalist **x.ai aesthetic** with the power of **Googl
 ---
 
 ## 📢 Changelog
+
+### Version 4.2.0 (The Gold Ticker Update)
+
+- ✨ **NEW:** **Gold Price Widget** — Live XAU (ounce) value in USD with positive/negative daily movement indicator.
+- ✨ **NEW:** **Gold Data Caching + Auto Refresh** — Cached responses with periodic refresh for smoother API usage.
+- ✨ **NEW:** **Gold Retry & Manual Refresh Controls** — One-click refresh and retry option when API data is unavailable.
+- 🔄 **UPDATED:** Added GoldPrice API host permission in Manifest V3 to support live gold data fetching.
 
 ### Version 3.0.0 (The J.A.R.V.I.S. Update)
 
@@ -173,4 +182,4 @@ Combining an aggressive, minimalist **x.ai aesthetic** with the power of **Googl
 
 ### 🏷️ Tags
 
-`#AI` `#Jarvis` `#ChromeExtension` `#Gemini` `#Productivity` `#VoiceControl` `#WebDev` `#Todo` `#Weather` `#Sports` `#Finance`
+`#AI` `#Jarvis` `#ChromeExtension` `#Gemini` `#Productivity` `#VoiceControl` `#WebDev` `#Todo` `#Weather` `#Sports` `#Finance` `#Gold`
