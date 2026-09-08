@@ -22,6 +22,10 @@ class PopupController {
         apiKey: "",
         cacheDuration: 900000, // 15 mins
       },
+      gold: {
+        enabled: true,
+        cacheDuration: 900000,
+      },
       ai: {
         enabled: false,
         apiKey: "",
@@ -45,6 +49,7 @@ class PopupController {
           ...this.settings,
           ...result.xaiSettings,
           finance: { ...this.settings.finance, ...result.xaiSettings.finance },
+          gold: { ...this.settings.gold, ...result.xaiSettings.gold },
           ai: { ...this.settings.ai, ...result.xaiSettings.ai },
         };
       }
@@ -155,6 +160,15 @@ class PopupController {
       });
     }
 
+    // --- Gold Settings ---
+    const goldEnabled = document.getElementById("goldEnabled");
+    if (goldEnabled) {
+      goldEnabled.addEventListener("change", (e) => {
+        if (!this.settings.gold) this.settings.gold = {};
+        this.settings.gold.enabled = e.target.checked;
+      });
+    }
+
     // --- Buttons ---
     document.getElementById("saveBtn").addEventListener("click", () => {
       this.handleSave();
@@ -216,6 +230,12 @@ class PopupController {
       document.getElementById("financeApiKey").value =
         this.settings.finance.apiKey || "";
     }
+
+    // Gold
+    if (this.settings.gold) {
+      document.getElementById("goldEnabled").checked =
+        this.settings.gold.enabled !== false;
+    }
   }
 
   async handleSave() {
@@ -240,6 +260,7 @@ class PopupController {
                 weatherChanged: true,
                 sportsChanged: true,
                 financeChanged: true, // Force refresh finance
+                goldChanged: true,
               },
               () => {
                 if (chrome.runtime.lastError) {
@@ -284,6 +305,10 @@ class PopupController {
           fromCurrency: "BTC",
           toCurrency: "USD",
           apiKey: "",
+          cacheDuration: 900000,
+        },
+        gold: {
+          enabled: true,
           cacheDuration: 900000,
         },
       };
