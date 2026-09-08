@@ -1764,9 +1764,33 @@ class XAIExtension {
         throw new Error("Invalid gold data");
       }
 
+      const currentPrice = parseFloat(json.price);
+      let changePct = null;
+
+      try {
+        // Fetch yesterday's price to calculate daily change
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yyyy = yesterday.getFullYear();
+        const mm = String(yesterday.getMonth() + 1).padStart(2, '0');
+        const dd = String(yesterday.getDate()).padStart(2, '0');
+        const dateStr = `${yyyy}-${mm}-${dd}`;
+        
+        const histUrl = `https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@${dateStr}/v1/currencies/xau.json`;
+        const histRes = await fetch(histUrl);
+        const histJson = await histRes.json();
+        
+        if (histJson && histJson.xau && histJson.xau.usd) {
+          const yesterdayPrice = parseFloat(histJson.xau.usd);
+          changePct = ((currentPrice - yesterdayPrice) / yesterdayPrice) * 100;
+        }
+      } catch(e) {
+        console.warn("Failed to fetch historical gold data for change percentage", e);
+      }
+
       const data = {
-        price: parseFloat(json.price),
-        changePct: null,
+        price: currentPrice,
+        changePct: changePct,
         time: new Date().toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
@@ -1793,11 +1817,11 @@ class XAIExtension {
 
     const changeEl = document.getElementById("goldChange");
     if (data.changePct !== null && data.changePct !== undefined) {
-      let sign = data.changePct > 0 ? "+" : "";
+      let sign = data.changePct > 0 ? "▲ +" : (data.changePct < 0 ? "▼ " : "");
       changeEl.textContent = sign + data.changePct.toFixed(2) + "%";
       // Add specific styling for positive/negative change
       changeEl.className = data.changePct >= 0 ? "gold-change-up" : "gold-change-down";
-      changeEl.style.display = "inline";
+      changeEl.style.display = "inline-block";
     } else {
       changeEl.style.display = "none";
     }

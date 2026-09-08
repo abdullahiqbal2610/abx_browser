@@ -565,9 +565,12 @@
               style="display: none"
             >
               <div class="gold-main">
-                <div class="ticker-rate" id="goldRate">--.--</div>
+                <div class="ticker-rate" style="display: flex; align-items: center; justify-content: space-between;">
+                  <span id="goldRate">--.--</span>
+                  <span id="goldChange" style="font-size: 1rem; font-weight: 500; display: none;">--</span>
+                </div>
                 <div class="ticker-pair">
-                  <span id="goldChange">--</span>
+                  <span>USD / Ounce</span>
                 </div>
               </div>
               <div class="ticker-change" id="goldTime">Updated just now</div>

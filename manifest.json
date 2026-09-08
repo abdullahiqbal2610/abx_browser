@@ -20,7 +20,8 @@
   "host_permissions": [
     "https://www.alphavantage.co/*",
     "https://suggestqueries.google.com/*",
-    "https://api.gold-api.com/*"
+    "https://api.gold-api.com/*",
+    "https://cdn.jsdelivr.net/*"
   ],
   "action": {
     "default_popup": "popup.html",
