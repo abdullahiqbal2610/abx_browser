@@ -39,6 +39,12 @@ class XAIExtension {
         currencyPair2: {},
         cacheDuration: 900000,
       },
+      gold: {
+        enabled: true,
+        cacheData: null,
+        lastUpdate: null,
+        cacheDuration: 900000,
+      },
       todoList: [],
     };
     this.init();
@@ -51,6 +57,7 @@ class XAIExtension {
     this.initWeather();
     this.initSports();
     this.initFinance();
+    this.initGold();
     this.initTodo();
     this.updateGreeting();
     this.updateTime();
@@ -188,6 +195,7 @@ class XAIExtension {
           ".weather-container",
           ".sports-container",
           ".finance-container",
+          ".gold-container",
         ];
         widgets.forEach((selector) => {
           const el = document.querySelector(selector);
@@ -1699,6 +1707,101 @@ class XAIExtension {
     await this.loadSports();
   }
 
+  // ==================== GOLD WIDGET FUNCTIONALITY ====================
+
+  async initGold() {
+    const widget = document.getElementById("goldWidget");
+    if (!this.settings.gold || !this.settings.gold.enabled) {
+      if (widget) widget.style.display = "none";
+      return;
+    }
+    if (widget) widget.style.display = "flex";
+
+    const refreshBtn = document.getElementById("goldRefresh");
+    if (refreshBtn) refreshBtn.onclick = () => this.loadGold(true);
+
+    await this.loadGold();
+
+    const duration = this.settings.gold.cacheDuration || 900000;
+    setInterval(() => this.loadGold(), duration);
+
+    const retryBtn = document.getElementById("retryGold");
+    if (retryBtn) {
+      retryBtn.addEventListener("click", () => {
+        this.loadGold(true);
+      });
+    }
+  }
+
+  async loadGold(force = false) {
+    const loading = document.getElementById("goldLoading");
+    const content = document.getElementById("goldContent");
+    const error = document.getElementById("goldError");
+
+    // Check Cache
+    if (
+      !force &&
+      this.settings.gold.cacheData &&
+      this.settings.gold.lastUpdate
+    ) {
+      const age = Date.now() - this.settings.gold.lastUpdate;
+      if (age < (this.settings.gold.cacheDuration || 900000)) {
+        this.displayGold(this.settings.gold.cacheData);
+        return;
+      }
+    }
+
+    loading.style.display = "block";
+    content.style.display = "none";
+    error.style.display = "none";
+
+    try {
+      const url = "https://data-asg.goldprice.org/dbXRates/USD";
+      const res = await fetch(url);
+      const json = await res.json();
+
+      if (!json || !json.items || json.items.length === 0) {
+        throw new Error("Invalid gold data");
+      }
+
+      const item = json.items[0];
+      const data = {
+        price: parseFloat(item.xauPrice),
+        changePct: parseFloat(item.pcXau),
+        time: new Date().toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+      };
+
+      this.settings.gold.cacheData = data;
+      this.settings.gold.lastUpdate = Date.now();
+      this.saveSettings();
+
+      this.displayGold(data);
+    } catch (e) {
+      console.error(e);
+      loading.style.display = "none";
+      error.style.display = "block";
+    }
+  }
+
+  displayGold(data) {
+    document.getElementById("goldLoading").style.display = "none";
+    document.getElementById("goldContent").style.display = "flex";
+
+    document.getElementById("goldRate").textContent = "$" + data.price.toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+    const changeEl = document.getElementById("goldChange");
+    let sign = data.changePct > 0 ? "+" : "";
+    changeEl.textContent = sign + data.changePct.toFixed(2) + "%";
+
+    // Add specific styling for positive/negative change
+    changeEl.className = data.changePct >= 0 ? "gold-change-up" : "gold-change-down";
+
+    document.getElementById("goldTime").textContent = "Updated " + data.time;
+  }
+
   // ==========================================
   //           AI & GEMINI LOGIC
   // ==========================================
@@ -2033,6 +2136,7 @@ class XAIExtension {
       ".weather-container",
       ".sports-container",
       ".finance-container",
+      ".gold-container",
     ];
     widgets.forEach((selector) => {
       const el = document.querySelector(selector);
@@ -2236,6 +2340,7 @@ class XAIExtension {
 // Fade out widgets on scroll
 const weatherWidget = document.querySelector(".weather-container");
 const financeWidget = document.querySelector(".finance-container");
+const goldWidget = document.querySelector(".gold-container");
 
 window.addEventListener("scroll", () => {
   const shouldHide = window.scrollY > 100;
@@ -2250,6 +2355,12 @@ window.addEventListener("scroll", () => {
   if (financeWidget) {
     financeWidget.style.opacity = shouldHide ? "0" : "1";
     financeWidget.style.pointerEvents = shouldHide ? "none" : "auto";
+  }
+
+  // Fade Gold
+  if (goldWidget) {
+    goldWidget.style.opacity = shouldHide ? "0" : "1";
+    goldWidget.style.pointerEvents = shouldHide ? "none" : "auto";
   }
 });
 

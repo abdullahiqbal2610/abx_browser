@@ -1213,7 +1213,17 @@ body {
   transition: opacity 0.5s ease; /* Smooth fade for scrolling */
 }
 
-.finance-widget {
+/* === GOLD WIDGET (Below Finance Widget) === */
+.gold-container {
+  position: fixed;
+  top: 250px;
+  right: 20px;
+  z-index: 90;
+  transition: opacity 0.5s ease; /* Smooth fade for scrolling */
+}
+
+.finance-widget,
+.gold-widget {
   min-width: 220px;
   padding: 20px;
   background: #191919;
@@ -1225,19 +1235,22 @@ body {
   flex-direction: column;
   gap: 10px;
 }
-.finance-widget:hover {
+.finance-widget:hover,
+.gold-widget:hover {
   border-color: rgba(255,255,255,0.12);
 }
 
 /* Header (Label + Refresh) */
-.finance-header {
+.finance-header,
+.gold-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 5px;
 }
 
-.finance-label {
+.finance-label,
+.gold-label {
   font-family: 'Geist Mono', monospace;
   font-size: 0.65rem;
   color: rgba(255,255,255,0.3);
@@ -1246,7 +1259,8 @@ body {
   font-weight: 400;
 }
 
-.finance-refresh {
+.finance-refresh,
+.gold-refresh {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 6px;
@@ -1260,7 +1274,8 @@ body {
   transition: all 0.3s ease;
 }
 
-.finance-refresh:hover {
+.finance-refresh:hover,
+.gold-refresh:hover {
   background: rgba(251,191,36,0.1);
   border-color: rgba(251,191,36,0.3);
   color: rgba(251,191,36,0.9);
@@ -1268,9 +1283,18 @@ body {
 }
 
 /* Main Data Display */
-.finance-main {
+.finance-main,
+.gold-main {
   display: flex;
   flex-direction: column;
+}
+
+.gold-change-up {
+  color: #10b981; /* green */
+}
+
+.gold-change-down {
+  color: #ef4444; /* red */
 }
 
 .ticker-rate {
@@ -1303,7 +1327,10 @@ body {
 }
 .finance-loading,
 .finance-error,
-.finance-empty {
+.finance-empty,
+.gold-loading,
+.gold-error,
+.gold-empty {
   text-align: center;
   padding: 10px;
   color: #9ca3af;
@@ -1648,7 +1675,8 @@ body {
 /* When body has 'ai-active', FORCE hide all widgets */
 body.ai-active .weather-container,
 body.ai-active .sports-container,
-body.ai-active .finance-container {
+body.ai-active .finance-container,
+body.ai-active .gold-container {
   opacity: 0 !important;
   pointer-events: none !important;
   transition: opacity 0.5s ease;
@@ -1720,7 +1748,8 @@ body.ai-active .finance-container {
 /* 4. Strip Old Fixed Positioning */
 .weather-container,
 .sports-container,
-.finance-container {
+.finance-container,
+.gold-container {
   position: relative !important;
   top: auto !important;
   left: auto !important;
@@ -1734,7 +1763,8 @@ body.ai-active .finance-container {
 /* 5. Force Widgets to Fill Sidebar */
 .weather-widget,
 .sports-widget,
-.finance-widget {
+.finance-widget,
+.gold-widget {
   min-width: 100% !important;
   max-width: 100% !important;
   width: 100%;

@@ -19,7 +19,8 @@
   },
   "host_permissions": [
     "https://www.alphavantage.co/*",
-    "https://suggestqueries.google.com/*"
+    "https://suggestqueries.google.com/*",
+    "https://data-asg.goldprice.org/*"
   ],
   "action": {
     "default_popup": "popup.html",
