@@ -1756,18 +1756,17 @@ class XAIExtension {
     error.style.display = "none";
 
     try {
-      const url = "https://data-asg.goldprice.org/dbXRates/USD";
+      const url = "https://api.gold-api.com/price/XAU";
       const res = await fetch(url);
       const json = await res.json();
 
-      if (!json || !json.items || json.items.length === 0) {
+      if (!json || !json.price) {
         throw new Error("Invalid gold data");
       }
 
-      const item = json.items[0];
       const data = {
-        price: parseFloat(item.xauPrice),
-        changePct: parseFloat(item.pcXau),
+        price: parseFloat(json.price),
+        changePct: null,
         time: new Date().toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
@@ -1793,11 +1792,15 @@ class XAIExtension {
     document.getElementById("goldRate").textContent = "$" + data.price.toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2});
 
     const changeEl = document.getElementById("goldChange");
-    let sign = data.changePct > 0 ? "+" : "";
-    changeEl.textContent = sign + data.changePct.toFixed(2) + "%";
-
-    // Add specific styling for positive/negative change
-    changeEl.className = data.changePct >= 0 ? "gold-change-up" : "gold-change-down";
+    if (data.changePct !== null && data.changePct !== undefined) {
+      let sign = data.changePct > 0 ? "+" : "";
+      changeEl.textContent = sign + data.changePct.toFixed(2) + "%";
+      // Add specific styling for positive/negative change
+      changeEl.className = data.changePct >= 0 ? "gold-change-up" : "gold-change-down";
+      changeEl.style.display = "inline";
+    } else {
+      changeEl.style.display = "none";
+    }
 
     document.getElementById("goldTime").textContent = "Updated " + data.time;
   }

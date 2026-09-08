@@ -20,7 +20,7 @@
   "host_permissions": [
     "https://www.alphavantage.co/*",
     "https://suggestqueries.google.com/*",
-    "https://data-asg.goldprice.org/*"
+    "https://api.gold-api.com/*"
   ],
   "action": {
     "default_popup": "popup.html",
