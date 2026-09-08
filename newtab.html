@@ -530,6 +530,55 @@
           </div>
         </div>
 
+        <div class="gold-container">
+          <div class="gold-widget glass-panel" id="goldWidget">
+            <div class="gold-header">
+              <span class="gold-label">Gold (Ounce)</span>
+              <button
+                class="gold-refresh"
+                id="goldRefresh"
+                title="Refresh"
+                aria-label="Refresh Gold Data"
+              >
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
+                  ></path>
+                </svg>
+              </button>
+            </div>
+            <div class="gold-loading" id="goldLoading">
+              <div class="loading-spinner small"></div>
+            </div>
+            <div
+              class="gold-content"
+              id="goldContent"
+              style="display: none"
+            >
+              <div class="gold-main">
+                <div class="ticker-rate" id="goldRate">--.--</div>
+                <div class="ticker-pair">
+                  <span id="goldChange">--</span>
+                </div>
+              </div>
+              <div class="ticker-change" id="goldTime">Updated just now</div>
+            </div>
+            <div class="gold-error" id="goldError" style="display: none">
+              <div class="error-message">Unavailable</div>
+              <button class="retry-btn" id="retryGold">Retry</button>
+            </div>
+          </div>
+        </div>
+
         <div class="todo-container">
           <div class="todo-widget glass-panel" id="todoWidget">
             <div class="todo-header">
