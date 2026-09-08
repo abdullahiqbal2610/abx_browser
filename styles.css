@@ -1289,12 +1289,35 @@ body {
   flex-direction: column;
 }
 
+.finance-content,
+.gold-content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
 .gold-change-up {
   color: #10b981; /* green */
+  background: rgba(16, 185, 129, 0.15);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
 }
 
 .gold-change-down {
   color: #ef4444; /* red */
+  background: rgba(239, 68, 68, 0.15);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
 }
 
 .ticker-rate {
@@ -1312,11 +1335,12 @@ body {
 }
 
 .ticker-change {
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   color: #6b7280;
-  margin-top: 5px;
+  margin-top: 10px;
   padding-top: 8px;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
+  text-align: left;
 }
 
 /* Loading/Error/Empty */

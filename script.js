@@ -1817,11 +1817,12 @@ class XAIExtension {
 
     const changeEl = document.getElementById("goldChange");
     if (data.changePct !== null && data.changePct !== undefined) {
-      let sign = data.changePct > 0 ? "▲ +" : (data.changePct < 0 ? "▼ " : "");
-      changeEl.textContent = sign + data.changePct.toFixed(2) + "%";
+      let arrow = data.changePct >= 0 ? "▲" : "▼";
+      let sign = data.changePct > 0 ? "+" : "";
+      changeEl.innerHTML = `<span>${arrow}</span><span>${sign}${data.changePct.toFixed(2)}%</span>`;
       // Add specific styling for positive/negative change
       changeEl.className = data.changePct >= 0 ? "gold-change-up" : "gold-change-down";
-      changeEl.style.display = "inline-block";
+      changeEl.style.display = "inline-flex";
     } else {
       changeEl.style.display = "none";
     }
