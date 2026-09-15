@@ -1739,7 +1739,7 @@ class XAIExtension {
   startMetalsAnimationLoop() {
     if (this.metalsLoopInterval) clearInterval(this.metalsLoopInterval);
 
-    // Toggle every  4 seconds
+    // Toggle every 4 seconds
     this.metalsLoopInterval = setInterval(() => {
       const goldSection = document.getElementById("goldSection");
       const silverSection = document.getElementById("silverSection");
