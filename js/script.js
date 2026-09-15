@@ -1739,7 +1739,7 @@ class XAIExtension {
   startMetalsAnimationLoop() {
     if (this.metalsLoopInterval) clearInterval(this.metalsLoopInterval);
 
-    // Toggle every 6 seconds
+    // Toggle every  4 seconds
     this.metalsLoopInterval = setInterval(() => {
       const goldSection = document.getElementById("goldSection");
       const silverSection = document.getElementById("silverSection");
@@ -1756,7 +1756,7 @@ class XAIExtension {
         goldSection.classList.add("active");
         if (metalsLabel) metalsLabel.textContent = "Gold (Ounce)";
       }
-    }, 6000);
+    }, 4000);
   }
 
   async loadGold(force = false) {
