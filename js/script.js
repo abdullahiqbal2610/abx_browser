@@ -1879,7 +1879,6 @@ class XAIExtension {
     } else {
       silverChangeEl.style.display = "none";
     }
-    document.getElementById("silverTime").textContent = "Updated " + data.time;
   }
 
   // ==========================================
