@@ -1731,6 +1731,29 @@ class XAIExtension {
         this.loadGold(true);
       });
     }
+
+    // Set up the animation loop
+    this.startMetalsAnimationLoop();
+  }
+
+  startMetalsAnimationLoop() {
+    if (this.metalsLoopInterval) clearInterval(this.metalsLoopInterval);
+
+    // Toggle every 6 seconds
+    this.metalsLoopInterval = setInterval(() => {
+      const goldSection = document.getElementById("goldSection");
+      const silverSection = document.getElementById("silverSection");
+
+      if (!goldSection || !silverSection) return;
+
+      if (goldSection.classList.contains("active")) {
+        goldSection.classList.remove("active");
+        silverSection.classList.add("active");
+      } else {
+        silverSection.classList.remove("active");
+        goldSection.classList.add("active");
+      }
+    }, 6000);
   }
 
   async loadGold(force = false) {
@@ -1766,8 +1789,10 @@ class XAIExtension {
 
       const item = json.items[0];
       const data = {
-        price: parseFloat(item.xauPrice),
-        changePct: parseFloat(item.pcXau),
+        goldPrice: parseFloat(item.xauPrice),
+        goldChangePct: parseFloat(item.pcXau),
+        silverPrice: parseFloat(item.xagPrice),
+        silverChangePct: parseFloat(item.pcXag),
         time: new Date().toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
@@ -1790,16 +1815,24 @@ class XAIExtension {
     document.getElementById("goldLoading").style.display = "none";
     document.getElementById("goldContent").style.display = "flex";
 
-    document.getElementById("goldRate").textContent = "$" + data.price.toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    // We will update the UI in a loop using a new render method
+    this.renderMetalsData(data);
+  }
 
-    const changeEl = document.getElementById("goldChange");
-    let sign = data.changePct > 0 ? "+" : "";
-    changeEl.textContent = sign + data.changePct.toFixed(2) + "%";
-
-    // Add specific styling for positive/negative change
-    changeEl.className = data.changePct >= 0 ? "gold-change-up" : "gold-change-down";
-
+  renderMetalsData(data) {
+    document.getElementById("goldRate").textContent = "$" + data.goldPrice.toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    const goldChangeEl = document.getElementById("goldChange");
+    let goldSign = data.goldChangePct > 0 ? "+" : "";
+    goldChangeEl.textContent = goldSign + data.goldChangePct.toFixed(2) + "%";
+    goldChangeEl.className = data.goldChangePct >= 0 ? "gold-change-up" : "gold-change-down";
     document.getElementById("goldTime").textContent = "Updated " + data.time;
+
+    document.getElementById("silverRate").textContent = "$" + data.silverPrice.toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    const silverChangeEl = document.getElementById("silverChange");
+    let silverSign = data.silverChangePct > 0 ? "+" : "";
+    silverChangeEl.textContent = silverSign + data.silverChangePct.toFixed(2) + "%";
+    silverChangeEl.className = data.silverChangePct >= 0 ? "gold-change-up" : "gold-change-down";
+    document.getElementById("silverTime").textContent = "Updated " + data.time;
   }
 
   // ==========================================

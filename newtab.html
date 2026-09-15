@@ -532,8 +532,8 @@
 
         <div class="gold-container">
           <div class="gold-widget glass-panel" id="goldWidget">
-            <div class="gold-header">
-              <span class="gold-label">Gold (Ounce)</span>
+            <div class="gold-header" style="margin-bottom: 0px;">
+              <span class="gold-label">METALS</span>
               <button
                 class="gold-refresh"
                 id="goldRefresh"
@@ -564,13 +564,29 @@
               id="goldContent"
               style="display: none"
             >
-              <div class="gold-main">
-                <div class="ticker-rate" id="goldRate">--.--</div>
-                <div class="ticker-pair">
-                  <span id="goldChange">--</span>
+              <div class="metals-wrapper">
+                <div class="metals-section gold-section active" id="goldSection">
+                  <div class="metals-label">GOLD (OUNCE)</div>
+                  <div class="gold-main">
+                    <div class="ticker-rate" id="goldRate">--.--</div>
+                    <div class="ticker-pair">
+                      <span id="goldChange">--</span>
+                    </div>
+                  </div>
+                  <div class="ticker-change" id="goldTime">Updated just now</div>
+                </div>
+
+                <div class="metals-section silver-section" id="silverSection">
+                  <div class="metals-label" style="color: #cbd5e1;">SILVER (OUNCE)</div>
+                  <div class="gold-main">
+                    <div class="ticker-rate" id="silverRate">--.--</div>
+                    <div class="ticker-pair">
+                      <span id="silverChange">--</span>
+                    </div>
+                  </div>
+                  <div class="ticker-change" id="silverTime">Updated just now</div>
                 </div>
               </div>
-              <div class="ticker-change" id="goldTime">Updated just now</div>
             </div>
             <div class="gold-error" id="goldError" style="display: none">
               <div class="error-message">Unavailable</div>

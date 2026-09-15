@@ -1289,6 +1289,39 @@ body {
   flex-direction: column;
 }
 
+/* === METALS ANIMATION === */
+.metals-wrapper {
+  position: relative;
+  width: 100%;
+  height: 75px; /* Adjust height slightly to accommodate the label + data + time */
+}
+
+.metals-section {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  pointer-events: none;
+}
+
+.metals-section.active {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.metals-label {
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.65rem;
+  color: #fbbf24; /* Default Gold */
+  text-transform: uppercase;
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
 .gold-change-up {
   color: #10b981; /* green */
 }
