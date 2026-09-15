@@ -533,7 +533,7 @@
         <div class="gold-container">
           <div class="gold-widget glass-panel" id="goldWidget">
             <div class="gold-header">
-              <span class="gold-label">Gold (Ounce)</span>
+              <span class="gold-label" id="metalsLabel">Gold (Ounce)</span>
               <button
                 class="gold-refresh"
                 id="goldRefresh"
@@ -564,14 +564,29 @@
               id="goldContent"
               style="display: none"
             >
-              <div class="gold-main">
-                <div class="ticker-rate" id="goldRate">--.--</div>
-                <div class="ticker-pair" style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
-                  <span>USD / Ounce</span>
-                  <span id="goldChange" style="display: none;">--</span>
+              <div class="metals-wrapper">
+                <div class="metals-section gold-section active" id="goldSection">
+                  <div class="gold-main">
+                    <div class="ticker-rate" id="goldRate">--.--</div>
+                    <div class="ticker-pair" style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+                      <span>USD</span>
+                      <span id="goldChange" style="display: none;">--</span>
+                    </div>
+                  </div>
+                  <div class="ticker-change" id="goldTime">Updated just now</div>
+                </div>
+
+                <div class="metals-section silver-section" id="silverSection">
+                  <div class="gold-main">
+                    <div class="ticker-rate" id="silverRate">--.--</div>
+                    <div class="ticker-pair" style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+                      <span>USD</span>
+                      <span id="silverChange" style="display: none;">--</span>
+                    </div>
+                  </div>
+                  <div class="ticker-change" id="silverTime">Updated just now</div>
                 </div>
               </div>
-              <div class="ticker-change" id="goldTime">Updated just now</div>
             </div>
             <div class="gold-error" id="goldError" style="display: none">
               <div class="error-message">Unavailable</div>

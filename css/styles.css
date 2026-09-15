@@ -1296,6 +1296,31 @@ body {
   width: 100%;
 }
 
+/* === METALS ANIMATION === */
+.metals-wrapper {
+  position: relative;
+  width: 100%;
+  height: 75px;
+}
+
+.metals-section {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  pointer-events: none;
+}
+
+.metals-section.active {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+
 .gold-change-up {
   color: #10b981; /* green */
   background: rgba(16, 185, 129, 0.15);

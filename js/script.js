@@ -1731,6 +1731,32 @@ class XAIExtension {
         this.loadGold(true);
       });
     }
+
+    // Set up the animation loop
+    this.startMetalsAnimationLoop();
+  }
+
+  startMetalsAnimationLoop() {
+    if (this.metalsLoopInterval) clearInterval(this.metalsLoopInterval);
+
+    // Toggle every 6 seconds
+    this.metalsLoopInterval = setInterval(() => {
+      const goldSection = document.getElementById("goldSection");
+      const silverSection = document.getElementById("silverSection");
+      const metalsLabel = document.getElementById("metalsLabel");
+
+      if (!goldSection || !silverSection) return;
+
+      if (goldSection.classList.contains("active")) {
+        goldSection.classList.remove("active");
+        silverSection.classList.add("active");
+        if (metalsLabel) metalsLabel.textContent = "Silver (Ounce)";
+      } else {
+        silverSection.classList.remove("active");
+        goldSection.classList.add("active");
+        if (metalsLabel) metalsLabel.textContent = "Gold (Ounce)";
+      }
+    }, 6000);
   }
 
   async loadGold(force = false) {
@@ -1757,15 +1783,19 @@ class XAIExtension {
 
     try {
       const url = "https://api.gold-api.com/price/XAU";
-      const res = await fetch(url);
+      const silverUrl = "https://api.gold-api.com/price/XAG";
+      const [res, silverRes] = await Promise.all([fetch(url), fetch(silverUrl)]);
       const json = await res.json();
+      const silverJson = await silverRes.json();
 
-      if (!json || !json.price) {
-        throw new Error("Invalid gold data");
+      if (!json || !json.price || !silverJson || !silverJson.price) {
+        throw new Error("Invalid metals data");
       }
 
       const currentPrice = parseFloat(json.price);
+      const silverPrice = parseFloat(silverJson.price);
       let changePct = null;
+      let silverChangePct = null;
 
       try {
         // Fetch yesterday's price to calculate daily change
@@ -1777,20 +1807,30 @@ class XAIExtension {
         const dateStr = `${yyyy}-${mm}-${dd}`;
         
         const histUrl = `https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@${dateStr}/v1/currencies/xau.json`;
-        const histRes = await fetch(histUrl);
+        const silverHistUrl = `https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@${dateStr}/v1/currencies/xag.json`;
+        
+        const [histRes, silverHistRes] = await Promise.all([fetch(histUrl), fetch(silverHistUrl)]);
         const histJson = await histRes.json();
+        const silverHistJson = await silverHistRes.json();
         
         if (histJson && histJson.xau && histJson.xau.usd) {
           const yesterdayPrice = parseFloat(histJson.xau.usd);
           changePct = ((currentPrice - yesterdayPrice) / yesterdayPrice) * 100;
         }
+
+        if (silverHistJson && silverHistJson.xag && silverHistJson.xag.usd) {
+          const yesterdaySilverPrice = parseFloat(silverHistJson.xag.usd);
+          silverChangePct = ((silverPrice - yesterdaySilverPrice) / yesterdaySilverPrice) * 100;
+        }
       } catch(e) {
-        console.warn("Failed to fetch historical gold data for change percentage", e);
+        console.warn("Failed to fetch historical metals data for change percentage", e);
       }
 
       const data = {
         price: currentPrice,
         changePct: changePct,
+        silverPrice: silverPrice,
+        silverChangePct: silverChangePct,
         time: new Date().toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
@@ -1813,21 +1853,33 @@ class XAIExtension {
     document.getElementById("goldLoading").style.display = "none";
     document.getElementById("goldContent").style.display = "flex";
 
+    // Gold Update
     document.getElementById("goldRate").textContent = "$" + data.price.toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2});
-
     const changeEl = document.getElementById("goldChange");
     if (data.changePct !== null && data.changePct !== undefined) {
       let arrow = data.changePct >= 0 ? "▲" : "▼";
       let sign = data.changePct > 0 ? "+" : "";
       changeEl.innerHTML = `<span>${arrow}</span><span>${sign}${data.changePct.toFixed(2)}%</span>`;
-      // Add specific styling for positive/negative change
       changeEl.className = data.changePct >= 0 ? "gold-change-up" : "gold-change-down";
       changeEl.style.display = "inline-flex";
     } else {
       changeEl.style.display = "none";
     }
-
     document.getElementById("goldTime").textContent = "Updated " + data.time;
+
+    // Silver Update
+    document.getElementById("silverRate").textContent = "$" + data.silverPrice.toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    const silverChangeEl = document.getElementById("silverChange");
+    if (data.silverChangePct !== null && data.silverChangePct !== undefined) {
+      let arrow = data.silverChangePct >= 0 ? "▲" : "▼";
+      let sign = data.silverChangePct > 0 ? "+" : "";
+      silverChangeEl.innerHTML = `<span>${arrow}</span><span>${sign}${data.silverChangePct.toFixed(2)}%</span>`;
+      silverChangeEl.className = data.silverChangePct >= 0 ? "gold-change-up" : "gold-change-down";
+      silverChangeEl.style.display = "inline-flex";
+    } else {
+      silverChangeEl.style.display = "none";
+    }
+    document.getElementById("silverTime").textContent = "Updated " + data.time;
   }
 
   // ==========================================
