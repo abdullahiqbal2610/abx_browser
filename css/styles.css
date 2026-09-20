@@ -1320,11 +1320,12 @@ body {
   pointer-events: auto;
 }
 
-/* === FINANCE 2-in-1 ANIMATION === */
+/* === FINANCE 2-in-1 ANIMATION (Horizontal Slide — Ticker Tape) === */
 .finance-wrapper {
   position: relative;
   width: 100%;
   height: 55px;
+  overflow: hidden;
 }
 
 .finance-section {
@@ -1333,24 +1334,30 @@ body {
   left: 0;
   width: 100%;
   opacity: 0;
-  transform: translateY(4px) scale(0.98);
-  filter: blur(2px);
-  transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), filter 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateX(20px);
+  transition: opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
   pointer-events: none;
 }
 
 .finance-section.active {
   opacity: 1;
-  transform: translateY(0) scale(1);
-  filter: blur(0);
+  transform: translateX(0);
   pointer-events: auto;
 }
 
-/* === SPORTS 2-in-1 ANIMATION === */
+.finance-section.exit {
+  opacity: 0;
+  transform: translateX(-20px);
+}
+
+/* === SPORTS 2-in-1 ANIMATION (Vertical Flip — Scoreboard) === */
 .sports-sections-wrapper {
   position: relative;
   width: 100%;
   min-height: 200px;
+  overflow: hidden;
+  perspective: 600px;
 }
 
 .sports-section {
@@ -1359,17 +1366,22 @@ body {
   left: 0;
   width: 100%;
   opacity: 0;
-  transform: translateY(4px) scale(0.98);
-  filter: blur(2px);
-  transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), filter 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateY(16px) rotateX(-6deg);
+  transform-origin: top center;
+  transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   pointer-events: none;
 }
 
 .sports-section.active {
   opacity: 1;
-  transform: translateY(0) scale(1);
-  filter: blur(0);
+  transform: translateY(0) rotateX(0deg);
   pointer-events: auto;
+}
+
+.sports-section.exit {
+  opacity: 0;
+  transform: translateY(-16px) rotateX(6deg);
 }
 
 /* Sports header bar (label + refresh) */

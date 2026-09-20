@@ -1249,8 +1249,21 @@ class XAIExtension {
     ARB: "arbitrum", OP: "optimism", IMX: "immutable-x",
   };
 
+  // Commodity symbols via gold-api.com (same API used for metals)
+  COMMODITY_IDS = {
+    XTI: "XTI",   // WTI Crude Oil
+    XBR: "XBR",   // Brent Crude Oil
+    XPT: "XPT",   // Platinum
+    XPD: "XPD",   // Palladium
+    XCU: "XCU",   // Copper
+  };
+
   isCrypto(symbol) {
     return !!this.CRYPTO_IDS[symbol.toUpperCase()];
+  }
+
+  isCommodity(symbol) {
+    return !!this.COMMODITY_IDS[symbol.toUpperCase()];
   }
 
   async fetchTickerData(fromSymbol, toSymbol) {
@@ -1258,7 +1271,7 @@ class XAIExtension {
     const to = toSymbol.toUpperCase();
 
     if (this.isCrypto(from)) {
-      // === CoinGecko path ===
+      // === CoinGecko path (crypto) ===
       const coinId = this.CRYPTO_IDS[from];
       const vsCurrency = to.toLowerCase();
       const url = `https://api.coingecko.com/api/v3/simple/price?ids=${coinId}&vs_currencies=${vsCurrency}&include_24hr_change=true`;
@@ -1269,27 +1282,59 @@ class XAIExtension {
       const price = json[coinId][vsCurrency];
       const changePct = json[coinId][`${vsCurrency}_24h_change`] ?? null;
       return { from, to, rate: price, changePct };
-    } else {
-      // === Frankfurter path (forex) ===
-      const url = `https://api.frankfurter.app/latest?from=${from}&to=${to}`;
+
+    } else if (this.isCommodity(from)) {
+      // === gold-api.com path (crude oil, platinum, etc.) ===
+      const url = `https://api.gold-api.com/price/${from}`;
       const res = await fetch(url);
-      if (!res.ok) throw new Error("Frankfurter error");
+      if (!res.ok) throw new Error("Commodity API error");
       const json = await res.json();
-      if (!json.rates || json.rates[to] === undefined) throw new Error("No forex data");
-      const rate = json.rates[to];
+      if (!json.price) throw new Error("No commodity data");
+      const price = parseFloat(json.price);
+
+      // Fetch yesterday for % change using fawazahmed0 as proxy
+      let changePct = null;
+      try {
+        // gold-api returns prev_close_price on some endpoints
+        if (json.prev_close_price) {
+          const prev = parseFloat(json.prev_close_price);
+          changePct = ((price - prev) / prev) * 100;
+        }
+      } catch (e) {
+        console.warn("No prev close for commodity", e);
+      }
+
+      const displayTo = to === "USD" ? "USD" : to;
+      return { from, to: displayTo, rate: price, changePct };
+
+    } else {
+      // === fawazahmed0 path (forex: EUR, GBP, JPY, etc.) ===
+      // Uses the same CDN API already proven to work in this extension
+      const fromLower = from.toLowerCase();
+      const toLower = to.toLowerCase();
+
+      const url = `https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/${fromLower}.json`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("Forex API error");
+      const json = await res.json();
+      if (!json[fromLower] || json[fromLower][toLower] === undefined) throw new Error(`No forex rate for ${from}/${to}`);
+      const rate = json[fromLower][toLower];
 
       // Fetch yesterday's rate for % change
       let changePct = null;
       try {
         const yesterday = new Date();
         yesterday.setDate(yesterday.getDate() - 1);
-        const dateStr = yesterday.toISOString().split("T")[0];
-        const histUrl = `https://api.frankfurter.app/${dateStr}?from=${from}&to=${to}`;
+        const yyyy = yesterday.getFullYear();
+        const mm = String(yesterday.getMonth() + 1).padStart(2, "0");
+        const dd = String(yesterday.getDate()).padStart(2, "0");
+        const dateStr = `${yyyy}-${mm}-${dd}`;
+        const histUrl = `https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@${dateStr}/v1/currencies/${fromLower}.json`;
         const histRes = await fetch(histUrl);
         if (histRes.ok) {
           const histJson = await histRes.json();
-          if (histJson.rates && histJson.rates[to]) {
-            const prevRate = histJson.rates[to];
+          if (histJson[fromLower] && histJson[fromLower][toLower]) {
+            const prevRate = histJson[fromLower][toLower];
             changePct = ((rate - prevRate) / prevRate) * 100;
           }
         }
@@ -1468,7 +1513,7 @@ class XAIExtension {
   startFinanceAnimationLoop(t1From, t1To, t2From, t2To) {
     if (this.financeLoopInterval) clearInterval(this.financeLoopInterval);
 
-    // Toggle every 4 seconds
+    // Toggle every 4 seconds with directional exit
     this.financeLoopInterval = setInterval(() => {
       const section1 = document.getElementById("financeSection1");
       const section2 = document.getElementById("financeSection2");
@@ -1477,11 +1522,17 @@ class XAIExtension {
       if (!section1 || !section2) return;
 
       if (section1.classList.contains("active")) {
+        // Section 1 exits left, Section 2 enters from right
+        section1.classList.add("exit");
         section1.classList.remove("active");
+        setTimeout(() => section1.classList.remove("exit"), 450);
         section2.classList.add("active");
         if (financeLabel) financeLabel.textContent = `${t2From}/${t2To}`;
       } else {
+        // Section 2 exits left, Section 1 enters from right
+        section2.classList.add("exit");
         section2.classList.remove("active");
+        setTimeout(() => section2.classList.remove("exit"), 450);
         section1.classList.add("active");
         if (financeLabel) financeLabel.textContent = `${t1From}/${t1To}`;
       }
@@ -1726,11 +1777,17 @@ class XAIExtension {
       if (!section1 || !section2) return;
 
       if (section1.classList.contains("active")) {
+        // Section 1 flips up and out, Section 2 flips in from below
+        section1.classList.add("exit");
         section1.classList.remove("active");
+        setTimeout(() => section1.classList.remove("exit"), 500);
         section2.classList.add("active");
         if (sportsLabel) sportsLabel.textContent = team2Name || "Sports";
       } else {
+        // Section 2 flips up and out, Section 1 flips in from below
+        section2.classList.add("exit");
         section2.classList.remove("active");
+        setTimeout(() => section2.classList.remove("exit"), 500);
         section1.classList.add("active");
         if (sportsLabel) sportsLabel.textContent = team1Name || "Sports";
       }
