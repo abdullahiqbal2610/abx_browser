@@ -149,7 +149,16 @@ class XAIExtension {
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       if (message.action === "settingsUpdated") {
         console.log("Settings updated from popup");
-        this.settings = { ...this.settings, ...message.settings };
+        // Deep merge sub-objects so new ticker/team values properly overwrite in-memory stale state
+        this.settings = {
+          ...this.settings,
+          ...message.settings,
+          sports:  { ...this.settings.sports,  ...(message.settings?.sports  || {}) },
+          finance: { ...this.settings.finance, ...(message.settings?.finance || {}) },
+          gold:    { ...this.settings.gold,    ...(message.settings?.gold    || {}) },
+          weather: { ...this.settings.weather, ...(message.settings?.weather || {}) },
+          ai:      { ...this.settings.ai,      ...(message.settings?.ai      || {}) },
+        };
 
         if (message.weatherChanged) {
           console.log("Weather settings changed, refreshing...");
@@ -163,6 +172,7 @@ class XAIExtension {
 
         if (message.financeChanged) {
           console.log("Finance settings changed, refreshing...");
+          // Clear cache so loadFinance() fetches fresh with new ticker symbols
           this.settings.finance.cacheData1 = null;
           this.settings.finance.cacheData2 = null;
           this.settings.finance.lastUpdate1 = null;
