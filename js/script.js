@@ -167,17 +167,42 @@ class XAIExtension {
 
         if (message.sportsChanged) {
           console.log("Sports settings changed, refreshing...");
-          this.refreshSportsData();
+          // Reload from storage to guarantee fresh team names
+          chrome.storage.local.get("xaiSettings", (result) => {
+            if (result.xaiSettings?.sports) {
+              this.settings.sports = {
+                ...result.xaiSettings.sports,
+                cacheData1: null,
+                cacheData2: null,
+                lastUpdate1: null,
+                lastUpdate2: null,
+              };
+            }
+            this.refreshSportsData();
+          });
         }
 
         if (message.financeChanged) {
           console.log("Finance settings changed, refreshing...");
-          // Clear cache so loadFinance() fetches fresh with new ticker symbols
-          this.settings.finance.cacheData1 = null;
-          this.settings.finance.cacheData2 = null;
-          this.settings.finance.lastUpdate1 = null;
-          this.settings.finance.lastUpdate2 = null;
-          this.initFinance();
+          // Reload from storage to guarantee fresh ticker symbols
+          chrome.storage.local.get("xaiSettings", (result) => {
+            if (result.xaiSettings?.finance) {
+              this.settings.finance = {
+                ...result.xaiSettings.finance,
+                // Always wipe the cache so loadFinance() fetches fresh
+                cacheData1: null,
+                cacheData2: null,
+                lastUpdate1: null,
+                lastUpdate2: null,
+              };
+            } else {
+              this.settings.finance.cacheData1 = null;
+              this.settings.finance.cacheData2 = null;
+              this.settings.finance.lastUpdate1 = null;
+              this.settings.finance.lastUpdate2 = null;
+            }
+            this.initFinance();
+          });
         }
 
         this.updateGreeting();
@@ -1259,13 +1284,12 @@ class XAIExtension {
     ARB: "arbitrum", OP: "optimism", IMX: "immutable-x",
   };
 
-  // Commodity symbols via gold-api.com (same API used for metals)
+  // Commodity symbols via gold-api.com — only precious metals are reliably supported
   COMMODITY_IDS = {
-    XTI: "XTI",   // WTI Crude Oil
-    XBR: "XBR",   // Brent Crude Oil
     XPT: "XPT",   // Platinum
     XPD: "XPD",   // Palladium
-    XCU: "XCU",   // Copper
+    // Note: XTI (WTI Crude) and XBR (Brent Crude) are NOT supported by gold-api.com
+    // Use forex codes or crypto for other assets
   };
 
   isCrypto(symbol) {
