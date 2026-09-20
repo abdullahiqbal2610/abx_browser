@@ -93,6 +93,30 @@
 
         <div class="sports-container">
           <div class="sports-widget glass-panel" id="sportsWidget">
+            <div class="sports-header-bar">
+              <span class="sports-label" id="sportsLabel">Sports</span>
+              <button
+                class="sports-refresh"
+                id="sportsRefresh"
+                title="Refresh sports"
+                aria-label="Refresh Sports"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
+                  ></path>
+                </svg>
+              </button>
+            </div>
             <div class="sports-loading flex-center" id="sportsLoading">
               <div class="loading-spinner"></div>
               <span>Loading sports...</span>
@@ -102,101 +126,100 @@
               id="sportsContent"
               style="display: none"
             >
-              <div class="sports-header">
-                <div class="team-info">
-                  <img class="team-badge" id="teamBadge" src="" alt="Badge" />
-                  <div class="team-details">
-                    <div class="team-name" id="teamName">--</div>
-                    <div class="team-league" id="teamLeague">--</div>
+              <div class="sports-sections-wrapper" id="sportsSectionsWrapper">
+
+                <!-- ── Team 1 Section ── -->
+                <div class="sports-section active" id="sportsSection1">
+                  <div class="sports-team-header">
+                    <img class="team-badge" id="teamBadge1" src="" alt="Badge" />
+                    <div class="team-name" id="teamName1">--</div>
                   </div>
-                </div>
-                <button
-                  class="sports-refresh"
-                  id="sportsRefresh"
-                  title="Refresh sports"
-                  aria-label="Refresh Sports"
-                >
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <path
-                      d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
-                    ></path>
-                  </svg>
-                </button>
-              </div>
-              <div class="matches-container">
-                <div class="match-card last-match">
-                  <div class="match-label">Last Match</div>
-                  <div class="match-info" id="lastMatchInfo">
-                    <div class="match-teams">
-                      <div class="match-team">
-                        <img
-                          class="match-team-badge"
-                          id="lastHomeBadge"
-                          src=""
-                          alt=""
-                        />
-                        <span id="lastHomeTeam">--</span>
+                  <div class="matches-container">
+                    <div class="match-card last-match" id="lastMatchCard1">
+                      <div class="match-label">Last Match</div>
+                      <div class="match-teams">
+                        <div class="match-team">
+                          <img class="match-team-badge" id="lastHomeBadge1" src="" alt="" />
+                          <span id="lastHomeTeam1">--</span>
+                        </div>
+                        <div class="match-score" id="lastScore1">- : -</div>
+                        <div class="match-team">
+                          <img class="match-team-badge" id="lastAwayBadge1" src="" alt="" />
+                          <span id="lastAwayTeam1">--</span>
+                        </div>
                       </div>
-                      <div class="match-score" id="lastScore">- : -</div>
-                      <div class="match-team">
-                        <img
-                          class="match-team-badge"
-                          id="lastAwayBadge"
-                          src=""
-                          alt=""
-                        />
-                        <span id="lastAwayTeam">--</span>
+                      <div class="match-details">
+                        <span class="match-competition" id="lastCompetition1">--</span>
+                        <span class="match-date" id="lastDate1">--</span>
                       </div>
                     </div>
-                    <div class="match-details">
-                      <span class="match-competition" id="lastCompetition"
-                        >--</span
-                      >
-                      <span class="match-date" id="lastDate">--</span>
+                    <div class="match-card next-match" id="nextMatchCard1">
+                      <div class="match-label">Upcoming</div>
+                      <div class="match-teams">
+                        <div class="match-team">
+                          <img class="match-team-badge" id="nextHomeBadge1" src="" alt="" />
+                          <span id="nextHomeTeam1">--</span>
+                        </div>
+                        <div class="match-vs">VS</div>
+                        <div class="match-team">
+                          <img class="match-team-badge" id="nextAwayBadge1" src="" alt="" />
+                          <span id="nextAwayTeam1">--</span>
+                        </div>
+                      </div>
+                      <div class="match-details">
+                        <span class="match-competition" id="nextCompetition1">--</span>
+                        <span class="match-date" id="nextDate1">--</span>
+                      </div>
                     </div>
                   </div>
                 </div>
-                <div class="match-card next-match">
-                  <div class="match-label">Upcoming Match</div>
-                  <div class="match-info" id="nextMatchInfo">
-                    <div class="match-teams">
-                      <div class="match-team">
-                        <img
-                          class="match-team-badge"
-                          id="nextHomeBadge"
-                          src=""
-                          alt=""
-                        />
-                        <span id="nextHomeTeam">--</span>
+
+                <!-- ── Team 2 Section ── -->
+                <div class="sports-section" id="sportsSection2">
+                  <div class="sports-team-header">
+                    <img class="team-badge" id="teamBadge2" src="" alt="Badge" />
+                    <div class="team-name" id="teamName2">--</div>
+                  </div>
+                  <div class="matches-container">
+                    <div class="match-card last-match" id="lastMatchCard2">
+                      <div class="match-label">Last Match</div>
+                      <div class="match-teams">
+                        <div class="match-team">
+                          <img class="match-team-badge" id="lastHomeBadge2" src="" alt="" />
+                          <span id="lastHomeTeam2">--</span>
+                        </div>
+                        <div class="match-score" id="lastScore2">- : -</div>
+                        <div class="match-team">
+                          <img class="match-team-badge" id="lastAwayBadge2" src="" alt="" />
+                          <span id="lastAwayTeam2">--</span>
+                        </div>
                       </div>
-                      <div class="match-vs">VS</div>
-                      <div class="match-team">
-                        <img
-                          class="match-team-badge"
-                          id="nextAwayBadge"
-                          src=""
-                          alt=""
-                        />
-                        <span id="nextAwayTeam">--</span>
+                      <div class="match-details">
+                        <span class="match-competition" id="lastCompetition2">--</span>
+                        <span class="match-date" id="lastDate2">--</span>
                       </div>
                     </div>
-                    <div class="match-details">
-                      <span class="match-competition" id="nextCompetition"
-                        >--</span
-                      >
-                      <span class="match-date" id="nextDate">--</span>
+                    <div class="match-card next-match" id="nextMatchCard2">
+                      <div class="match-label">Upcoming</div>
+                      <div class="match-teams">
+                        <div class="match-team">
+                          <img class="match-team-badge" id="nextHomeBadge2" src="" alt="" />
+                          <span id="nextHomeTeam2">--</span>
+                        </div>
+                        <div class="match-vs">VS</div>
+                        <div class="match-team">
+                          <img class="match-team-badge" id="nextAwayBadge2" src="" alt="" />
+                          <span id="nextAwayTeam2">--</span>
+                        </div>
+                      </div>
+                      <div class="match-details">
+                        <span class="match-competition" id="nextCompetition2">--</span>
+                        <span class="match-date" id="nextDate2">--</span>
+                      </div>
                     </div>
                   </div>
                 </div>
+
               </div>
             </div>
             <div class="sports-error" id="sportsError" style="display: none">
@@ -480,7 +503,7 @@
         <div class="finance-container">
           <div class="finance-widget glass-panel" id="financeWidget">
             <div class="finance-header">
-              <span class="finance-label">Market</span>
+              <span class="finance-label" id="financeLabel">Market</span>
               <button
                 class="finance-refresh"
                 id="financeRefresh"
@@ -511,21 +534,36 @@
               id="financeContent"
               style="display: none"
             >
-              <div class="finance-main">
-                <div class="ticker-rate" id="tickerRate">--.--</div>
-                <div class="ticker-pair">
-                  <span id="tickerFrom">--</span> /
-                  <span id="tickerTo">--</span>
+              <div class="ticker-change" id="financeTime" style="margin-top: 0; padding-top: 0; border-top: none; padding-bottom: 8px;">Updated just now</div>
+              <div class="finance-wrapper" style="height: 55px;">
+                <!-- ── Ticker 1 Section ── -->
+                <div class="finance-section active" id="financeSection1">
+                  <div class="finance-main">
+                    <div class="ticker-rate" id="tickerRate1">--.--</div>
+                    <div class="ticker-pair" style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+                      <span id="tickerPair1">-- / --</span>
+                      <span id="tickerChange1" style="display: none;">--</span>
+                    </div>
+                  </div>
+                </div>
+                <!-- ── Ticker 2 Section ── -->
+                <div class="finance-section" id="financeSection2">
+                  <div class="finance-main">
+                    <div class="ticker-rate" id="tickerRate2">--.--</div>
+                    <div class="ticker-pair" style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+                      <span id="tickerPair2">-- / --</span>
+                      <span id="tickerChange2" style="display: none;">--</span>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div class="ticker-change" id="tickerTime">Updated just now</div>
             </div>
             <div class="finance-error" id="financeError" style="display: none">
               <div class="error-message">Unavailable</div>
               <button class="retry-btn" id="retryFinance">Retry</button>
             </div>
             <div class="finance-empty" id="financeEmpty" style="display: none">
-              No Pair Set
+              No Ticker Set
             </div>
           </div>
         </div>

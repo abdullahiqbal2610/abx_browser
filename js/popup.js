@@ -12,14 +12,16 @@ class PopupController {
       },
       sports: {
         enabled: true,
-        teamName: "",
+        team1: "",
+        team2: "",
       },
-      // Simplified Finance Settings (Single Ticker)
+      // Finance Settings (2 tickers, keyless APIs)
       finance: {
         enabled: true,
-        fromCurrency: "BTC",
-        toCurrency: "USD",
-        apiKey: "",
+        ticker1From: "BTC",
+        ticker1To: "USD",
+        ticker2From: "EUR",
+        ticker2To: "USD",
         cacheDuration: 900000, // 15 mins
       },
       gold: {
@@ -48,6 +50,7 @@ class PopupController {
         this.settings = {
           ...this.settings,
           ...result.xaiSettings,
+          sports: { ...this.settings.sports, ...result.xaiSettings.sports },
           finance: { ...this.settings.finance, ...result.xaiSettings.finance },
           gold: { ...this.settings.gold, ...result.xaiSettings.gold },
           ai: { ...this.settings.ai, ...result.xaiSettings.ai },
@@ -118,16 +121,23 @@ class PopupController {
       });
     }
 
-    const sportsTeamName = document.getElementById("sportsTeamName");
-    if (sportsTeamName) {
-      sportsTeamName.addEventListener("input", (e) => {
+    const sportsTeam1 = document.getElementById("sportsTeam1");
+    if (sportsTeam1) {
+      sportsTeam1.addEventListener("input", (e) => {
         if (!this.settings.sports) this.settings.sports = {};
-        this.settings.sports.teamName = e.target.value;
+        this.settings.sports.team1 = e.target.value;
       });
     }
 
+    const sportsTeam2 = document.getElementById("sportsTeam2");
+    if (sportsTeam2) {
+      sportsTeam2.addEventListener("input", (e) => {
+        if (!this.settings.sports) this.settings.sports = {};
+        this.settings.sports.team2 = e.target.value;
+      });
+    }
 
-    // --- Finance Settings (NEW SIMPLIFIED LOGIC) ---
+    // --- Finance Settings (2 Tickers, Free API) ---
     const financeEnabled = document.getElementById("financeEnabled");
     if (financeEnabled) {
       financeEnabled.addEventListener("change", (e) => {
@@ -136,27 +146,35 @@ class PopupController {
       });
     }
 
-    const financeFrom = document.getElementById("financeFrom");
-    if (financeFrom) {
-      financeFrom.addEventListener("input", (e) => {
+    const financeFrom1 = document.getElementById("financeFrom1");
+    if (financeFrom1) {
+      financeFrom1.addEventListener("input", (e) => {
         if (!this.settings.finance) this.settings.finance = {};
-        this.settings.finance.fromCurrency = e.target.value.toUpperCase();
+        this.settings.finance.ticker1From = e.target.value.toUpperCase();
       });
     }
 
-    const financeTo = document.getElementById("financeTo");
-    if (financeTo) {
-      financeTo.addEventListener("input", (e) => {
+    const financeTo1 = document.getElementById("financeTo1");
+    if (financeTo1) {
+      financeTo1.addEventListener("input", (e) => {
         if (!this.settings.finance) this.settings.finance = {};
-        this.settings.finance.toCurrency = e.target.value.toUpperCase();
+        this.settings.finance.ticker1To = e.target.value.toUpperCase();
       });
     }
 
-    const financeApiKey = document.getElementById("financeApiKey");
-    if (financeApiKey) {
-      financeApiKey.addEventListener("input", (e) => {
+    const financeFrom2 = document.getElementById("financeFrom2");
+    if (financeFrom2) {
+      financeFrom2.addEventListener("input", (e) => {
         if (!this.settings.finance) this.settings.finance = {};
-        this.settings.finance.apiKey = e.target.value || "";
+        this.settings.finance.ticker2From = e.target.value.toUpperCase();
+      });
+    }
+
+    const financeTo2 = document.getElementById("financeTo2");
+    if (financeTo2) {
+      financeTo2.addEventListener("input", (e) => {
+        if (!this.settings.finance) this.settings.finance = {};
+        this.settings.finance.ticker2To = e.target.value.toUpperCase();
       });
     }
 
@@ -215,20 +233,24 @@ class PopupController {
     if (this.settings.sports) {
       document.getElementById("sportsEnabled").checked =
         this.settings.sports.enabled !== false;
-      document.getElementById("sportsTeamName").value =
-        this.settings.sports.teamName || "";
+      const t1 = document.getElementById("sportsTeam1");
+      const t2 = document.getElementById("sportsTeam2");
+      if (t1) t1.value = this.settings.sports.team1 || "";
+      if (t2) t2.value = this.settings.sports.team2 || "";
     }
 
-    // Finance (NEW)
+    // Finance
     if (this.settings.finance) {
       document.getElementById("financeEnabled").checked =
         this.settings.finance.enabled !== false;
-      document.getElementById("financeFrom").value =
-        this.settings.finance.fromCurrency || "";
-      document.getElementById("financeTo").value =
-        this.settings.finance.toCurrency || "";
-      document.getElementById("financeApiKey").value =
-        this.settings.finance.apiKey || "";
+      const f1from = document.getElementById("financeFrom1");
+      const f1to = document.getElementById("financeTo1");
+      const f2from = document.getElementById("financeFrom2");
+      const f2to = document.getElementById("financeTo2");
+      if (f1from) f1from.value = this.settings.finance.ticker1From || "";
+      if (f1to)   f1to.value   = this.settings.finance.ticker1To   || "";
+      if (f2from) f2from.value = this.settings.finance.ticker2From || "";
+      if (f2to)   f2to.value   = this.settings.finance.ticker2To   || "";
     }
 
     // Gold
@@ -298,13 +320,15 @@ class PopupController {
         },
         sports: {
           enabled: true,
-          teamName: "",
+          team1: "",
+          team2: "",
         },
         finance: {
           enabled: true,
-          fromCurrency: "BTC",
-          toCurrency: "USD",
-          apiKey: "",
+          ticker1From: "BTC",
+          ticker1To: "USD",
+          ticker2From: "EUR",
+          ticker2To: "USD",
           cacheDuration: 900000,
         },
         gold: {

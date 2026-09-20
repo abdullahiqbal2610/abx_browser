@@ -380,9 +380,15 @@
     </div>
 
     <div class="setting-group">
-      <label class="field-label" for="sportsTeamName">Favorite Team</label>
-      <input type="text" id="sportsTeamName" class="setting-input" placeholder="e.g. Manchester United" />
+      <label class="field-label" for="sportsTeam1">Team 1</label>
+      <input type="text" id="sportsTeam1" class="setting-input" placeholder="e.g. Inter Miami CF" />
       <div class="hint-text">Enter the full team name for best results.</div>
+    </div>
+
+    <div class="setting-group">
+      <label class="field-label" for="sportsTeam2">Team 2 <span style="opacity:0.5; font-size:0.75em;">(optional)</span></label>
+      <input type="text" id="sportsTeam2" class="setting-input" placeholder="e.g. Barcelona" />
+      <div class="hint-text">Leave blank to show only Team 1.</div>
     </div>
 
     <div class="section-divider"></div>
@@ -398,17 +404,22 @@
     </div>
 
     <div class="setting-group">
-      <label class="field-label">Currency Pair</label>
+      <label class="field-label">Ticker 1</label>
       <div class="pair-row">
-        <input type="text" id="financeFrom" class="setting-input" placeholder="BTC" />
+        <input type="text" id="financeFrom1" class="setting-input" placeholder="BTC" />
         <span class="pair-arrow">→</span>
-        <input type="text" id="financeTo" class="setting-input" placeholder="USD" />
+        <input type="text" id="financeTo1" class="setting-input" placeholder="USD" />
       </div>
     </div>
 
     <div class="setting-group">
-      <label class="field-label" for="financeApiKey">AlphaVantage API Key</label>
-      <input type="password" id="financeApiKey" class="setting-input" placeholder="Your API Key" />
+      <label class="field-label">Ticker 2 <span style="opacity:0.5; font-size:0.75em;">(optional)</span></label>
+      <div class="pair-row">
+        <input type="text" id="financeFrom2" class="setting-input" placeholder="EUR" />
+        <span class="pair-arrow">→</span>
+        <input type="text" id="financeTo2" class="setting-input" placeholder="USD" />
+      </div>
+      <div class="hint-text">Use crypto symbols (BTC, ETH, SOL) or forex codes (EUR, GBP). No API key needed.</div>
     </div>
 
     <div class="section-divider"></div>

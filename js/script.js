@@ -27,16 +27,24 @@ class XAIExtension {
       },
       sports: {
         enabled: true,
-        teamName: "",
-        lastUpdate: null,
-        cacheData: null,
+        team1: "",
+        team2: "",
+        lastUpdate1: null,
+        lastUpdate2: null,
+        cacheData1: null,
+        cacheData2: null,
         cacheDuration: 15 * 60 * 1000,
       },
       finance: {
         enabled: true,
-        apiKey: "",
-        currencyPair1: {},
-        currencyPair2: {},
+        ticker1From: "BTC",
+        ticker1To: "USD",
+        ticker2From: "EUR",
+        ticker2To: "USD",
+        cacheData1: null,
+        cacheData2: null,
+        lastUpdate1: null,
+        lastUpdate2: null,
         cacheDuration: 900000,
       },
       gold: {
@@ -151,6 +159,15 @@ class XAIExtension {
         if (message.sportsChanged) {
           console.log("Sports settings changed, refreshing...");
           this.refreshSportsData();
+        }
+
+        if (message.financeChanged) {
+          console.log("Finance settings changed, refreshing...");
+          this.settings.finance.cacheData1 = null;
+          this.settings.finance.cacheData2 = null;
+          this.settings.finance.lastUpdate1 = null;
+          this.settings.finance.lastUpdate2 = null;
+          this.initFinance();
         }
 
         this.updateGreeting();
@@ -1219,32 +1236,95 @@ class XAIExtension {
     await this.loadWeather();
   }
 
-  // ================= FINANCE TICKER (Single Pair) =================
+  // ================= FINANCE TICKER (2-in-1, Free API) =================
+
+  // CoinGecko ID map for top crypto symbols
+  CRYPTO_IDS = {
+    BTC: "bitcoin", ETH: "ethereum", BNB: "binancecoin", SOL: "solana",
+    XRP: "ripple", ADA: "cardano", DOGE: "dogecoin", DOT: "polkadot",
+    MATIC: "matic-network", LTC: "litecoin", LINK: "chainlink", AVAX: "avalanche-2",
+    UNI: "uniswap", ATOM: "cosmos", XLM: "stellar", ALGO: "algorand",
+    VET: "vechain", FIL: "filecoin", TRX: "tron", SHIB: "shiba-inu",
+    SUI: "sui", TON: "the-open-network", APT: "aptos", NEAR: "near",
+    ARB: "arbitrum", OP: "optimism", IMX: "immutable-x",
+  };
+
+  isCrypto(symbol) {
+    return !!this.CRYPTO_IDS[symbol.toUpperCase()];
+  }
+
+  async fetchTickerData(fromSymbol, toSymbol) {
+    const from = fromSymbol.toUpperCase();
+    const to = toSymbol.toUpperCase();
+
+    if (this.isCrypto(from)) {
+      // === CoinGecko path ===
+      const coinId = this.CRYPTO_IDS[from];
+      const vsCurrency = to.toLowerCase();
+      const url = `https://api.coingecko.com/api/v3/simple/price?ids=${coinId}&vs_currencies=${vsCurrency}&include_24hr_change=true`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("CoinGecko error");
+      const json = await res.json();
+      if (!json[coinId] || json[coinId][vsCurrency] === undefined) throw new Error("No crypto data");
+      const price = json[coinId][vsCurrency];
+      const changePct = json[coinId][`${vsCurrency}_24h_change`] ?? null;
+      return { from, to, rate: price, changePct };
+    } else {
+      // === Frankfurter path (forex) ===
+      const url = `https://api.frankfurter.app/latest?from=${from}&to=${to}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("Frankfurter error");
+      const json = await res.json();
+      if (!json.rates || json.rates[to] === undefined) throw new Error("No forex data");
+      const rate = json.rates[to];
+
+      // Fetch yesterday's rate for % change
+      let changePct = null;
+      try {
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const dateStr = yesterday.toISOString().split("T")[0];
+        const histUrl = `https://api.frankfurter.app/${dateStr}?from=${from}&to=${to}`;
+        const histRes = await fetch(histUrl);
+        if (histRes.ok) {
+          const histJson = await histRes.json();
+          if (histJson.rates && histJson.rates[to]) {
+            const prevRate = histJson.rates[to];
+            changePct = ((rate - prevRate) / prevRate) * 100;
+          }
+        }
+      } catch (e) {
+        console.warn("Failed to fetch yesterday forex rate", e);
+      }
+
+      return { from, to, rate, changePct };
+    }
+  }
+
   async initFinance() {
+    // Clear any existing animation loop
+    if (this.financeLoopInterval) {
+      clearInterval(this.financeLoopInterval);
+      this.financeLoopInterval = null;
+    }
+
     const widget = document.getElementById("financeWidget");
     if (!this.settings.finance || !this.settings.finance.enabled) {
       if (widget) widget.style.display = "none";
       return;
     }
-    if (widget) widget.style.display = "flex"; // Flex for centering
+    if (widget) widget.style.display = "flex";
 
     const refreshBtn = document.getElementById("financeRefresh");
     if (refreshBtn) refreshBtn.onclick = () => this.loadFinance(true);
 
+    const retryBtn = document.getElementById("retryFinance");
+    if (retryBtn) retryBtn.addEventListener("click", () => this.loadFinance(true));
+
     await this.loadFinance();
 
-    // Refresh every 15 mins
     const duration = this.settings.finance.cacheDuration || 900000;
-
     setInterval(() => this.loadFinance(), duration);
-
-    // Retry Button Listener
-    const retryBtn = document.getElementById("retryFinance");
-    if (retryBtn) {
-      retryBtn.addEventListener("click", () => {
-        this.loadFinance(true);
-      });
-    }
   }
 
   async loadFinance(force = false) {
@@ -1253,11 +1333,12 @@ class XAIExtension {
     const error = document.getElementById("financeError");
     const empty = document.getElementById("financeEmpty");
 
-    const fromCurr = this.settings.finance.fromCurrency;
-    const toCurr = this.settings.finance.toCurrency;
+    const t1From = (this.settings.finance.ticker1From || "").trim();
+    const t1To   = (this.settings.finance.ticker1To   || "").trim();
+    const t2From = (this.settings.finance.ticker2From || "").trim();
+    const t2To   = (this.settings.finance.ticker2To   || "").trim();
 
-    // Check if empty
-    if (!fromCurr || !toCurr) {
+    if (!t1From || !t1To) {
       loading.style.display = "none";
       content.style.display = "none";
       error.style.display = "none";
@@ -1265,71 +1346,157 @@ class XAIExtension {
       return;
     }
 
-    // Check Cache
-    if (
-      !force &&
-      this.settings.finance.cacheData &&
-      this.settings.finance.lastUpdate
-    ) {
-      const age = Date.now() - this.settings.finance.lastUpdate;
-      if (age < (this.settings.finance.cacheDuration || 900000)) {
-        this.displayFinance(this.settings.finance.cacheData);
-        return;
+    const cacheDuration = this.settings.finance.cacheDuration || 900000;
+
+    // Check cache for ticker 1
+    let data1 = null;
+    if (!force && this.settings.finance.cacheData1 && this.settings.finance.lastUpdate1) {
+      if (Date.now() - this.settings.finance.lastUpdate1 < cacheDuration) {
+        data1 = this.settings.finance.cacheData1;
       }
     }
 
-    // Load New
+    // Check cache for ticker 2 (only if ticker 2 is set)
+    let data2 = null;
+    const hasTicker2 = t2From && t2To;
+    if (hasTicker2 && !force && this.settings.finance.cacheData2 && this.settings.finance.lastUpdate2) {
+      if (Date.now() - this.settings.finance.lastUpdate2 < cacheDuration) {
+        data2 = this.settings.finance.cacheData2;
+      }
+    }
+
+    // If both cached, just display
+    if (data1 && (!hasTicker2 || data2)) {
+      this.displayFinancePair(1, data1);
+      if (hasTicker2 && data2) this.displayFinancePair(2, data2);
+      this.showFinanceContent();
+      // Set label to ticker1 on initial show
+      const financeLabel = document.getElementById("financeLabel");
+      if (financeLabel) financeLabel.textContent = `${t1From}/${t1To}`;
+      if (hasTicker2 && !this.financeLoopInterval) this.startFinanceAnimationLoop(t1From, t1To, t2From, t2To);
+      return;
+    }
+
+    // Fetch fresh
     loading.style.display = "block";
     content.style.display = "none";
     error.style.display = "none";
     empty.style.display = "none";
 
     try {
-      const apiKey = this.settings.finance.apiKey || "demo";
-      const url = `https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=${fromCurr}&to_currency=${toCurr}&apikey=${apiKey}`;
+      const promises = [this.fetchTickerData(t1From, t1To)];
+      if (hasTicker2) promises.push(this.fetchTickerData(t2From, t2To));
 
-      const res = await fetch(url);
-      const json = await res.json();
+      const results = await Promise.allSettled(promises);
+      const result1 = results[0];
 
-      if (json["Note"] || !json["Realtime Currency Exchange Rate"])
-        throw new Error("API Limit/Error");
+      if (result1.status === "rejected") throw result1.reason;
 
-      const r = json["Realtime Currency Exchange Rate"];
-      const data = {
-        from: r["1. From_Currency Code"],
-        to: r["3. To_Currency Code"],
-        rate: parseFloat(r["5. Exchange Rate"]),
-        time: new Date().toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-      };
+      data1 = result1.value;
+      this.settings.finance.cacheData1 = data1;
+      this.settings.finance.lastUpdate1 = Date.now();
 
-      this.settings.finance.cacheData = data;
-      this.settings.finance.lastUpdate = Date.now();
+      if (hasTicker2) {
+        const result2 = results[1];
+        if (result2.status === "fulfilled") {
+          data2 = result2.value;
+          this.settings.finance.cacheData2 = data2;
+          this.settings.finance.lastUpdate2 = Date.now();
+        }
+      }
+
       this.saveSettings();
 
-      this.displayFinance(data);
+      const timeStr = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+      const financeTime = document.getElementById("financeTime");
+      if (financeTime) financeTime.textContent = "Updated " + timeStr;
+
+      this.displayFinancePair(1, data1);
+      if (hasTicker2 && data2) this.displayFinancePair(2, data2);
+      this.showFinanceContent();
+
+      // Set label to ticker1 on initial show
+      const financeLabel = document.getElementById("financeLabel");
+      if (financeLabel) financeLabel.textContent = `${t1From}/${t1To}`;
+
+      if (hasTicker2 && !this.financeLoopInterval) {
+        this.startFinanceAnimationLoop(t1From, t1To, t2From, t2To);
+      }
     } catch (e) {
-      console.error(e);
+      console.error("Finance error:", e);
       loading.style.display = "none";
       error.style.display = "block";
     }
   }
 
-  displayFinance(data) {
-    document.getElementById("financeLoading").style.display = "none";
-    document.getElementById("financeContent").style.display = "flex"; // Flex for layout
+  displayFinancePair(sectionNum, data) {
+    const rateEl = document.getElementById(`tickerRate${sectionNum}`);
+    const pairEl = document.getElementById(`tickerPair${sectionNum}`);
+    const changeEl = document.getElementById(`tickerChange${sectionNum}`);
 
-    document.getElementById("tickerFrom").textContent = data.from;
-    document.getElementById("tickerTo").textContent = data.to;
-    document.getElementById("tickerRate").textContent = data.rate.toFixed(2);
-    document.getElementById("tickerTime").textContent = "Updated " + data.time;
+    if (!rateEl) return;
+
+    // Format rate: crypto needs more decimals for small values
+    const rate = data.rate;
+    let rateStr;
+    if (rate >= 1000) rateStr = rate.toLocaleString(undefined, { maximumFractionDigits: 2 });
+    else if (rate >= 1) rateStr = rate.toFixed(4);
+    else rateStr = rate.toFixed(6);
+    rateEl.textContent = rateStr;
+
+    if (pairEl) pairEl.textContent = `${data.from} / ${data.to}`;
+
+    if (changeEl) {
+      if (data.changePct !== null && data.changePct !== undefined) {
+        const pct = data.changePct;
+        const isUp = pct >= 0;
+        const arrow = isUp ? "▲" : "▼";
+        changeEl.textContent = `${arrow} ${Math.abs(pct).toFixed(2)}%`;
+        changeEl.className = isUp ? "gold-change-up" : "gold-change-down";
+        changeEl.style.display = "inline-flex";
+      } else {
+        changeEl.style.display = "none";
+      }
+    }
+  }
+
+  showFinanceContent() {
+    document.getElementById("financeLoading").style.display = "none";
+    document.getElementById("financeContent").style.display = "flex";
+  }
+
+  startFinanceAnimationLoop(t1From, t1To, t2From, t2To) {
+    if (this.financeLoopInterval) clearInterval(this.financeLoopInterval);
+
+    // Toggle every 4 seconds
+    this.financeLoopInterval = setInterval(() => {
+      const section1 = document.getElementById("financeSection1");
+      const section2 = document.getElementById("financeSection2");
+      const financeLabel = document.getElementById("financeLabel");
+
+      if (!section1 || !section2) return;
+
+      if (section1.classList.contains("active")) {
+        section1.classList.remove("active");
+        section2.classList.add("active");
+        if (financeLabel) financeLabel.textContent = `${t2From}/${t2To}`;
+      } else {
+        section2.classList.remove("active");
+        section1.classList.add("active");
+        if (financeLabel) financeLabel.textContent = `${t1From}/${t1To}`;
+      }
+    }, 4000);
   }
 
   // ==================== SPORTS WIDGET FUNCTIONALITY ====================
 
   async initSports() {
+    // Clear any existing animation loop
+    if (this.sportsLoopInterval) {
+      clearInterval(this.sportsLoopInterval);
+      this.sportsLoopInterval = null;
+    }
+
     if (!this.settings.sports.enabled) {
       document.getElementById("sportsWidget").style.display = "none";
       return;
@@ -1338,39 +1505,32 @@ class XAIExtension {
     this.setupSportsEventListeners();
     await this.loadSports();
 
-    setInterval(() => {
-      this.loadSports();
-    }, this.settings.sports.cacheDuration);
+    setInterval(() => this.loadSports(), this.settings.sports.cacheDuration);
   }
 
   setupSportsEventListeners() {
     const retryBtn = document.getElementById("retrySports");
     if (retryBtn) {
-      retryBtn.addEventListener("click", () => {
-        this.loadSports();
-      });
+      retryBtn.addEventListener("click", () => this.loadSports());
     }
 
     const refreshBtn = document.getElementById("sportsRefresh");
     if (refreshBtn) {
-      refreshBtn.addEventListener("click", () => {
-        this.handleSportsRefresh();
-      });
+      refreshBtn.addEventListener("click", () => this.handleSportsRefresh());
     }
   }
 
   async loadSports() {
-    const sportsWidget = document.getElementById("sportsWidget");
     const sportsLoading = document.getElementById("sportsLoading");
     const sportsContent = document.getElementById("sportsContent");
     const sportsError = document.getElementById("sportsError");
     const sportsEmpty = document.getElementById("sportsEmpty");
 
-    // Check if team is set
-    if (
-      !this.settings.sports.teamName ||
-      this.settings.sports.teamName.trim() === ""
-    ) {
+    const team1 = (this.settings.sports.team1 || "").trim();
+    const team2 = (this.settings.sports.team2 || "").trim();
+
+    // Check if at least team1 is set
+    if (!team1) {
       sportsLoading.style.display = "none";
       sportsContent.style.display = "none";
       sportsError.style.display = "none";
@@ -1378,9 +1538,25 @@ class XAIExtension {
       return;
     }
 
-    // Check cache first
-    if (this.isSportsCacheValid()) {
-      this.displaySports(this.settings.sports.cacheData);
+    const cacheDuration = this.settings.sports.cacheDuration || 900000;
+    const hasTeam2 = !!team2;
+
+    // Check caches
+    let data1 = null, data2 = null;
+    if (this.settings.sports.cacheData1 && this.settings.sports.lastUpdate1) {
+      if (Date.now() - this.settings.sports.lastUpdate1 < cacheDuration) {
+        data1 = this.settings.sports.cacheData1;
+      }
+    }
+    if (hasTeam2 && this.settings.sports.cacheData2 && this.settings.sports.lastUpdate2) {
+      if (Date.now() - this.settings.sports.lastUpdate2 < cacheDuration) {
+        data2 = this.settings.sports.cacheData2;
+      }
+    }
+
+    // If both cached, display directly
+    if (data1 && (!hasTeam2 || data2)) {
+      this.renderSportsData(data1, data2, hasTeam2);
       return;
     }
 
@@ -1391,45 +1567,180 @@ class XAIExtension {
     sportsEmpty.style.display = "none";
 
     try {
-      const teamQuery = this.settings.sports.teamName || "Barcelona";
-      
-      const espnTeam = await this.searchESPNTeam(teamQuery);
-      if (!espnTeam) {
-        throw new Error("Team not found on ESPN");
+      const promises = [this.fetchTeamData(team1)];
+      if (hasTeam2) promises.push(this.fetchTeamData(team2));
+
+      const results = await Promise.allSettled(promises);
+      const result1 = results[0];
+
+      if (result1.status === "rejected") throw result1.reason;
+
+      data1 = result1.value;
+      this.settings.sports.cacheData1 = data1;
+      this.settings.sports.lastUpdate1 = Date.now();
+
+      if (hasTeam2 && results[1].status === "fulfilled") {
+        data2 = results[1].value;
+        this.settings.sports.cacheData2 = data2;
+        this.settings.sports.lastUpdate2 = Date.now();
       }
-      
-      const { teamData, lastMatch, nextMatch } = await this.fetchESPNFixtures(espnTeam.id, espnTeam.leagueSlug);
 
-      const sportsData = {
-        team: teamData,
-        lastMatch: lastMatch,
-        nextMatch: nextMatch,
-      };
-
-      // Cache the data
-      this.settings.sports.cacheData = sportsData;
-      this.settings.sports.lastUpdate = Date.now();
       this.saveSettings();
-
-      // Display sports data
-      this.displaySports(sportsData);
+      this.renderSportsData(data1, data2, hasTeam2);
     } catch (error) {
       console.error("Sports error:", error);
       this.displaySportsError(error.message);
     }
   }
 
+  async fetchTeamData(teamName) {
+    const espnTeam = await this.searchESPNTeam(teamName);
+    if (!espnTeam) throw new Error(`Team not found: ${teamName}`);
+    const { teamData, lastMatch, nextMatch } = await this.fetchESPNFixtures(espnTeam.id, espnTeam.leagueSlug);
+    return { team: teamData, lastMatch, nextMatch };
+  }
+
+  renderSportsData(data1, data2, hasTeam2) {
+    const sportsLoading = document.getElementById("sportsLoading");
+    const sportsContent = document.getElementById("sportsContent");
+    const sportsError = document.getElementById("sportsError");
+    const sportsEmpty = document.getElementById("sportsEmpty");
+
+    sportsLoading.style.display = "none";
+    sportsError.style.display = "none";
+    sportsEmpty.style.display = "none";
+
+    // Show section 2 only if we have team2 data
+    const section2 = document.getElementById("sportsSection2");
+    if (section2) section2.style.display = hasTeam2 && data2 ? "" : "none";
+
+    this.displaySportsTeam(1, data1);
+    if (hasTeam2 && data2) this.displaySportsTeam(2, data2);
+
+    // Update label with team1 name initially
+    const sportsLabel = document.getElementById("sportsLabel");
+    if (sportsLabel) sportsLabel.textContent = data1.team.name || "Sports";
+
+    sportsContent.style.display = "block";
+
+    if (hasTeam2 && data2 && !this.sportsLoopInterval) {
+      this.startSportsAnimationLoop(data1.team.name, data2.team.name);
+    }
+  }
+
+  displaySportsTeam(sectionNum, data) {
+    const suffix = sectionNum; // 1 or 2
+
+    const badge = document.getElementById(`teamBadge${suffix}`);
+    const nameEl = document.getElementById(`teamName${suffix}`);
+
+    if (badge) {
+      if (data.team.logo) {
+        badge.src = data.team.logo;
+        badge.alt = data.team.name;
+        badge.style.display = "block";
+      } else {
+        badge.style.display = "none";
+      }
+    }
+    if (nameEl) nameEl.textContent = data.team.name || "--";
+
+    // Last match
+    const lastCard = document.getElementById(`lastMatchCard${suffix}`);
+    if (data.lastMatch) {
+      if (lastCard) lastCard.style.display = "block";
+      this.displayMatchForSection(suffix, data.lastMatch, "last");
+    } else {
+      if (lastCard) lastCard.style.display = "none";
+    }
+
+    // Next match
+    const nextCard = document.getElementById(`nextMatchCard${suffix}`);
+    if (data.nextMatch) {
+      if (nextCard) nextCard.style.display = "block";
+      this.displayMatchForSection(suffix, data.nextMatch, "next");
+    } else {
+      if (nextCard) nextCard.style.display = "none";
+    }
+  }
+
+  displayMatchForSection(sectionNum, match, type) {
+    const prefix = type === "last" ? "last" : "next";
+    const suffix = sectionNum;
+
+    const homeTeam = match.teams.home.name || "--";
+    const awayTeam = match.teams.away.name || "--";
+
+    const homeEl = document.getElementById(`${prefix}HomeTeam${suffix}`);
+    const awayEl = document.getElementById(`${prefix}AwayTeam${suffix}`);
+    if (homeEl) homeEl.textContent = homeTeam;
+    if (awayEl) awayEl.textContent = awayTeam;
+
+    const homeBadge = document.getElementById(`${prefix}HomeBadge${suffix}`);
+    const awayBadge = document.getElementById(`${prefix}AwayBadge${suffix}`);
+
+    if (homeBadge) {
+      if (match.teams.home.logo) {
+        homeBadge.src = match.teams.home.logo;
+        homeBadge.alt = homeTeam;
+        homeBadge.style.display = "block";
+      } else {
+        homeBadge.style.display = "none";
+      }
+    }
+
+    if (awayBadge) {
+      if (match.teams.away.logo) {
+        awayBadge.src = match.teams.away.logo;
+        awayBadge.alt = awayTeam;
+        awayBadge.style.display = "block";
+      } else {
+        awayBadge.style.display = "none";
+      }
+    }
+
+    if (type === "last") {
+      const scoreEl = document.getElementById(`lastScore${suffix}`);
+      if (scoreEl) {
+        const homeScore = match.goals.home !== null ? match.goals.home : "-";
+        const awayScore = match.goals.away !== null ? match.goals.away : "-";
+        scoreEl.textContent = `${homeScore} : ${awayScore}`;
+      }
+    }
+
+    const compEl = document.getElementById(`${prefix}Competition${suffix}`);
+    if (compEl) compEl.textContent = match.league.name || "--";
+
+    const dateEl = document.getElementById(`${prefix}Date${suffix}`);
+    if (dateEl) dateEl.textContent = this.formatMatchDate(match.fixture.date, "");
+  }
+
+  startSportsAnimationLoop(team1Name, team2Name) {
+    if (this.sportsLoopInterval) clearInterval(this.sportsLoopInterval);
+
+    this.sportsLoopInterval = setInterval(() => {
+      const section1 = document.getElementById("sportsSection1");
+      const section2 = document.getElementById("sportsSection2");
+      const sportsLabel = document.getElementById("sportsLabel");
+
+      if (!section1 || !section2) return;
+
+      if (section1.classList.contains("active")) {
+        section1.classList.remove("active");
+        section2.classList.add("active");
+        if (sportsLabel) sportsLabel.textContent = team2Name || "Sports";
+      } else {
+        section2.classList.remove("active");
+        section1.classList.add("active");
+        if (sportsLabel) sportsLabel.textContent = team1Name || "Sports";
+      }
+    }, 4000);
+  }
+
   isSportsCacheValid() {
-    if (!this.settings.sports.cacheData || !this.settings.sports.lastUpdate) {
-      return false;
-    }
-
-    // Don't use cache if it contains empty matches, try to refetch
-    if (!this.settings.sports.cacheData.lastMatch && !this.settings.sports.cacheData.nextMatch) {
-      return false;
-    }
-
-    const timeSinceUpdate = Date.now() - this.settings.sports.lastUpdate;
+    // Legacy fallback — used if old cache keys exist
+    if (!this.settings.sports.cacheData1 || !this.settings.sports.lastUpdate1) return false;
+    const timeSinceUpdate = Date.now() - this.settings.sports.lastUpdate1;
     return timeSinceUpdate < this.settings.sports.cacheDuration;
   }
 
@@ -1454,11 +1765,7 @@ class XAIExtension {
       const teamId = uidParts[1];
       const leagueSlug = soccerTeam.defaultLeagueSlug || "esp.1";
       
-      return {
-        id: teamId,
-        leagueSlug: leagueSlug,
-        name: soccerTeam.displayName
-      };
+      return { id: teamId, leagueSlug, name: soccerTeam.displayName };
     } catch (error) {
       console.error("ESPN Search Error:", error);
       return null;
@@ -1479,9 +1786,7 @@ class XAIExtension {
         logo: data.team.logo
       };
 
-      let fixtures = data.events || [];
-
-      // Map ESPN structure to our expected structure
+      const fixtures = data.events || [];
       const mappedFixtures = fixtures.map(event => {
         const comp = event.competitions[0];
         const homeComp = comp.competitors.find(c => c.homeAway === "home");
@@ -1492,9 +1797,7 @@ class XAIExtension {
             date: event.date,
             timestamp: new Date(event.date).getTime() / 1000
           },
-          league: {
-            name: event.season?.displayName || event.name
-          },
+          league: { name: event.season?.displayName || event.name },
           teams: {
             home: {
               name: homeComp?.team?.displayName || "--",
@@ -1512,9 +1815,7 @@ class XAIExtension {
         };
       });
 
-      // Sort fixtures by timestamp
       mappedFixtures.sort((a, b) => a.fixture.timestamp - b.fixture.timestamp);
-      
       const currentTimestamp = Math.floor(Date.now() / 1000);
       const pastMatches = mappedFixtures.filter(f => f.fixture.timestamp < currentTimestamp);
       const upcomingMatches = mappedFixtures.filter(f => f.fixture.timestamp >= currentTimestamp);
@@ -1529,130 +1830,13 @@ class XAIExtension {
     }
   }
 
-  displaySports(data) {
-    const sportsLoading = document.getElementById("sportsLoading");
-    const sportsContent = document.getElementById("sportsContent");
-    const sportsError = document.getElementById("sportsError");
-    const sportsEmpty = document.getElementById("sportsEmpty");
-
-    // Hide loading, error, and empty states
-    sportsLoading.style.display = "none";
-    sportsError.style.display = "none";
-    sportsEmpty.style.display = "none";
-
-    // Display team info
-    const teamBadge = document.getElementById("teamBadge");
-    const teamName = document.getElementById("teamName");
-    const teamLeague = document.getElementById("teamLeague");
-
-    if (data.team.logo) {
-      teamBadge.src = data.team.logo;
-      teamBadge.alt = data.team.name;
-      teamBadge.style.display = "block";
-    } else {
-      teamBadge.style.display = "none";
-    }
-
-    teamName.textContent = data.team.name || "--";
-    teamLeague.style.display = "none";
-
-    // Display last match
-    const lastMatchCard = document.querySelector(".match-card.last-match");
-    if (data.lastMatch) {
-      lastMatchCard.style.display = "block";
-      this.displayMatch(data.lastMatch, "last", data.team.name);
-    } else {
-      lastMatchCard.style.display = "none";
-    }
-
-    // Display next match
-    const nextMatchCard = document.querySelector(".match-card.next-match");
-    if (data.nextMatch) {
-      nextMatchCard.style.display = "block";
-      this.displayMatch(data.nextMatch, "next", data.team.name);
-    } else {
-      nextMatchCard.style.display = "none";
-    }
-
-    // Show sports content
-    sportsContent.style.display = "block";
-  }
-
-  displayMatch(match, type, currentTeam) {
-    const prefix = type === "last" ? "last" : "next";
-
-    // Team names
-    const homeTeam = match.teams.home.name || "--";
-    const awayTeam = match.teams.away.name || "--";
-
-    document.getElementById(`${prefix}HomeTeam`).textContent = homeTeam;
-    document.getElementById(`${prefix}AwayTeam`).textContent = awayTeam;
-
-    // Team badges
-    const homeBadge = document.getElementById(`${prefix}HomeBadge`);
-    const awayBadge = document.getElementById(`${prefix}AwayBadge`);
-
-    if (match.teams.home.logo) {
-      homeBadge.src = match.teams.home.logo;
-      homeBadge.alt = homeTeam;
-      homeBadge.style.display = "block";
-    } else {
-      homeBadge.style.display = "none";
-    }
-
-    if (match.teams.away.logo) {
-      awayBadge.src = match.teams.away.logo;
-      awayBadge.alt = awayTeam;
-      awayBadge.style.display = "block";
-    } else {
-      awayBadge.style.display = "none";
-    }
-
-    // Score (for last match) or VS (for next match)
-    if (type === "last") {
-      const homeScore = match.goals.home !== null ? match.goals.home : "-";
-      const awayScore = match.goals.away !== null ? match.goals.away : "-";
-      document.getElementById("lastScore").textContent =
-        `${homeScore} : ${awayScore}`;
-    }
-
-    // Competition/League
-    document.getElementById(`${prefix}Competition`).textContent =
-      match.league.name || "--";
-
-    // Date
-    const matchDate = this.formatMatchDate(match.fixture.date, "");
-    document.getElementById(`${prefix}Date`).textContent = matchDate;
-  }
-
-  displayNoMatch(type) {
-    const prefix = type === "last" ? "last" : "next";
-
-    document.getElementById(`${prefix}HomeTeam`).textContent = "--";
-    document.getElementById(`${prefix}AwayTeam`).textContent = "--";
-
-    const homeBadge = document.getElementById(`${prefix}HomeBadge`);
-    const awayBadge = document.getElementById(`${prefix}AwayBadge`);
-    homeBadge.style.display = "none";
-    awayBadge.style.display = "none";
-
-    if (type === "last") {
-      document.getElementById("lastScore").textContent = "- : -";
-    }
-
-    document.getElementById(`${prefix}Competition`).textContent = "No data";
-    document.getElementById(`${prefix}Date`).textContent = "--";
-  }
-
   formatMatchDate(dateString, timeString) {
     if (!dateString) return "--";
-
     try {
       const date = new Date(dateString + (timeString ? " " + timeString : ""));
       const now = new Date();
       const diffDays = Math.floor((date - now) / (1000 * 60 * 60 * 24));
 
-      // Format based on proximity
       if (Math.abs(diffDays) === 0) {
         return "Today" + (timeString ? ` at ${timeString}` : "");
       } else if (diffDays === 1) {
@@ -1670,39 +1854,32 @@ class XAIExtension {
   }
 
   displaySportsError(message) {
-    const sportsLoading = document.getElementById("sportsLoading");
-    const sportsContent = document.getElementById("sportsContent");
-    const sportsError = document.getElementById("sportsError");
-    const sportsEmpty = document.getElementById("sportsEmpty");
+    document.getElementById("sportsLoading").style.display = "none";
+    document.getElementById("sportsContent").style.display = "none";
+    document.getElementById("sportsEmpty").style.display = "none";
     const errorMessage = document.getElementById("sportsErrorMessage");
-
-    sportsLoading.style.display = "none";
-    sportsContent.style.display = "none";
-    sportsEmpty.style.display = "none";
-
-    errorMessage.textContent = message;
-    sportsError.style.display = "block";
+    if (errorMessage) errorMessage.textContent = message;
+    document.getElementById("sportsError").style.display = "block";
   }
 
   async handleSportsRefresh() {
     const refreshBtn = document.getElementById("sportsRefresh");
-
-    if (refreshBtn) {
-      refreshBtn.classList.add("refreshing");
-    }
-
+    if (refreshBtn) refreshBtn.classList.add("refreshing");
     await this.refreshSportsData();
-
     setTimeout(() => {
-      if (refreshBtn) {
-        refreshBtn.classList.remove("refreshing");
-      }
+      if (refreshBtn) refreshBtn.classList.remove("refreshing");
     }, 1000);
   }
 
   async refreshSportsData() {
-    this.settings.sports.cacheData = null;
-    this.settings.sports.lastUpdate = null;
+    this.settings.sports.cacheData1 = null;
+    this.settings.sports.cacheData2 = null;
+    this.settings.sports.lastUpdate1 = null;
+    this.settings.sports.lastUpdate2 = null;
+    if (this.sportsLoopInterval) {
+      clearInterval(this.sportsLoopInterval);
+      this.sportsLoopInterval = null;
+    }
     await this.saveSettings();
     await this.loadSports();
   }
