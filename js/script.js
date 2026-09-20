@@ -1554,7 +1554,7 @@ class XAIExtension {
     }
 
     teamName.textContent = data.team.name || "--";
-    teamLeague.textContent = "--";
+    teamLeague.style.display = "none";
 
     // Display last match
     const lastMatchCard = document.querySelector(".match-card.last-match");
