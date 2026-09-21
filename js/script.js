@@ -76,10 +76,19 @@ class XAIExtension {
 
   async loadSettings() {
     try {
-      // Changed from .sync to .local
       const result = await chrome.storage.local.get(["xaiSettings"]);
       if (result.xaiSettings) {
-        this.settings = { ...this.settings, ...result.xaiSettings };
+        const saved = result.xaiSettings;
+        // Deep merge each sub-object so partial/stale storage can't corrupt defaults
+        this.settings = {
+          ...this.settings,
+          ...saved,
+          sports:  { ...this.settings.sports,  ...(saved.sports  || {}) },
+          finance: { ...this.settings.finance, ...(saved.finance || {}) },
+          gold:    { ...this.settings.gold,    ...(saved.gold    || {}) },
+          weather: { ...this.settings.weather, ...(saved.weather || {}) },
+          ai:      { ...this.settings.ai,      ...(saved.ai      || {}) },
+        };
       }
     } catch (error) {
       console.log("Settings loaded from default values");
@@ -88,9 +97,30 @@ class XAIExtension {
 
   async saveSettings() {
     try {
-      // Changed from .sync to .local
-      await chrome.storage.local.set({ xaiSettings: this.settings });
+      // Strip runtime cache before saving so stale prices never persist across reloads
+      const toSave = {
+        ...this.settings,
+        finance: this.settings.finance ? {
+          ...this.settings.finance,
+          cacheData1: undefined,
+          cacheData2: undefined,
+          lastUpdate1: undefined,
+          lastUpdate2: undefined,
+        } : this.settings.finance,
+        sports: this.settings.sports ? {
+          ...this.settings.sports,
+          cacheData1: undefined,
+          cacheData2: undefined,
+          lastUpdate1: undefined,
+          lastUpdate2: undefined,
+        } : this.settings.sports,
+      };
+      // Set flag BEFORE writing — onChanged fires async but before this setTimeout clears it
+      this._savingFromNewtab = true;
+      await chrome.storage.local.set({ xaiSettings: toSave });
+      setTimeout(() => { this._savingFromNewtab = false; }, 200);
     } catch (error) {
+      this._savingFromNewtab = false;
       console.log("Could not save settings");
     }
   }
@@ -146,68 +176,73 @@ class XAIExtension {
       searchInput.focus();
     }, 500);
 
+    // === PRIMARY settings sync: chrome.storage.onChanged ===
+    // Fires directly whenever popup saves — no message passing needed.
+    // This is more reliable than chrome.tabs.sendMessage which can be dropped.
+    chrome.storage.onChanged.addListener((changes, namespace) => {
+      if (namespace !== "local" || !changes.xaiSettings) return;
+      // Ignore writes that THIS newtab page made (via saveSettings) to avoid infinite loop
+      if (this._savingFromNewtab) return;
+      const newSettings = changes.xaiSettings.newValue;
+      if (!newSettings) return;
+
+      console.log("[storage.onChanged] xaiSettings updated");
+
+      // Deep-merge new settings into memory
+      this.settings = {
+        ...this.settings,
+        ...newSettings,
+        sports:  { ...this.settings.sports,  ...(newSettings.sports  || {}) },
+        finance: { ...this.settings.finance, ...(newSettings.finance || {}) },
+        gold:    { ...this.settings.gold,    ...(newSettings.gold    || {}) },
+        weather: { ...this.settings.weather, ...(newSettings.weather || {}) },
+        ai:      { ...this.settings.ai,      ...(newSettings.ai      || {}) },
+      };
+
+      // Finance: wipe cache then reinit with new tickers
+      if (newSettings.finance) {
+        this.settings.finance = {
+          ...this.settings.finance,
+          ...newSettings.finance,
+          cacheData1: null,
+          cacheData2: null,
+          lastUpdate1: null,
+          lastUpdate2: null,
+        };
+        this.initFinance();
+      }
+
+      // Sports: wipe cache then refresh
+      if (newSettings.sports) {
+        this.settings.sports = {
+          ...this.settings.sports,
+          ...newSettings.sports,
+          cacheData1: null,
+          cacheData2: null,
+          lastUpdate1: null,
+          lastUpdate2: null,
+        };
+        this.refreshSportsData();
+      }
+
+      // Gold: reinit if changed
+      if (newSettings.gold) this.initGold();
+
+      // Weather: refresh if changed
+      if (newSettings.weather) this.refreshWeatherData();
+
+      this.updateGreeting();
+    });
+
+    // === FALLBACK: message-based listener (kept for backward compat) ===
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       if (message.action === "settingsUpdated") {
-        console.log("Settings updated from popup");
-        // Deep merge sub-objects so new ticker/team values properly overwrite in-memory stale state
-        this.settings = {
-          ...this.settings,
-          ...message.settings,
-          sports:  { ...this.settings.sports,  ...(message.settings?.sports  || {}) },
-          finance: { ...this.settings.finance, ...(message.settings?.finance || {}) },
-          gold:    { ...this.settings.gold,    ...(message.settings?.gold    || {}) },
-          weather: { ...this.settings.weather, ...(message.settings?.weather || {}) },
-          ai:      { ...this.settings.ai,      ...(message.settings?.ai      || {}) },
-        };
-
-        if (message.weatherChanged) {
-          console.log("Weather settings changed, refreshing...");
-          this.refreshWeatherData();
-        }
-
-        if (message.sportsChanged) {
-          console.log("Sports settings changed, refreshing...");
-          // Reload from storage to guarantee fresh team names
-          chrome.storage.local.get("xaiSettings", (result) => {
-            if (result.xaiSettings?.sports) {
-              this.settings.sports = {
-                ...result.xaiSettings.sports,
-                cacheData1: null,
-                cacheData2: null,
-                lastUpdate1: null,
-                lastUpdate2: null,
-              };
-            }
-            this.refreshSportsData();
-          });
-        }
-
-        if (message.financeChanged) {
-          console.log("Finance settings changed, refreshing...");
-          // Reload from storage to guarantee fresh ticker symbols
-          chrome.storage.local.get("xaiSettings", (result) => {
-            if (result.xaiSettings?.finance) {
-              this.settings.finance = {
-                ...result.xaiSettings.finance,
-                // Always wipe the cache so loadFinance() fetches fresh
-                cacheData1: null,
-                cacheData2: null,
-                lastUpdate1: null,
-                lastUpdate2: null,
-              };
-            } else {
-              this.settings.finance.cacheData1 = null;
-              this.settings.finance.cacheData2 = null;
-              this.settings.finance.lastUpdate1 = null;
-              this.settings.finance.lastUpdate2 = null;
-            }
-            this.initFinance();
-          });
-        }
-
-        this.updateGreeting();
+        // The storage.onChanged listener above handles everything.
+        // Just acknowledge receipt.
+        console.log("[message] settingsUpdated received (handled by storage.onChanged)");
         sendResponse({ success: true });
       }
+      return true;
     });
 
     // === AI BUTTON LISTENERS ===
