@@ -2927,6 +2927,7 @@ class XAIExtension {
     }, 4000);
   }
 
+} // end class XAIExtension
 
 // Fade out widgets on scroll
 const weatherWidget = document.querySelector(".weather-container");
