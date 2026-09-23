@@ -748,4 +748,100 @@
             <ul id="todoList" class="todo-list"></ul>
           </div>
         </div>
-      
+      </aside>
+    </div>
+
+    <div id="aiModal" class="ai-modal">
+      <div class="ai-modal-content">
+        <div class="ai-header">
+          <div style="display: flex; align-items: center; gap: 15px">
+            <span class="ai-title">GEMINI INTELLIGENCE</span>
+            <button
+              id="stopVoiceBtn"
+              class="voice-control-btn"
+              title="Stop Speaking"
+              style="display: none"
+              aria-label="Stop Voice Output"
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <rect x="4" y="4" width="16" height="16"></rect>
+              </svg>
+              <span style="font-size: 0.8rem; margin-left: 5px"
+                >STOP VOICE</span
+              >
+            </button>
+          </div>
+          <button
+            id="closeAiModal"
+            class="close-ai-btn"
+            aria-label="Close AI Interface"
+          >
+            &times;
+          </button>
+        </div>
+        <div id="aiResponseText" class="ai-response-text"></div>
+        <div class="ai-input-container">
+          <div class="ai-input-wrapper">
+            <input
+              type="text"
+              id="aiReplyInput"
+              class="ai-reply-input"
+              placeholder="Reply to Gemini..."
+              autocomplete="off"
+            />
+            <button
+              id="aiReplyMic"
+              class="ai-reply-btn"
+              title="Voice Input"
+              aria-label="Reply with Voice"
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"
+                ></path>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                <line x1="12" y1="19" x2="12" y2="23"></line>
+              </svg>
+            </button>
+            <button
+              id="aiReplySend"
+              class="ai-reply-btn"
+              title="Send Reply"
+              aria-label="Send Reply"
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+            </button>
+          </div>
+          <div class="ai-status">CONNECTION SECURE</div>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/effects.js"></script>
+    <script src="js/script.js"></script>
+  </body>
+</html>
