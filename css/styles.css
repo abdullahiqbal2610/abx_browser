@@ -2151,6 +2151,7 @@ body > .settings-container {
 
 .todo-input {
   flex: 1;
+  min-width: 0; /* Allows input to shrink in flex container, fixing overflow */
   background: transparent;
   border: 1px solid #212327;
   border-radius: 9999px;
@@ -2489,7 +2490,7 @@ body > .settings-container {
 .psx-wrapper {
   position: relative;
   width: 100%;
-  height: 68px;
+  height: 56px; /* Trimmed bottom whitespace */
 }
 
 .psx-section {
