@@ -53,6 +53,9 @@ class XAIExtension {
         lastUpdate: null,
         cacheDuration: 900000,
       },
+      psx: {
+        enabled: true,
+      },
       todoList: [],
     };
     this.init();
@@ -87,6 +90,7 @@ class XAIExtension {
           sports:  { ...this.settings.sports,  ...(saved.sports  || {}) },
           finance: { ...this.settings.finance, ...(saved.finance || {}) },
           gold:    { ...this.settings.gold,    ...(saved.gold    || {}) },
+          psx:     { ...this.settings.psx,     ...(saved.psx     || {}) },
           weather: { ...this.settings.weather, ...(saved.weather || {}) },
           ai:      { ...this.settings.ai,      ...(saved.ai      || {}) },
         };
@@ -196,6 +200,7 @@ class XAIExtension {
         sports:  { ...this.settings.sports,  ...(newSettings.sports  || {}) },
         finance: { ...this.settings.finance, ...(newSettings.finance || {}) },
         gold:    { ...this.settings.gold,    ...(newSettings.gold    || {}) },
+        psx:     { ...this.settings.psx,     ...(newSettings.psx     || {}) },
         weather: { ...this.settings.weather, ...(newSettings.weather || {}) },
         ai:      { ...this.settings.ai,      ...(newSettings.ai      || {}) },
       };
@@ -228,6 +233,9 @@ class XAIExtension {
 
       // Gold: reinit if changed
       if (newSettings.gold) this.initGold();
+
+      // PSX: reinit if changed
+      if (newSettings.psx) this.initPsx();
 
       // Weather: refresh if changed
       if (newSettings.weather) this.refreshWeatherData();

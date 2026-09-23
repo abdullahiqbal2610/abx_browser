@@ -1861,9 +1861,9 @@ body.ai-active .gold-container {
   min-height: 100vh;
   display: grid;
   /* Narrower sidebars, constrained center, centered on screen */
-  grid-template-columns: 280px minmax(450px, 650px) 280px;
-  gap: 25px; /* Reduced gap to pull islands together */
-  padding: 40px 20px;
+  grid-template-columns: 240px minmax(400px, 600px) 240px;
+  gap: 20px; /* Reduced gap to pull islands together */
+  padding: 30px 15px;
   justify-content: center;
   align-items: start;
 }
@@ -1872,7 +1872,7 @@ body.ai-active .gold-container {
 .sidebar {
   display: flex;
   flex-direction: column;
-  gap: 15px; /* Tighter gap between widgets */
+  gap: 12px; /* Tighter gap between widgets */
   padding-top: 15px; /* Push down slightly to align with greeting */
 }
 
@@ -2554,3 +2554,4 @@ body > .settings-container {
   margin-top: 2px;
   font-weight: 300;
 }
+.sidebar .glass-panel { padding: 12px 14px !important; }

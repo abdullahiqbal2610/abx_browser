@@ -24,6 +24,9 @@ class PopupController {
         ticker2To: "USD",
         cacheDuration: 900000, // 15 mins
       },
+      psx: {
+        enabled: true,
+      },
       gold: {
         enabled: true,
         cacheDuration: 900000,
@@ -52,6 +55,7 @@ class PopupController {
           ...result.xaiSettings,
           sports: { ...this.settings.sports, ...result.xaiSettings.sports },
           finance: { ...this.settings.finance, ...result.xaiSettings.finance },
+          psx: { ...this.settings.psx, ...result.xaiSettings.psx },
           gold: { ...this.settings.gold, ...result.xaiSettings.gold },
           ai: { ...this.settings.ai, ...result.xaiSettings.ai },
         };
@@ -134,6 +138,15 @@ class PopupController {
       sportsTeam2.addEventListener("input", (e) => {
         if (!this.settings.sports) this.settings.sports = {};
         this.settings.sports.team2 = e.target.value;
+      });
+    }
+
+    // --- PSX Settings ---
+    const psxEnabled = document.getElementById("psxEnabled");
+    if (psxEnabled) {
+      psxEnabled.addEventListener("change", (e) => {
+        if (!this.settings.psx) this.settings.psx = {};
+        this.settings.psx.enabled = e.target.checked;
       });
     }
 
@@ -253,6 +266,14 @@ class PopupController {
       if (f2to)   f2to.value   = this.settings.finance.ticker2To   || "";
     }
 
+    // PSX
+    if (this.settings.psx) {
+      const psxToggle = document.getElementById("psxEnabled");
+      if (psxToggle) {
+        psxToggle.checked = this.settings.psx.enabled !== false;
+      }
+    }
+
     // Gold
     if (this.settings.gold) {
       document.getElementById("goldEnabled").checked =
@@ -282,6 +303,7 @@ class PopupController {
                 weatherChanged: true,
                 sportsChanged: true,
                 financeChanged: true, // Force refresh finance
+                psxChanged: true,
                 goldChanged: true,
               },
               () => {
@@ -330,6 +352,9 @@ class PopupController {
           ticker2From: "EUR",
           ticker2To: "USD",
           cacheDuration: 900000,
+        },
+        psx: {
+          enabled: true,
         },
         gold: {
           enabled: true,
