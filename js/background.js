@@ -54,6 +54,27 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             sendResponse({ success: true });
             break;
             
+        case 'fetchPsx':
+            const symbol = request.symbol;
+            const BASE = "https://dps.psx.com.pk";
+            const body = new URLSearchParams({ symbol: symbol });
+            fetch(`${BASE}/historical`, {
+                method: "POST",
+                headers: {
+                    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                    "Accept-Language": "en-US,en;q=0.5",
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: body.toString(),
+            })
+            .then(res => {
+                if (!res.ok) throw new Error(`Status: ${res.status}`);
+                return res.text();
+            })
+            .then(html => sendResponse({ success: true, html: html }))
+            .catch(err => sendResponse({ success: false, error: err.message }));
+            return true; // Keep message channel open for async response
+            
         default:
             sendResponse({ error: 'Unknown action' });
     }

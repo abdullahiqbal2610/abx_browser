@@ -2821,106 +2821,75 @@ class XAIExtension {
   }
 
   /**
-   * Scrapes live PSX quote using psxdata library's AJAX endpoints.
+   * Scrapes PSX quote using psxdata's historical endpoint — works 24/7.
    *
-   * KSE-100: GET /sector-summary/sectorwise — reads the TOTAL row at the bottom
-   * Stocks : GET /trading-board/REG/main    — parses the row for the given symbol
-   *
-   * Must send X-Requested-With: XMLHttpRequest (from psxdata constants.py).
+   * POST /historical {symbol} returns descending history.
+   * We parse row 0 (today) and row 1 (yesterday) to calculate daily change.
    */
   async scrapePsxQuote(symbol) {
-    const HEADERS = {
-      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
-      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-      "Accept-Language": "en-US,en;q=0.5",
-      "Referer": "https://dps.psx.com.pk/",
-      "X-Requested-With": "XMLHttpRequest",
-    };
     const sym = symbol.toUpperCase();
 
-    // Helper: parse a table from html, return {headers[], rows[]}
-    const parseTable = (html) => {
-      const doc = new DOMParser().parseFromString(html, "text/html");
-      const table = doc.querySelector("table");
-      if (!table) return null;
-      const ths = [...table.querySelectorAll("th")].map(th => th.textContent.trim());
-      const rows = [...table.querySelectorAll("tbody tr, tr")]
-        .filter(tr => tr.querySelectorAll("td").length > 0)
-        .map(tr => [...tr.querySelectorAll("td")].map(td => td.textContent.trim()));
-      return { ths, rows };
-    };
-
-    // ── KSE-100 Index ───────────────────────────────────────────────────────────
-    if (sym === "KSE100") {
-      // /sector-summary/sectorwise returns a table with sectors + a TOTAL row
-      // Columns: Sector Code, Sector Name, Advance, Decline, Unchanged, Volume,
-      //          Market Cap, Current Index, % Change
-      const res = await fetch("https://dps.psx.com.pk/sector-summary/sectorwise", { headers: HEADERS });
-      if (!res.ok) throw new Error(`KSE100 sector-summary failed: ${res.status}`);
-      const data = parseTable(await res.text());
-      if (!data) throw new Error("KSE100: no table in sector-summary");
-
-      // Find "Current Index" and "% Change" column positions
-      const colCurrent = data.ths.findIndex(h => /current.*index/i.test(h) || /current/i.test(h));
-      const colChange  = data.ths.findIndex(h => /change.*%|%.*change/i.test(h) || h === "% Change");
-
-      // The LAST row is the TOTAL row with the overall index level
-      const totalRow = data.rows[data.rows.length - 1];
-      if (!totalRow) throw new Error("KSE100: no total row");
-
-      // Try last row's "current index" col; if col not found, try second-to-last col
-      const rawPrice = colCurrent >= 0 ? totalRow[colCurrent] : totalRow[totalRow.length - 2];
-      const price = parseFloat((rawPrice || "").replace(/,/g, ""));
-      if (isNaN(price) || price < 1000) throw new Error(`KSE100: bad price value: ${rawPrice}`);
-
-      const rawPct = colChange >= 0 ? totalRow[colChange] : null;
-      const changePct = rawPct ? parseFloat(rawPct.replace(/%/g, "")) : null;
-
-      return { symbol: sym, price, change: null, changePct: isNaN(changePct) ? null : changePct };
-    }
-
-    // ── Individual stocks (FFC, MEBL) ──────────────────────────────────────────
-    // Cache the full board for 4 minutes so FFC + MEBL share one request
-    const CACHE_TTL = 4 * 60 * 1000;
-    if (!this._psxBoardCache || (Date.now() - this._psxBoardCacheTime) > CACHE_TTL) {
-      const res = await fetch("https://dps.psx.com.pk/trading-board/REG/main", { headers: HEADERS });
-      if (!res.ok) throw new Error(`Trading board fetch failed: ${res.status}`);
-      this._psxBoardCache = await res.text();
-      this._psxBoardCacheTime = Date.now();
-    }
-
-    const data = parseTable(this._psxBoardCache);
-    if (!data) throw new Error("Trading board: no table found");
-
-    // Map column names (mirrors psxdata COLUMN_MAP)
-    const col = {};
-    data.ths.forEach((h, i) => {
-      const u = h.toUpperCase();
-      if (u === "SYMBOL")      col.symbol    = i;
-      else if (u === "CURRENT") col.current   = i;
-      else if (u === "LDCP")    col.ldcp      = i;
-      else if (u === "CHANGE")  col.change    = i;
-      else if (u === "CHANGE (%)") col.changePct = i;
+    // In Manifest V3, we must fetch from the background service worker to bypass CORS
+    // since dps.psx.com.pk doesn't set Access-Control-Allow-Origin headers.
+    const response = await new Promise((resolve, reject) => {
+      chrome.runtime.sendMessage({ action: 'fetchPsx', symbol: sym }, (res) => {
+        if (chrome.runtime.lastError) {
+          reject(new Error(chrome.runtime.lastError.message));
+        } else if (!res.success) {
+          reject(new Error(res.error));
+        } else {
+          resolve(res.html);
+        }
+      });
     });
 
-    // Find the row for our symbol
-    for (const cells of data.rows) {
-      const rowSym = (cells[col.symbol] || "").trim().toUpperCase();
-      if (rowSym === sym) {
-        const price     = parseFloat((cells[col.current]  || "").replace(/,/g, ""));
-        const change    = parseFloat((cells[col.change]   || "").replace(/,/g, ""));
-        const changePct = parseFloat((cells[col.changePct]|| "").replace(/%/g, ""));
-        if (!isNaN(price)) {
-          return {
-            symbol: sym,
-            price,
-            change:    isNaN(change)    ? null : change,
-            changePct: isNaN(changePct) ? null : changePct,
-          };
-        }
+    const html = response;
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    const table = doc.querySelector("table");
+    if (!table) throw new Error(`${sym}: no data table returned`);
+
+    const ths = [...table.querySelectorAll("th")].map(th => th.textContent.trim().toUpperCase());
+    const colClose = ths.findIndex(h => h.includes("CLOSE"));
+    
+    // Rows are usually in tbody, descending (most recent first)
+    let rows = [...table.querySelectorAll("tbody tr")]
+      .map(tr => [...tr.querySelectorAll("td")].map(td => td.textContent.trim()))
+      .filter(r => r.length > 0);
+      
+    if (rows.length === 0) {
+      rows = [...table.querySelectorAll("tr")]
+        .map(tr => [...tr.querySelectorAll("td")].map(td => td.textContent.trim()))
+        .filter(r => r.length > 0);
+    }
+
+    if (rows.length === 0) throw new Error(`${sym}: no historical data rows`);
+
+    const closeIdx = colClose >= 0 ? colClose : 4; // Fallback to col 4 if headers weird
+    const currentPriceStr = (rows[0][closeIdx] || "").replace(/,/g, "");
+    const price = parseFloat(currentPriceStr);
+    if (isNaN(price)) throw new Error(`${sym}: could not parse current price`);
+
+    let change = null;
+    let changePct = null;
+
+    if (rows.length > 1) {
+      const prevPriceStr = (rows[1][closeIdx] || "").replace(/,/g, "");
+      const prevPrice = parseFloat(prevPriceStr);
+      if (!isNaN(prevPrice) && prevPrice !== 0) {
+        change = price - prevPrice;
+        changePct = (change / prevPrice) * 100;
+        // round to 2 decimals like PSX does
+        change = Math.round(change * 100) / 100;
+        changePct = Math.round(changePct * 100) / 100;
       }
     }
-    throw new Error(`Symbol ${sym} not found in trading board`);
+
+    return {
+      symbol: sym,
+      price,
+      change,
+      changePct,
+    };
   }
 
   /** Renders a single PSX panel with price + change pill */
