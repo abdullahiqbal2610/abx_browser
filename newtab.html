@@ -236,7 +236,76 @@
             </div>
           </div>
         </div>
+
+        <!-- ══ PSX Widget ══ -->
+        <div class="psx-container">
+          <div class="psx-widget glass-panel" id="psxWidget">
+
+            <!-- Header bar -->
+            <div class="psx-header-bar">
+              <span class="psx-label" id="psxLabel">PSX</span>
+              <button class="psx-refresh" id="psxRefresh" title="Refresh PSX data" aria-label="Refresh PSX">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"></path>
+                </svg>
+              </button>
+            </div>
+
+            <!-- Loading -->
+            <div class="psx-loading flex-center" id="psxLoading">
+              <div class="loading-spinner small"></div>
+              <span>Loading PSX...</span>
+            </div>
+
+            <!-- Content: 3-panel animated wrapper -->
+            <div class="psx-content" id="psxContent" style="display:none;">
+              <div class="psx-wrapper" id="psxWrapper">
+
+                <!-- Panel 1: KSE-100 Index -->
+                <div class="psx-section active" id="psxSection1">
+                  <div class="psx-symbol-row">
+                    <span class="psx-symbol-name" id="psxSymbol1">KSE-100</span>
+                    <span class="psx-change-pill" id="psxChange1"></span>
+                  </div>
+                  <div class="psx-price" id="psxPrice1">--</div>
+                  <div class="psx-meta" id="psxMeta1">Index</div>
+                </div>
+
+                <!-- Panel 2: FFC -->
+                <div class="psx-section" id="psxSection2">
+                  <div class="psx-symbol-row">
+                    <span class="psx-symbol-name" id="psxSymbol2">FFC</span>
+                    <span class="psx-change-pill" id="psxChange2"></span>
+                  </div>
+                  <div class="psx-price" id="psxPrice2">--</div>
+                  <div class="psx-meta" id="psxMeta2">Fauji Fertilizer</div>
+                </div>
+
+                <!-- Panel 3: MEBL -->
+                <div class="psx-section" id="psxSection3">
+                  <div class="psx-symbol-row">
+                    <span class="psx-symbol-name" id="psxSymbol3">MEBL</span>
+                    <span class="psx-change-pill" id="psxChange3"></span>
+                  </div>
+                  <div class="psx-price" id="psxPrice3">--</div>
+                  <div class="psx-meta" id="psxMeta3">Meezan Bank</div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Error -->
+            <div class="psx-error" id="psxError" style="display:none;">
+              <div class="error-message">PSX data unavailable</div>
+              <button class="retry-btn" id="retryPsx">Retry</button>
+            </div>
+
+          </div>
+        </div>
+
       </aside>
+
+
 
       <main class="main-container center-focus">
         <header class="header-section">

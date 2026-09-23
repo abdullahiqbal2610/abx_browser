@@ -21,7 +21,8 @@
     "https://www.alphavantage.co/*",
     "https://suggestqueries.google.com/*",
     "https://api.gold-api.com/*",
-    "https://cdn.jsdelivr.net/*"
+    "https://cdn.jsdelivr.net/*",
+    "https://dps.psx.com.pk/*"
   ],
   "action": {
     "default_popup": "popup.html",

@@ -67,6 +67,7 @@ class XAIExtension {
     this.initFinance();
     this.initGold();
     this.initTodo();
+    this.initPsx();
     this.updateGreeting();
     this.updateTime();
     this.loadBookmarks();
@@ -2717,7 +2718,215 @@ class XAIExtension {
         })[tag],
     );
   }
-}
+
+  // ═══════════════════════════════════════════
+  //  PSX WIDGET
+  // ═══════════════════════════════════════════
+
+  /** Returns true if PKT market is currently open (Mon–Fri 09:30–15:30) */
+  isPsxOpen() {
+    const now = new Date();
+    // PKT = UTC+5
+    const pkt = new Date(now.getTime() + 5 * 60 * 60 * 1000);
+    const day = pkt.getUTCDay(); // 0=Sun, 6=Sat
+    const h = pkt.getUTCHours();
+    const m = pkt.getUTCMinutes();
+    const mins = h * 60 + m;
+    const isWeekday = day >= 1 && day <= 5;
+    const inHours = mins >= 9 * 60 + 30 && mins <= 15 * 60 + 30;
+    return isWeekday && inHours;
+  }
+
+  initPsx() {
+    if (this.psxLoopInterval) {
+      clearInterval(this.psxLoopInterval);
+      this.psxLoopInterval = null;
+    }
+
+    const refreshBtn = document.getElementById("psxRefresh");
+    if (refreshBtn) {
+      refreshBtn.onclick = () => this.loadPsx(true);
+    }
+    const retryBtn = document.getElementById("retryPsx");
+    if (retryBtn) {
+      retryBtn.onclick = () => this.loadPsx(true);
+    }
+
+    this.loadPsx();
+
+    // Refresh every 5 minutes (PSX data doesn't need to be more frequent)
+    setInterval(() => this.loadPsx(), 5 * 60 * 1000);
+  }
+
+  async loadPsx(force = false) {
+    const loading = document.getElementById("psxLoading");
+    const content = document.getElementById("psxContent");
+    const error   = document.getElementById("psxError");
+    const refreshBtn = document.getElementById("psxRefresh");
+
+    if (!loading || !content || !error) return;
+
+    // Show loading
+    loading.style.display = "flex";
+    content.style.display = "none";
+    error.style.display   = "none";
+    if (refreshBtn) refreshBtn.classList.add("refreshing");
+
+    const PANELS = [
+      { symbol: "KSE100", label: "KSE-100", meta: "Index",            num: 1 },
+      { symbol: "FFC",    label: "FFC",     meta: "Fauji Fertilizer", num: 2 },
+      { symbol: "MEBL",   label: "MEBL",    meta: "Meezan Bank",       num: 3 },
+    ];
+
+    try {
+      // Fetch all 3 concurrently
+      const results = await Promise.allSettled(
+        PANELS.map(p => this.scrapePsxQuote(p.symbol))
+      );
+
+      let anySuccess = false;
+      results.forEach((res, i) => {
+        const panel = PANELS[i];
+        if (res.status === "fulfilled" && res.value) {
+          this.displayPsxPanel(panel.num, panel.label, panel.meta, res.value);
+          anySuccess = true;
+        } else {
+          // Show dashes for failed panels
+          const priceEl = document.getElementById(`psxPrice${panel.num}`);
+          const changeEl = document.getElementById(`psxChange${panel.num}`);
+          if (priceEl) priceEl.textContent = "--";
+          if (changeEl) { changeEl.textContent = ""; changeEl.className = "psx-change-pill"; }
+        }
+      });
+
+      loading.style.display = "none";
+
+      if (anySuccess) {
+        content.style.display = "block";
+        // Update header label to first panel
+        const psxLabel = document.getElementById("psxLabel");
+        if (psxLabel) psxLabel.textContent = PANELS[0].label;
+        // Start/restart animation loop
+        this.startPsxAnimationLoop(PANELS);
+      } else {
+        error.style.display = "block";
+      }
+    } catch (e) {
+      console.error("PSX load error:", e);
+      loading.style.display = "none";
+      error.style.display   = "block";
+    } finally {
+      if (refreshBtn) refreshBtn.classList.remove("refreshing");
+    }
+  }
+
+  /**
+   * Scrapes live quote from https://dps.psx.com.pk/company/{SYMBOL}
+   * Mirrors the Python scraper in quote.py — same CSS classes, same logic.
+   */
+  async scrapePsxQuote(symbol) {
+    const url = `https://dps.psx.com.pk/company/${symbol.toUpperCase()}`;
+    const res = await fetch(url, {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (compatible; ABX-Browser/1.0)",
+        "Accept": "text/html,application/xhtml+xml",
+      }
+    });
+    if (!res.ok) throw new Error(`PSX fetch failed for ${symbol}: ${res.status}`);
+    const html = await res.text();
+
+    // Parse HTML with DOMParser (browser-native, no deps needed)
+    const doc = new DOMParser().parseFromString(html, "text/html");
+
+    // Price: div.quote__close → e.g. "Rs.569.92" or plain "110,450.12"
+    const priceEl = doc.querySelector(".quote__close");
+    let price = null;
+    if (priceEl) {
+      const raw = priceEl.textContent.replace(/Rs\./g, "").replace(/,/g, "").trim();
+      price = parseFloat(raw.split(/\s/)[0]);
+    }
+
+    // Change: div.quote__change → e.g. "1.83 (0.32%)" or "-5.10 (-0.89%)"
+    const changeEl = doc.querySelector(".quote__change");
+    let change = null, changePct = null;
+    if (changeEl) {
+      const raw = changeEl.textContent.trim();
+      // Extract change value (first number)
+      const changeMatch = raw.match(/^([-+]?[\d,]+\.?\d*)/);
+      if (changeMatch) change = parseFloat(changeMatch[1].replace(/,/g, ""));
+      // Extract % from parentheses
+      const pctMatch = raw.match(/\(([-+]?[\d.]+)%\)/);
+      if (pctMatch) changePct = parseFloat(pctMatch[1]);
+    }
+
+    if (price === null || isNaN(price)) throw new Error(`No price data for ${symbol}`);
+
+    return { symbol: symbol.toUpperCase(), price, change, changePct };
+  }
+
+  /** Renders a single PSX panel with price + change pill */
+  displayPsxPanel(num, label, meta, data) {
+    const priceEl  = document.getElementById(`psxPrice${num}`);
+    const changeEl = document.getElementById(`psxChange${num}`);
+    const symbolEl = document.getElementById(`psxSymbol${num}`);
+    const metaEl   = document.getElementById(`psxMeta${num}`);
+
+    if (symbolEl) symbolEl.textContent = label;
+    if (metaEl)   metaEl.textContent   = meta;
+
+    // Format price: use commas for large numbers (index), Rs. prefix for stocks
+    if (priceEl) {
+      const isIndex = num === 1; // KSE-100
+      if (isIndex) {
+        priceEl.textContent = data.price.toLocaleString("en-US", { maximumFractionDigits: 0 });
+      } else {
+        priceEl.textContent = "Rs. " + data.price.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      }
+    }
+
+    // Change pill
+    if (changeEl) {
+      if (data.changePct !== null && data.changePct !== undefined) {
+        const up = data.changePct >= 0;
+        const arrow = up ? "▲" : "▼";
+        const absVal = Math.abs(data.changePct).toFixed(2);
+        changeEl.textContent = `${arrow} ${absVal}%`;
+        changeEl.className = "psx-change-pill " + (up ? "gold-change-up" : "gold-change-down");
+      } else {
+        changeEl.textContent = "";
+        changeEl.className = "psx-change-pill";
+      }
+    }
+  }
+
+  /** Cycles through the 3 PSX panels every 4 seconds with blur+fade */
+  startPsxAnimationLoop(panels) {
+    if (this.psxLoopInterval) clearInterval(this.psxLoopInterval);
+
+    let current = 0; // index into panels array
+
+    // Ensure section 1 is active on start
+    panels.forEach((p, i) => {
+      const sec = document.getElementById(`psxSection${p.num}`);
+      if (sec) {
+        sec.classList.toggle("active", i === 0);
+      }
+    });
+
+    this.psxLoopInterval = setInterval(() => {
+      const prev = current;
+      current = (current + 1) % panels.length;
+
+      const prevSec = document.getElementById(`psxSection${panels[prev].num}`);
+      const nextSec = document.getElementById(`psxSection${panels[current].num}`);
+      const psxLabel = document.getElementById("psxLabel");
+
+      if (prevSec) prevSec.classList.remove("active");
+      if (nextSec) nextSec.classList.add("active");
+      if (psxLabel) psxLabel.textContent = panels[current].label;
+    }, 4000);
+  }
+
 
 // Fade out widgets on scroll
 const weatherWidget = document.querySelector(".weather-container");
