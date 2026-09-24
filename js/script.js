@@ -2854,27 +2854,47 @@ class XAIExtension {
     const html = response;
     const doc = new DOMParser().parseFromString(html, "text/html");
     
-    const priceDiv = doc.querySelector(".quote__close");
-    if (!priceDiv) throw new Error(`${sym}: price not found`);
-    const priceText = priceDiv.textContent.replace("Rs.", "").replace(/,/g, "").trim();
-    const price = parseFloat(priceText);
-    if (isNaN(price)) throw new Error(`${sym}: could not parse current price`);
-
+    let price = null;
     let change = null;
     let changePct = null;
 
-    const changeDiv = doc.querySelector(".quote__change");
-    if (changeDiv) {
-      const changeText = changeDiv.textContent.replace("Rs.", "").replace(/,/g, "").trim();
-      const parts = changeText.split("(");
-      if (parts.length > 0) {
-        change = parseFloat(parts[0].trim());
+    const isIndex = ["KSE100", "KSE30", "KMI30", "ALLSHR"].includes(sym);
+
+    if (isIndex) {
+      const panel = doc.querySelector(`div[data-name="${sym}"]`);
+      if (!panel) throw new Error(`${sym}: index not found on homepage`);
+      
+      const priceText = panel.querySelector(".marketIndices__price").textContent.replace(/,/g, "").trim();
+      price = parseFloat(priceText);
+      
+      const changeDiv = panel.querySelector(".marketIndices__change");
+      if (changeDiv) {
+        const changeText = changeDiv.textContent.trim();
+        const parts = changeText.split("|");
+        if (parts.length > 0) change = parseFloat(parts[0].replace(/,/g, "").trim());
+        if (parts.length > 1) changePct = parseFloat(parts[1].replace("%", "").replace(/,/g, "").trim());
       }
-      if (parts.length > 1) {
-        const pctStr = parts[1].replace("%", "").replace(")", "").trim();
-        changePct = parseFloat(pctStr);
+    } else {
+      const priceDiv = doc.querySelector(".quote__close");
+      if (!priceDiv) throw new Error(`${sym}: price not found`);
+      const priceText = priceDiv.textContent.replace("Rs.", "").replace(/,/g, "").trim();
+      price = parseFloat(priceText);
+      
+      const changeDiv = doc.querySelector(".quote__change");
+      if (changeDiv) {
+        const changeText = changeDiv.textContent.replace("Rs.", "").replace(/,/g, "").trim();
+        const parts = changeText.split("(");
+        if (parts.length > 0) {
+          change = parseFloat(parts[0].trim());
+        }
+        if (parts.length > 1) {
+          const pctStr = parts[1].replace("%", "").replace(")", "").trim();
+          changePct = parseFloat(pctStr);
+        }
       }
     }
+
+    if (isNaN(price)) throw new Error(`${sym}: could not parse current price`);
 
     return {
       symbol: sym,

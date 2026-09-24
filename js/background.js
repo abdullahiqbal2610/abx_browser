@@ -57,7 +57,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         case 'fetchPsx':
             const symbol = request.symbol;
             const BASE = "https://dps.psx.com.pk";
-            fetch(`${BASE}/company/${symbol}`, {
+            const isIndex = ["KSE100", "KSE30", "KMI30", "ALLSHR"].includes(symbol);
+            const url = isIndex ? BASE : `${BASE}/company/${symbol}`;
+            fetch(url, {
                 method: "GET",
                 headers: {
                     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
