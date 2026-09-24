@@ -2861,18 +2861,23 @@ class XAIExtension {
     const isIndex = ["KSE100", "KSE30", "KMI30", "ALLSHR"].includes(sym);
 
     if (isIndex) {
-      const panel = doc.querySelector(`div[data-name="${sym}"]`);
+      const panel = doc.querySelector(`div.marketIndices__details[data-name="${sym}"]`);
       if (!panel) throw new Error(`${sym}: index not found on homepage`);
       
-      const priceText = panel.querySelector(".marketIndices__price").textContent.replace(/,/g, "").trim();
+      const priceText = panel.querySelector(".marketIndices__price").childNodes[0].textContent.replace(/,/g, "").trim();
       price = parseFloat(priceText);
       
       const changeDiv = panel.querySelector(".marketIndices__change");
       if (changeDiv) {
         const changeText = changeDiv.textContent.trim();
-        const parts = changeText.split("|");
-        if (parts.length > 0) change = parseFloat(parts[0].replace(/,/g, "").trim());
-        if (parts.length > 1) changePct = parseFloat(parts[1].replace("%", "").replace(/,/g, "").trim());
+        const parts = changeText.split("(");
+        if (parts.length > 0) {
+          change = parseFloat(parts[0].replace(/,/g, "").trim());
+        }
+        if (parts.length > 1) {
+          const pctStr = parts[1].replace("%", "").replace(")", "").trim();
+          changePct = parseFloat(pctStr);
+        }
       }
     } else {
       const priceDiv = doc.querySelector(".quote__close");
