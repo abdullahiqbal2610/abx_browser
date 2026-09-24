@@ -57,15 +57,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         case 'fetchPsx':
             const symbol = request.symbol;
             const BASE = "https://dps.psx.com.pk";
-            const body = new URLSearchParams({ symbol: symbol });
-            fetch(`${BASE}/historical`, {
-                method: "POST",
+            fetch(`${BASE}/company/${symbol}`, {
+                method: "GET",
                 headers: {
                     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
                     "Accept-Language": "en-US,en;q=0.5",
-                    "Content-Type": "application/x-www-form-urlencoded"
-                },
-                body: body.toString(),
+                }
             })
             .then(res => {
                 if (!res.ok) throw new Error(`Status: ${res.status}`);

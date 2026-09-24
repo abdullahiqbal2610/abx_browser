@@ -2853,42 +2853,26 @@ class XAIExtension {
 
     const html = response;
     const doc = new DOMParser().parseFromString(html, "text/html");
-    const table = doc.querySelector("table");
-    if (!table) throw new Error(`${sym}: no data table returned`);
-
-    const ths = [...table.querySelectorAll("th")].map(th => th.textContent.trim().toUpperCase());
-    const colClose = ths.findIndex(h => h.includes("CLOSE"));
     
-    // Rows are usually in tbody, descending (most recent first)
-    let rows = [...table.querySelectorAll("tbody tr")]
-      .map(tr => [...tr.querySelectorAll("td")].map(td => td.textContent.trim()))
-      .filter(r => r.length > 0);
-      
-    if (rows.length === 0) {
-      rows = [...table.querySelectorAll("tr")]
-        .map(tr => [...tr.querySelectorAll("td")].map(td => td.textContent.trim()))
-        .filter(r => r.length > 0);
-    }
-
-    if (rows.length === 0) throw new Error(`${sym}: no historical data rows`);
-
-    const closeIdx = colClose >= 0 ? colClose : 4; // Fallback to col 4 if headers weird
-    const currentPriceStr = (rows[0][closeIdx] || "").replace(/,/g, "");
-    const price = parseFloat(currentPriceStr);
+    const priceDiv = doc.querySelector(".quote__close");
+    if (!priceDiv) throw new Error(`${sym}: price not found`);
+    const priceText = priceDiv.textContent.replace("Rs.", "").replace(/,/g, "").trim();
+    const price = parseFloat(priceText);
     if (isNaN(price)) throw new Error(`${sym}: could not parse current price`);
 
     let change = null;
     let changePct = null;
 
-    if (rows.length > 1) {
-      const prevPriceStr = (rows[1][closeIdx] || "").replace(/,/g, "");
-      const prevPrice = parseFloat(prevPriceStr);
-      if (!isNaN(prevPrice) && prevPrice !== 0) {
-        change = price - prevPrice;
-        changePct = (change / prevPrice) * 100;
-        // round to 2 decimals like PSX does
-        change = Math.round(change * 100) / 100;
-        changePct = Math.round(changePct * 100) / 100;
+    const changeDiv = doc.querySelector(".quote__change");
+    if (changeDiv) {
+      const changeText = changeDiv.textContent.replace("Rs.", "").replace(/,/g, "").trim();
+      const parts = changeText.split("(");
+      if (parts.length > 0) {
+        change = parseFloat(parts[0].trim());
+      }
+      if (parts.length > 1) {
+        const pctStr = parts[1].replace("%", "").replace(")", "").trim();
+        changePct = parseFloat(pctStr);
       }
     }
 
